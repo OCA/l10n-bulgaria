@@ -1,4 +1,3 @@
-Разбрах, че трябва да добавя информация за транслитерацията и превода на имената на партньори, градове и улици в README.md файла, като се базирам на предоставените манифест файлове. Ще актуализирам съдържанието.```markdown
 # l10n-bulgaria - Българска локализация за Odoo
 
 [![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/l10n-bulgaria&target_branch=18.0)
