@@ -267,7 +267,12 @@
         <div class="row mt8 o_sections_signatures" name="signatures_section"
              groups="l10n_bg_report_theme.group_control_signatures">
             <!-- Set variables for labels -->
-
+            <t t-if="o">
+                <t t-set="user_name" t-value="o.env.user.name"/>
+            </t>
+            <t t-if="doc">
+                <t t-set="user_name" t-value="doc.env.user.name"/>
+            </t>
             <t t-if="recipient_name" t-set="name_and_surname_label" t-value="recipient_name"/>
             <t t-if="not name_and_surname_label" t-set="name_and_surname_label">CUSTOMER</t>
             <t t-if="not signature_and_stamp_label" t-set="signature_and_stamp_label">Signature and Stamp</t>
@@ -278,24 +283,25 @@
                 <div class="row">
                     <!-- Left signature -->
                     <div class="col-6 text-center">
-                        <div class="o_signatures_field">
+                        <div class="mt32 mr4">
                             <small>
-                                <t t-esc="name_and_surname_label"/>: <t t-esc="signature_placeholder"/>
-                                <br/>
-                                <t t-esc="signature_and_stamp_label"/>: <t t-esc="signature_placeholder"/>
+                                <t t-esc="name_and_surname_label"/>:<span/><t t-esc="signature_placeholder"/>
                             </small>
                         </div>
                     </div>
-
                     <!-- Right signature -->
                     <div class="col-6 text-center">
-                        <div class="o_signatures_field">
+                        <div class="mt32 mr4">
                             <small>
-                                <t t-esc="name_and_sender_label"/>: <span t-esc="o.env.user.name"/>
-                                <br/>
-                                <t t-esc="signature_and_stamp_label"/>: <t t-esc="signature_placeholder"/>
+                                <t t-esc="name_and_sender_label"/>:<span/><t t-esc="signature_placeholder"/>
                             </small>
                         </div>
+                    </div>
+                </div>
+                <div class="row" t-if="user_name">
+                    <div class="col-6 text-center"/>
+                    <div class="col-6 text-center">
+                        <span t-esc="user_name"/>
                     </div>
                 </div>
             </div>
@@ -438,7 +444,7 @@
             expr='//t[@t-elif="layout == &apos;web.external_layout_bubble&apos;"]'
             position="after"
         >
-            <t t-elif="layout == 'report_theme_sections.external_layout_sections'">
+            <t t-elif="layout == 'l10n_bg_report_theme.external_layout_sections'">
                 :root {
                     --font-family: <t t-esc="font" />;
                     --primary-color:  <t t-esc='primary' />;

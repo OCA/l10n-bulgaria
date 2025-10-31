@@ -125,6 +125,10 @@ class ResTransliterate(models.AbstractModel):
     def _get_code_lang(self, code):
         return self.env['res.lang'].search([('iso_code', '=', code)])
 
+    @api.model
+    def _get_transliterate_fields(self):
+        return []
+
     def _check_lang(self, text):
         current_lang = lang = self.env.user.lang
         installed_langs = self._get_transliterate_languages()

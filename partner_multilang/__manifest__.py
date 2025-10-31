@@ -13,7 +13,6 @@
             "transliterate",
             "unidecode",
             "lingua",
-            # "langdetect"
         ]
     },
     "depends": [
