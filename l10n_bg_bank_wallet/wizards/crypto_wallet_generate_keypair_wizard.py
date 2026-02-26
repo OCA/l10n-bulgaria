@@ -44,7 +44,8 @@ class CryptoWalletGenerateKeypairWizard(models.TransientModel):
                 if not re.match(r"^[a-zA-Z0-9_.-]+$", record.key_name):
                     raise UserError(
                         _(
-                            "Името може да съдържа само букви, цифри, тире, долна черта и точки"
+                            "Името може да съдържа само букви, цифри, тире, "
+                            "долна черта и точки"
                         )
                     )
 

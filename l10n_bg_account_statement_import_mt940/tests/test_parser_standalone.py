@@ -267,7 +267,7 @@ def parse_mt940_file(file_path):
                                     field_data = part[2:].strip()
                                     print(f"  Field {field_num}: {field_data[:70]}")
 
-                                    # If field 22, try to parse with BankTransactionParser
+                                    # If field 22, parse with BankTransactionParser.
                                     if field_num == "22":
                                         parser = BankTransactionParser(
                                             field_data,

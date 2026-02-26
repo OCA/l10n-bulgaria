@@ -141,7 +141,7 @@ class FileSystemManager:
             _logger.info(f"Wallet data saved to disk: {file_path}")
         except Exception as e:
             _logger.error(f"Failed to save wallet to disk: {str(e)}")
-            raise UserError(f"Грешка при записването на диск: {str(e)}")
+            raise UserError(f"Грешка при записването на диск: {str(e)}") from e
 
     def load_encrypted_file(self, file_path: Path) -> bytes | None:
         """Load encrypted data from a file"""
@@ -288,7 +288,9 @@ class CryptoWallet(models.Model):
 
         except Exception as e:
             _logger.error(f"Failed to unlock wallet '{self.name}': {str(e)}")
-            raise UserError("Грешна главна парола или повредени данни в портфела")
+            raise UserError(
+                "Грешна главна парола или повредени данни в портфела"
+            ) from e
 
     def _update_session_state(self, encryption_key, wallet_data):
         """Update session state after successful unlock - extracted method"""
@@ -591,7 +593,7 @@ class CryptoWallet(models.Model):
 
         except Exception as e:
             _logger.error(f"Failed to generate keypair: {str(e)}")
-            raise UserError(f"Грешка при генериране на ключове: {str(e)}")
+            raise UserError(f"Грешка при генериране на ключове: {str(e)}") from e
 
     # === USER WALLET MANAGEMENT ===
     @api.model
@@ -626,8 +628,12 @@ class CryptoWallet(models.Model):
             try:
                 wallet.unlock_wallet_with_password(current_hash)
                 _logger.debug(f"Wallet sync verified for user {user_id}")
-            except:
-                _logger.warning(f"Wallet desync for user {user_id}, reinitializing")
+            except Exception as e:
+                _logger.warning(
+                    "Wallet desync for user %s, reinitializing: %s",
+                    user_id,
+                    e,
+                )
                 wallet._initialize_empty_wallet(current_hash)
 
         return wallet
@@ -976,7 +982,12 @@ class CryptoWallet(models.Model):
             keys_text = []
             for key_info in keys_info:
                 keys_text.append(
-                    f"• {key_info['name']} ({key_info['type']}) - създаден {key_info['created']}"
+                    "• %s (%s) - създаден %s"
+                    % (
+                        key_info["name"],
+                        key_info["type"],
+                        key_info["created"],
+                    )
                 )
 
             message = f"""
@@ -1029,6 +1040,9 @@ class CryptoWallet(models.Model):
         )
 
         _logger.info(
-            f"Copied key '{key_name}' from user {self.user_id.id} to user {target_user_id}"
+            "Copied key '%s' from user %s to user %s",
+            key_name,
+            self.user_id.id,
+            target_user_id,
         )
         return True

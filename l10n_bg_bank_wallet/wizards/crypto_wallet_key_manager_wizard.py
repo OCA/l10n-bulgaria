@@ -36,7 +36,7 @@ class CryptoWalletKeyManager(models.TransientModel):
                 try:
                     keys_info = record.wallet_id.list_keys_with_user_password()
                     record.keys_count = len(keys_info) if keys_info else 0
-                except:
+                except Exception:
                     record.keys_count = 0
             else:
                 record.is_wallet_locked = True
@@ -53,7 +53,13 @@ class CryptoWalletKeyManager(models.TransientModel):
                         key_lines = []
                         for i, key_info in enumerate(keys_info, 1):
                             key_lines.append(
-                                f"{i}. {key_info['name']} ({key_info['type']}) - {key_info['created']}"
+                                "%s. %s (%s) - %s"
+                                % (
+                                    i,
+                                    key_info["name"],
+                                    key_info["type"],
+                                    key_info["created"],
+                                )
                             )
                         record.key_list = "\n".join(key_lines)
                     else:

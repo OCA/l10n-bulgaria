@@ -55,7 +55,7 @@ class CryptoWalletExportWizard(models.TransientModel):
         if self.use_user_password:
             try:
                 self.master_password = self.env.user.password
-            except:
+            except Exception:
                 pass
 
     @api.onchange("export_format")
@@ -182,7 +182,8 @@ class CryptoWalletExportWizard(models.TransientModel):
             "params": {
                 "title": _("Копиране"),
                 "message": _(
-                    "Данните са готови за копиране. Моля, селектирайте и копирайте текста по-долу."
+                    "Данните са готови за копиране. Моля, селектирайте и копирайте "
+                    "текста по-долу."
                 ),
                 "type": "info",
                 "sticky": True,

@@ -96,10 +96,12 @@ class Users(models.Model):
                     # Опитва се да отключи портфела
                     system_wallet.unlock_wallet(current_hash)
                     _logger.debug(f"Wallet sync verified for user {user_id}")
-                except:
+                except Exception as e:
                     # Портфелът не може да се отключи - нещо не е наред
                     _logger.warning(
-                        f"Wallet out of sync for user {user_id}, attempting recovery"
+                        "Wallet out of sync for user %s, attempting recovery: %s",
+                        user_id,
+                        e,
                     )
                     cls._create_initial_wallet(env, user_id, current_hash)
             else:

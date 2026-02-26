@@ -2,7 +2,10 @@
     "name": "Bulgarian Company Registry Integration",
     "version": "18.0.2.0.1",
     "category": "Localization",
-    "summary": "Real-time integration with Bulgarian Trade Registry (portal.registryagency.bg)",
+    "summary": (
+        "Real-time integration with Bulgarian Trade Registry "
+        "(portal.registryagency.bg)"
+    ),
     "description": "\n"
     "Bulgarian Company Registry Integration\n"
     "=======================================\n"

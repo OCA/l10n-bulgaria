@@ -35,7 +35,7 @@ class CryptoWalletChangePasswordWizard(models.TransientModel):
         if self.use_current_user_password:
             try:
                 self.old_password = self.env.user.password
-            except:
+            except Exception:
                 pass
 
     @api.constrains("new_password", "confirm_password")
@@ -78,7 +78,9 @@ class CryptoWalletChangePasswordWizard(models.TransientModel):
                     self.env.user.password = self.new_password
 
                 _logger.info(
-                    f"Password changed for wallet {self.wallet_id.name} by user {self.env.user.name}"
+                    "Password changed for wallet %s by user %s",
+                    self.wallet_id.name,
+                    self.env.user.name,
                 )
 
                 return {
@@ -149,7 +151,8 @@ class CryptoWalletChangePasswordWizard(models.TransientModel):
                     "params": {
                         "title": _("Частичен успех"),
                         "message": _(
-                            "Паролата е променена, но възникна грешка при отключването: %s"
+                            "Паролата е променена, но възникна грешка при "
+                            "отключването: %s"
                         )
                         % str(e),
                         "type": "warning",

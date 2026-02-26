@@ -83,7 +83,8 @@ class CryptoWalletAddKeyWizard(models.TransientModel):
             if not re.match(r"^[a-zA-Z0-9_.-]+$", record.key_name):
                 raise UserError(
                     _(
-                        "Името на ключа може да съдържа само букви, цифри, тире, долна черта и точки"
+                        "Името на ключа може да съдържа само букви, цифри, тире, "
+                        "долна черта и точки"
                     )
                 )
 
@@ -163,7 +164,7 @@ class CryptoWalletAddKeyWizard(models.TransientModel):
             raise
         except Exception as e:
             _logger.error(f"Error adding key to wallet: {e}")
-            raise UserError(_("Грешка при добавяне на ключ: %s") % str(e))
+            raise UserError(_("Грешка при добавяне на ключ: %s") % str(e)) from e
 
     def add_key_and_add_another(self):
         """Добавя ключа и отваря нов wizard за следващ ключ"""

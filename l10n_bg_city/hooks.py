@@ -11,7 +11,7 @@ from odoo.tools.translate import TranslationImporter, code_translations
 _logger = logging.getLogger(__name__)
 
 
-def post_init_hook(env):
+def post_init_hook(env):  # noqa: C901
     module = __name__.split("addons.")[1].split(".")[0]
     module_path = ""
     for adp in addons.__path__:
@@ -52,7 +52,7 @@ def post_init_hook(env):
                     fname_check = fname_check.split("/")
 
                     if len(fname_check) > 1:
-                        fname, row_id = fname_check[0], fname_check[1]
+                        fname = fname_check[0]
                     else:
                         fname = fname_check[0]
 

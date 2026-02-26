@@ -6,8 +6,12 @@ from odoo.tools import SQL, html2plaintext
 from odoo.addons.base.models.res_bank import sanitize_account_number
 
 try:
-    from odoo.addons.account_reconcile_model_oca.models.account_bank_statement_line import (
-        AccountBankStatementLine as AccountBankStatementLineBase,
+    from odoo.addons.account_reconcile_model_oca.models import (
+        account_bank_statement_line as account_bank_statement_line_module,
+    )
+
+    AccountBankStatementLineBase = (
+        account_bank_statement_line_module.AccountBankStatementLine
     )
 except ImportError:
     AccountBankStatementLineBase = None
@@ -73,7 +77,12 @@ def _retrieve_partner_patch(self):
                     {unaccent("%s")} ~* ('^' || (
                         SELECT STRING_AGG(CONCAT('(?=.*\m', chunk[1], '\\M)'), '')
                         FROM regexp_matches(
-                            {unaccent("COALESCE(partner.name #>> '{}', partner.name::text)")},
+                            {
+                                unaccent(
+                                    "COALESCE(partner.name #>> '{}', "
+                                    "partner.name::text)"
+                                )
+                            },
                             '\\w{{3,}}', 'g'
                         ) AS chunk
                     ))
