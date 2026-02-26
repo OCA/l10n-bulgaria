@@ -30,12 +30,16 @@ def apply_mask_zip(
     # Валидация на входа - подобрена обработка
     if value in (None, False, True, ""):
         _logger.warning(
-            f"apply_mask_zip received invalid value: {value} ({type(value).__name__}), using empty string"
+            "apply_mask_zip received invalid value: %s (%s), using empty string",
+            value,
+            type(value).__name__,
         )
         value = ""
     elif not isinstance(value, str):
         _logger.warning(
-            f"apply_mask_zip received non-string value: {value} ({type(value).__name__}), converting to string"
+            "apply_mask_zip received non-string value: %s (%s), converting to string",
+            value,
+            type(value).__name__,
         )
         value = str(value)
 
@@ -97,12 +101,14 @@ class AccountChartTemplate(models.AbstractModel):
 
     def _get_installed_plugins(self):
         """
-        Retrieves a list of names of installed plugins that match the naming convention
-        defined by the `BASE_MODULE` and `PLUGINS_SUFFIX` variables. This method searches
-        for modules in the system's environment whose names start with the base module
-        name and plugin suffix, and whose state is marked as installed.
+        Retrieves a list of names of installed plugins that match the naming
+        convention defined by the `BASE_MODULE` and `PLUGINS_SUFFIX` variables.
+        This method searches for modules in the system's environment whose names
+        start with the base module name and plugin suffix, and whose state is
+        marked as installed.
 
-        :return: A list of installed plugin module names that match the filtering criteria.
+        :return: A list of installed plugin module names that match the filtering
+            criteria.
         :rtype: list[str]
         """
         return (
@@ -156,8 +162,10 @@ class AccountChartTemplate(models.AbstractModel):
                     code = account_data.get("code", "")
                     if not isinstance(code, str):
                         _logger.warning(
-                            f"Invalid code type for account {key}: {type(code).__name__}. "
-                            f"Expected string, converting to string."
+                            "Invalid code type for account %s: %s. Expected string, "
+                            "converting to string.",
+                            key,
+                            type(code).__name__,
                         )
                         code = str(code) if code not in (None, False, True) else ""
 
@@ -194,14 +202,16 @@ class AccountChartTemplate(models.AbstractModel):
     @template(model="account.account")
     def _get_account_account(self, template_code):
         """
-        Gets account-specific template data and updates it according to the given template code.
+        Gets account-specific template data and updates it according to the given
+        template code.
 
-        This method overrides the base `_get_account_account` method to provide additional
-        processing of account template data using `_get_bg_account_data`. The data is modified
-        to conform to a specific type template.
+        This method overrides the base `_get_account_account` method to provide
+        additional processing of account template data using `_get_bg_account_data`.
+        The data is modified to conform to a specific type template.
 
         Args:
-            template_code (str): The template code used to fetch the account account template data.
+            template_code (str): The template code used to fetch the account
+                account template data.
 
         Returns:
             dict: The updated template data for the specified account account.
@@ -216,15 +226,19 @@ class AccountChartTemplate(models.AbstractModel):
     @template(model="account.group")
     def _get_bg_account_group_data(self, template_code, module=BASE_MODULE):
         """
-        Extracts and processes account group data from a CSV file using the given template.
+        Extracts and processes account group data from a CSV file using the given
+        template.
 
-        This method reads a CSV file template corresponding to account groups and converts it
-        into data usable within the system. It is specifically tailored to work with account
-        group data and relies on predefined module contexts.
+        This method reads a CSV file template corresponding to account groups and
+        converts it into data usable within the system. It is specifically
+        tailored to work with account group data and relies on predefined module
+        contexts.
 
         Arguments:
-            template_code (str): The reference code of the desired template to fetch account group data.
-            module (str): The module context within which the template resides. Defaults to BASE_MODULE.
+            template_code (str): The reference code of the desired template to
+                fetch account group data.
+            module (str): The module context within which the template resides.
+                Defaults to BASE_MODULE.
 
         Returns:
             list[dict]: A list of dictionaries containing parsed account group data.
@@ -239,13 +253,15 @@ class AccountChartTemplate(models.AbstractModel):
         """
         _get_account_group(template_code)
 
-        Retrieves and updates data for an account group based on the provided template code. The method
-        leverages a parent method to obtain initial account group data, then augments it using additional
-        template-specific information.
+        Retrieves and updates data for an account group based on the provided
+        template code. The method leverages a parent method to obtain initial
+        account group data, then augments it using additional template-specific
+        information.
 
         Parameters:
             template_code: str
-                The code of the template for which account group data needs to be retrieved.
+                The code of the template for which account group data needs to be
+                retrieved.
 
         Returns:
             dict
@@ -262,12 +278,14 @@ class AccountChartTemplate(models.AbstractModel):
         """
         Extracts and processes tax data based on the provided template code and module.
 
-        The method retrieves tax data using the specified CSV template and module. It dereferences
-        account tags within the tax data after parsing it.
+        The method retrieves tax data using the specified CSV template and module.
+        It dereferences account tags within the tax data after parsing it.
 
         Args:
-            template_code: The code of the CSV template to use for retrieving tax data.
-            module: The name of the module where the template is located. Defaults to BASE_MODULE.
+            template_code: The code of the CSV template to use for retrieving tax
+                data.
+            module: The name of the module where the template is located. Defaults
+                to BASE_MODULE.
 
         Returns:
             A list containing processed tax data extracted from the template.
@@ -374,7 +392,8 @@ class AccountChartTemplate(models.AbstractModel):
 
         Returns:
             dict: A dictionary containing the following keys:
-                - 'account_mask': A string pattern defining how account numbers are masked.
+                - 'account_mask': A string pattern defining how account numbers are
+                  masked.
                 - 'code_digits': The number of digits used for the code format.
         """
         return {
