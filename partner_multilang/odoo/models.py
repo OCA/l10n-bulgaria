@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
 
-regex_order = re.compile(r'''
+regex_order = re.compile(
+    r"""
     ^
     (\s*
         (?P<term>((?P<field>[a-z0-9_]+|"[a-z0-9_]+")(\.(?P<property>[a-z0-9_]+))?(\->>'(?P<translate>[a-z0-9_]+)')?(:(?P<func>[a-z_]+))?))
@@ -14,4 +14,6 @@ regex_order = re.compile(r'''
     )+
     (?<!,)
     $
-''', re.IGNORECASE | re.VERBOSE)
+""",
+    re.IGNORECASE | re.VERBOSE,
+)

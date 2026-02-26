@@ -1,14 +1,19 @@
 # 🤖 AI TARIC & INTRASTAT Classifier for Odoo
 
-Автоматична класификация на стоки със TARIC и INTRASTAT кодове, използвайки изкуствен интелект (Claude AI).
+Автоматична класификация на стоки със TARIC и INTRASTAT кодове, използвайки изкуствен
+интелект (Claude AI).
 
 ## 📋 Описание
 
-Този модул предоставя напълно автоматизирана система за класификация на продукти с митнически TARIC кодове и INTRASTAT номенклатура за България. Използва се най-новата AI технология (Claude Sonnet 4.5) от Anthropic за интелигентно разпознаване и предлагане на подходящи кодове.
+Този модул предоставя напълно автоматизирана система за класификация на продукти с
+митнически TARIC кодове и INTRASTAT номенклатура за България. Използва се най-новата AI
+технология (Claude Sonnet 4.5) от Anthropic за интелигентно разпознаване и предлагане на
+подходящи кодове.
 
 ## ✨ Възможности
 
 ### AI Класификация
+
 - 🎯 **Автоматично предлагане** на TARIC кодове чрез AI анализ
 - 🔍 **Интелигентно търсене** в TARIC базата данни
 - 📊 **Confidence scoring** - оценка на увереността на AI (0-100%)
@@ -16,6 +21,7 @@
 - 🇧🇬 **Двуезично** - Подръжка на български и английски език
 
 ### TARIC Кодове
+
 - 📚 10-digit TARIC код (CN8 + 2 допълнителни цифри)
 - 🏷️ 8-digit Combined Nomenclature (CN8) код
 - 💰 Митнически мита и тарифи
@@ -24,6 +30,7 @@
 - 📖 История на всички класификации
 
 ### INTRASTAT Номенклатура (България)
+
 - 📊 CN8 кодове за INTRASTAT отчитане
 - 🇪🇺 Съответствие с изискванията на НСИ България
 - 💶 Прагове за деклариране (dispatch/arrival)
@@ -32,6 +39,7 @@
 - ⚖️ Нетно тегло, допълнителни единици, и други задължителни полета
 
 ### Batch Обработка
+
 - 📦 **Масова класификация** - обработка на стотици продукти наведнъж
 - 🎚️ **Филтри** - само некласифицирани, по категория и др.
 - ⚡ **Автоматично прилагане** на високо доверителни предложения (>90%)
@@ -40,6 +48,7 @@
 ## 🔧 Инсталация
 
 ### Изисквания
+
 - Odoo 16.0, 17.0 или 18.0
 - Python 3.8+
 - Anthropic API Key (безплатен trial налични на https://console.anthropic.com/)
@@ -47,6 +56,7 @@
 ### Стъпки за инсталация
 
 1. **Копирайте модула** в addons директорията на Odoo:
+
 ```bash
 cd /path/to/odoo/addons
 git clone <repository-url> taric_ai_classifier
@@ -54,6 +64,7 @@ git clone <repository-url> taric_ai_classifier
 ```
 
 2. **Рестартирайте Odoo** сървъра:
+
 ```bash
 sudo systemctl restart odoo
 # или
@@ -61,6 +72,7 @@ sudo systemctl restart odoo
 ```
 
 3. **Активирайте модула**:
+
    - Влезте в Odoo като администратор
    - Отидете на Apps
    - Натиснете "Update Apps List"
@@ -119,12 +131,15 @@ sudo systemctl restart odoo
 ### AI Настройки (Settings → Accounting)
 
 **🤖 AI Classification Settings:**
+
 - **Enable Auto-Classification** - автоматично предлагане при създаване на продукти
-- **Minimum Confidence Threshold** - минимален % за показване на предложения (default: 80%)
+- **Minimum Confidence Threshold** - минимален % за показване на предложения (default:
+  80%)
 - **Auto-apply High Confidence** - автоматично прилагане при >95% (default: off)
 - **Anthropic API Key** - вашият API ключ
 
 **📊 INTRASTAT Bulgaria Settings:**
+
 - **Threshold - Dispatch (BGN)** - годишен праг за изпращания (default: 500,000)
 - **Threshold - Arrival (BGN)** - годишен праг за получавания (default: 500,000)
 
@@ -219,21 +234,25 @@ taric_ai_classifier/
 ## 🎯 Use Cases
 
 ### 1. Електронна търговия
+
 - Автоматична класификация на хиляди продукти от каталог
 - Бърза подготовка за експорт към ЕС
 - Точно изчисление на митнически мита
 
 ### 2. Производствени компании
+
 - Класификация на суровини и готови изделия
 - INTRASTAT декларации за NSI
 - Проследяване на произход на стоките
 
 ### 3. Спедиторски фирми
+
 - Проверка и валидация на клиентски TARIC кодове
 - Подготовка на митнически документи
 - Compliance с EU regulations
 
 ### 4. Счетоводни къщи
+
 - Помощ на клиенти с INTRASTAT отчитане
 - Бърза класификация при одити
 - Експертни заключения с AI подкрепа
@@ -263,24 +282,31 @@ Expected: 94035000 (Wooden bedroom furniture)
 ## 🐛 Troubleshooting
 
 ### Грешка: "Anthropic API key not configured"
+
 **Решение:** Отидете на Settings → Accounting → TARIC & INTRASTAT AI и въведете API ключ
 
 ### Грешка: "AI service error: 401"
-**Решение:** API ключът е невалиден. Проверете дали сте го копирали правилно от Anthropic Console
+
+**Решение:** API ключът е невалиден. Проверете дали сте го копирали правилно от
+Anthropic Console
 
 ### AI не предлага кодове
-**Решение:** 
+
+**Решение:**
+
 - Проверете дали продуктът има име и описание
 - Опитайте с по-детайлно описание
 - Проверете интернет връзката
 
 ### Бавна класификация
-**Причина:** AI заявките отнемат 2-5 секунди per продукт
-**Решение:** Използвайте batch класификация през нощта или в свободно време
+
+**Причина:** AI заявките отнемат 2-5 секунди per продукт **Решение:** Използвайте batch
+класификация през нощта или в свободно време
 
 ## 💰 Разходи
 
 ### Anthropic API Pricing (2025)
+
 - Claude Sonnet 4.5: ~$3 per 1M input tokens, ~$15 per 1M output tokens
 - Една класификация: ~500 tokens input + 300 tokens output
 - **Цена на класификация: ~$0.006 (1.1 цента)**
@@ -303,6 +329,7 @@ Expected: 94035000 (Wooden bedroom furniture)
 ## 📞 Поддръжка
 
 За въпроси, bugs или feature requests:
+
 - GitHub Issues: [repository-url]/issues
 - Email: support@example.com
 - Odoo Community Forum: [forum-thread-url]
@@ -314,7 +341,8 @@ LGPL-3 - Free to use, modify and distribute
 ## 👨‍💻 Автор
 
 **Rosen Vladimirov**
-- GitHub: https://github.com/rosenvladimirov
+
+- GitHub: https://github.com/OCA
 - Odoo Expert & Bulgarian ERP Specialist
 
 ## 🙏 Благодарности

@@ -2,9 +2,7 @@
 
 import logging
 
-from odoo.exceptions import UserError
 from odoo.tools.translate import load_language
-from odoo import _
 
 _logger = logging.getLogger(__name__)
 

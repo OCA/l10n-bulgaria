@@ -4,7 +4,10 @@ import logging
 from psycopg2 import sql
 
 from odoo import api, fields, models, tools
-from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import l10n_bg_get_tag_negate_sql
+
+from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
+    l10n_bg_get_tag_negate_sql,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -110,7 +113,7 @@ class AccountBGResultDeclar(models.Model):
 
     @api.model
     def _from(self):
-        tax_negate = l10n_bg_get_tag_negate_sql(table_alias='account_account_tag')
+        tax_negate = l10n_bg_get_tag_negate_sql(table_alias="account_account_tag")
         return f"""account_move_line AS aml
     LEFT JOIN account_move AS am
         ON aml.move_id = am.id

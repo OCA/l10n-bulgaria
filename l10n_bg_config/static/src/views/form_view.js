@@ -1,13 +1,13 @@
 /** @odoo-module **/
-import { registry } from "@web/core/registry";
-import { FormController } from "@web/views/form/form_controller";
-import { formView } from "@web/views/form/form_view";
-import { onMounted, onWillUnmount } from "@odoo/owl";
-import { useService } from "@web/core/utils/hooks";
-import { _t } from "@web/core/l10n/translation";
+import {registry} from "@web/core/registry";
+import {FormController} from "@web/views/form/form_controller";
+import {formView} from "@web/views/form/form_view";
+import {onMounted, onWillUnmount} from "@odoo/owl";
+import {useService} from "@web/core/utils/hooks";
+import {_t} from "@web/core/l10n/translation";
 
 // Constants for shortcut configuration and event
-const SHORTCUT_KEY_CONFIG = { shift: true, alt: true, key: "k", keyCode: 75 };
+const SHORTCUT_KEY_CONFIG = {shift: true, alt: true, key: "k", keyCode: 75};
 const KEYDOWN_EVENT = "keydown";
 const FIELD_NAME = "l10n_bg_key";
 
@@ -19,8 +19,12 @@ export class ApiKeyPartnerFormController extends FormController {
 
         // Shortcut listener setup
         this._handleShortcutKey = this._createShortcutHandler();
-        onMounted(() => document.addEventListener(KEYDOWN_EVENT, this._handleShortcutKey));
-        onWillUnmount(() => document.removeEventListener(KEYDOWN_EVENT, this._handleShortcutKey));
+        onMounted(() =>
+            document.addEventListener(KEYDOWN_EVENT, this._handleShortcutKey)
+        );
+        onWillUnmount(() =>
+            document.removeEventListener(KEYDOWN_EVENT, this._handleShortcutKey)
+        );
     }
 
     _createShortcutHandler() {
@@ -49,20 +53,17 @@ export class ApiKeyPartnerFormController extends FormController {
 
     async _fetchAndHandleApiKey(recordId) {
         // Fetch API Key from the backend
-        const result = await this.orm.call(
-            "res.partner",
-            "get_api_key",
-            [recordId],
-            { context: { ...this.context } }
-        );
+        const result = await this.orm.call("res.partner", "get_api_key", [recordId], {
+            context: {...this.context},
+        });
         console.log(result);
         // Retrieve the value from the result
         if (result) {
             const message = _t(`The API Key is: ${result}`);
-            this.notification.add(message, { type: "info" });
+            this.notification.add(message, {type: "info"});
             // Update the model and focus the field in DOM
             if (this.model?.root) {
-                this.model.root.update({ [FIELD_NAME]: result });
+                this.model.root.update({[FIELD_NAME]: result});
                 this._focusField(FIELD_NAME);
             } else {
                 console.warn(`Field "${FIELD_NAME}" not found!`);
@@ -82,16 +83,22 @@ export class ApiKeyPartnerFormController extends FormController {
 
             if (tabName) {
                 // Намерете съответния nav-link по атрибута name
-                const allTabs = document.querySelectorAll('.o_notebook_headers .nav-link');
-                const allContent = document.querySelectorAll('.o_group');
+                const allTabs = document.querySelectorAll(
+                    ".o_notebook_headers .nav-link"
+                );
+                const allContent = document.querySelectorAll(".o_group");
 
                 // Деактивирайте всички табове и съдържателни контейнери
-                allTabs.forEach(tab => tab.classList.remove("active"));
-                allContent.forEach(content => (content.style.display = "none"));
+                allTabs.forEach((tab) => tab.classList.remove("active"));
+                allContent.forEach((content) => (content.style.display = "none"));
 
                 // Намерете желания таб и неговото съдържание
-                const targetTab = document.querySelector(`.nav-link[name="${tabName}"]`);
-                const targetContent = document.querySelector(`.o_group[name="${tabName}"]`);
+                const targetTab = document.querySelector(
+                    `.nav-link[name="${tabName}"]`
+                );
+                const targetContent = document.querySelector(
+                    `.o_group[name="${tabName}"]`
+                );
 
                 if (targetTab && targetContent) {
                     // Активирайте желания таб

@@ -2,11 +2,15 @@
 
 import logging
 import os
+
 from markupsafe import Markup
 
 from odoo import fields, models
 from odoo.modules import get_module_resource
-from odoo.addons.l10n_bg_report_theme.wizards.base_document_layout_colors import get_scss_file_path
+
+from odoo.addons.l10n_bg_report_theme.wizards.base_document_layout_colors import (
+    get_scss_file_path,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -22,8 +26,12 @@ class Company(models.Model):
     layout_background_footer_image = fields.Binary("Background Footer Image")
 
     layout_background_l_image = fields.Binary("Background Article Image-landscape")
-    layout_background_l_header_image = fields.Binary("Background Header Image-landscape")
-    layout_background_l_footer_image = fields.Binary("Background Footer Image-landscape")
+    layout_background_l_header_image = fields.Binary(
+        "Background Header Image-landscape"
+    )
+    layout_background_l_footer_image = fields.Binary(
+        "Background Footer Image-landscape"
+    )
 
     custom_scss_path = fields.Char("Custom SCSS Path")
 
@@ -47,14 +55,18 @@ class Company(models.Model):
 
         if self.custom_scss_path and os.path.exists(self.custom_scss_path):
             try:
-                with open(self.custom_scss_path, 'r', encoding='utf-8') as f:
+                with open(self.custom_scss_path, encoding="utf-8") as f:
                     content = f.read()
-                    _logger.info(f"Loaded custom SCSS for company {self.id} from {self.custom_scss_path}")
+                    _logger.info(
+                        f"Loaded custom SCSS for company {self.id} from {self.custom_scss_path}"
+                    )
                     return Markup(content)
             except Exception as e:
                 _logger.error(f"Failed to read custom SCSS file: {e}")
 
-        _logger.warning(f"No custom SCSS file found for company {self.id}, using default")
+        _logger.warning(
+            f"No custom SCSS file found for company {self.id}, using default"
+        )
         return Markup("")
 
     def get_layout_scss_content(self):
@@ -63,15 +75,36 @@ class Company(models.Model):
         contents = []
 
         # Ако има фирмен SCSS файл, НЕ добавяй оригиналния report_variable_colors.scss
-        has_custom_colors = self.custom_scss_path and os.path.exists(self.custom_scss_path)
+        has_custom_colors = self.custom_scss_path and os.path.exists(
+            self.custom_scss_path
+        )
 
         files = [
-            ('l10n_bg_report_theme', 'static/src/webclient/actions/reports/report_variable_colors.scss',
-             not has_custom_colors),
-            ('l10n_bg_report_theme', 'static/src/webclient/actions/reports/report_variable_fonts.scss', True),
-            ('l10n_bg_report_theme', 'static/src/webclient/actions/reports/default/report_variable_sizes.scss', True),
-            ('l10n_bg_report_theme', 'static/src/webclient/actions/reports/layout_assets/layout_background.scss', True),
-            ('l10n_bg_report_theme', 'static/src/webclient/actions/reports/layout_assets/layout_sections.scss', True),
+            (
+                "l10n_bg_report_theme",
+                "static/src/webclient/actions/reports/report_variable_colors.scss",
+                not has_custom_colors,
+            ),
+            (
+                "l10n_bg_report_theme",
+                "static/src/webclient/actions/reports/report_variable_fonts.scss",
+                True,
+            ),
+            (
+                "l10n_bg_report_theme",
+                "static/src/webclient/actions/reports/default/report_variable_sizes.scss",
+                True,
+            ),
+            (
+                "l10n_bg_report_theme",
+                "static/src/webclient/actions/reports/layout_assets/layout_background.scss",
+                True,
+            ),
+            (
+                "l10n_bg_report_theme",
+                "static/src/webclient/actions/reports/layout_assets/layout_sections.scss",
+                True,
+            ),
         ]
 
         for module, path, include in files:
@@ -79,10 +112,10 @@ class Company(models.Model):
                 _logger.info(f"Skipping {path} - using custom colors file instead")
                 continue
 
-            full_path = get_module_resource(module, *path.split('/'))
+            full_path = get_module_resource(module, *path.split("/"))
             if full_path and os.path.exists(full_path):
                 try:
-                    with open(full_path, 'r', encoding='utf-8') as f:
+                    with open(full_path, encoding="utf-8") as f:
                         contents.append(f"/* {path} */\n" + f.read())
                 except Exception as e:
                     _logger.error(f"Failed to read theme SCSS file {path}: {e}")

@@ -4,17 +4,17 @@ Standalone test script for MT940 parser - no Odoo installation needed.
 Usage: python3 test_parser_standalone.py <path_to_mt940_file>
 """
 
-import sys
 import os
-import io
+import sys
 
 # Add parent directory to path to import modules
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 try:
+    import re
+
     import mt940
     import mt940.tags
-    import re
 except ImportError:
     print("ERROR: mt-940 library not installed. Install with: pip install mt-940")
     sys.exit(1)
@@ -27,24 +27,22 @@ mt940.tags.StatementNumber.pattern = r"""
     $"""
 
 
-class Tag(object):
+class Tag:
     def parse(self, transactions, value):
         match = re.match(self.pattern, value, self.RE_FLAGS)
         if match:  # pragma: no branch
             return match.groupdict()
         else:  # pragma: no cover
             part_value = value
-            for pattern in self.pattern.split('\n'):
+            for pattern in self.pattern.split("\n"):
                 match = re.match(pattern, part_value, self.RE_FLAGS)
                 if match:
-                    part_value = part_value[len(match.group(0)):]
+                    part_value = part_value[len(match.group(0)) :]
                 else:
                     pass
-            raise RuntimeError(
-                'Unable to parse %r from %r' % (self, value),
-                self, value
-            )
+            raise RuntimeError(f"Unable to parse {self!r} from {value!r}")
         return match.groupdict()
+
 
 mt940.tags.Tag.parse = Tag.parse
 
@@ -164,7 +162,10 @@ def detect_bank_format(account_identification):
     if account_identification and "UBBS" in account_identification.upper():
         return "ubb"
     # ProCredit has BIC starting with BUIN or PRCB
-    if account_identification and ("BUIN" in account_identification.upper() or "PRCB" in account_identification.upper()):
+    if account_identification and (
+        "BUIN" in account_identification.upper()
+        or "PRCB" in account_identification.upper()
+    ):
         return "procredit"
     # Unicredit Bulbank has BIC starting with UNCR
     if account_identification and "UNCR" in account_identification.upper():
@@ -185,7 +186,7 @@ def parse_mt940_file(file_path):
     for encoding in encodings:
         try:
             print(f"Trying encoding: {encoding}")
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 data = f.read().decode(encoding)
 
             # Parse with mt940 library
@@ -196,15 +197,26 @@ def parse_mt940_file(file_path):
             mt940_transactions_data = transactions.data
 
             # Detect bank format
-            account_identification = mt940_transactions_data.get("account_identification", "")
+            account_identification = mt940_transactions_data.get(
+                "account_identification", ""
+            )
             bank_format = detect_bank_format(account_identification)
 
             print(f"Bank Format: {bank_format}")
             print(f"Account: {account_identification}")
-            print(f"Statement Number: {mt940_transactions_data.get('statement_number')}")
-            print(f"Transaction Reference: {mt940_transactions_data.get('transaction_reference')}")
-            print(f"\nOpening Balance: {mt940_transactions_data['final_opening_balance']}")
-            print(f"Closing Balance: {mt940_transactions_data['final_closing_balance']}")
+            print(
+                f"Statement Number: {mt940_transactions_data.get('statement_number')}"
+            )
+            transaction_reference = mt940_transactions_data.get(
+                "transaction_reference"
+            )
+            print(f"Transaction Reference: {transaction_reference}")
+            print(
+                f"\nOpening Balance: {mt940_transactions_data['final_opening_balance']}"
+            )
+            print(
+                f"Closing Balance: {mt940_transactions_data['final_closing_balance']}"
+            )
 
             # Parse transactions
             print(f"\n{'='*80}")
@@ -219,14 +231,20 @@ def parse_mt940_file(file_path):
                 print(f"\n--- Transaction #{idx} ---")
                 print(f"Date: {trans_data['date']}")
                 print(f"Amount: {trans_data['amount']}")
-                print(f"Customer Reference: {trans_data.get('customer_reference', 'N/A')}")
+                print(
+                    f"Customer Reference: {trans_data.get('customer_reference', 'N/A')}"
+                )
                 print(f"Transaction ID: {trans_data.get('id', 'N/A')}")
 
                 # Parse transaction details
                 transaction_details = trans_data.get("transaction_details", "")
                 if transaction_details:
-                    print(f"\nRaw Transaction Details:")
-                    print(f"{transaction_details[:200]}..." if len(transaction_details) > 200 else transaction_details)
+                    print("\nRaw Transaction Details:")
+                    print(
+                        f"{transaction_details[:200]}..."
+                        if len(transaction_details) > 200
+                        else transaction_details
+                    )
 
                     # Parse details based on bank format
                     if bank_format == "ubb":
@@ -237,7 +255,9 @@ def parse_mt940_file(file_path):
                     else:
                         # ProCredit/UniCredit format
                         separator = "^" if "^" in transaction_details else "+"
-                        print(f"\n[ProCredit/UniCredit Format - '{separator}' separator]")
+                        print(
+                            f"\n[ProCredit/UniCredit Format - '{separator}' separator]"
+                        )
                         parts = transaction_details.split(separator)
 
                         for part in parts[:10]:  # Show first 10 parts
@@ -247,14 +267,19 @@ def parse_mt940_file(file_path):
                                 if part[:2].isdigit():
                                     field_num = part[:2]
                                     field_data = part[2:].strip()
-                                    print(f"  Field {field_num}: {field_data[:70]}")
+                                    print(
+                                        f"  Field {field_num}: {field_data[:70]}"
+                                    )
 
                                     # If field 22, try to parse with BankTransactionParser
                                     if field_num == "22":
-                                        parser = BankTransactionParser(field_data, bank_swift_id=account_identification[:8])
+                                        parser = BankTransactionParser(
+                                            field_data,
+                                            bank_swift_id=account_identification[:8],
+                                        )
                                         parsed = parser.get_data()
                                         if parsed:
-                                            print(f"    Parsed data from field 22:")
+                                            print("    Parsed data from field 22:")
                                             for key, value in parsed.items():
                                                 print(f"      {key} {value}")
                                 else:

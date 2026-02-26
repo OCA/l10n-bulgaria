@@ -2,7 +2,9 @@
 
 ## Обзор
 
-Модулът `l10n_bg_crypto_wallet` реализира **трислойна система за сигурност** за управление на криптографски ключове в Odoo 18. Системата комбинира криптографска защита на ниво данни с многостепенен контрол на достъпа, базиран на Odoo security framework.
+Модулът `l10n_bg_crypto_wallet` реализира **трислойна система за сигурност** за
+управление на криптографски ключове в Odoo 18. Системата комбинира криптографска защита
+на ниво данни с многостепенен контрол на достъпа, базиран на Odoo security framework.
 
 ---
 
@@ -25,6 +27,7 @@
 ## 🔒 Архитектура на сигурността
 
 ### Трислойна защита
+
 ```
 
 ┌─────────────────────────────────────────────────────────────┐
@@ -45,11 +48,13 @@
 │  • Защитени файлове (600 permissions)                       │
 └─────────────────────────────────────────────────────────────┘
 ```
+
 ---
 
 ## 🛡️ Модели за сигурност
 
 ### Security Groups
+
 ```
 
 group_crypto_wallet_admin
@@ -59,42 +64,46 @@ group_crypto_wallet_admin
 └── group_crypto_wallet_export
     └── group_crypto_wallet_read
 ```
-| 🔑 Група | 📋 Права | 🔗 Наследява |
-|----------|----------|--------------|
-| `read` | Четене на портфейли | - |
-| `write` | Четене + Писане | read |
-| `generate` | Генериране на ключове | write |
-| `export` | Експортиране | read |
-| `admin` | Пълни административни права | generate + export |
+
+| 🔑 Група   | 📋 Права                    | 🔗 Наследява      |
+| ---------- | --------------------------- | ----------------- |
+| `read`     | Четене на портфейли         | -                 |
+| `write`    | Четене + Писане             | read              |
+| `generate` | Генериране на ключове       | write             |
+| `export`   | Експортиране                | read              |
+| `admin`    | Пълни административни права | generate + export |
 
 ### Model Access Rights
 
 | 👥 Group\Operation | 📖 Read | ✏️ Write | ➕ Create | 🗑️ Delete |
-|-------------------|---------|----------|-----------|-----------|
-| **read** | ✅ | ❌ | ❌ | ❌ |
-| **write** | ✅ | ✅ | ✅ | ❌ |
-| **generate** | ✅ | ✅ | ✅ | ❌ |
-| **export** | ✅ | ❌ | ❌ | ❌ |
-| **admin** | ✅ | ✅ | ✅ | ✅ |
+| ------------------ | ------- | -------- | --------- | --------- |
+| **read**           | ✅      | ❌       | ❌        | ❌        |
+| **write**          | ✅      | ✅       | ✅        | ❌        |
+| **generate**       | ✅      | ✅       | ✅        | ❌        |
+| **export**         | ✅      | ❌       | ❌        | ❌        |
+| **admin**          | ✅      | ✅       | ✅        | ✅        |
 
 ### Record Rules
 
 #### 🔐 User Own Records
+
 ```xml
 <field name="domain_force">[('user_id', '=', user.id)]</field>
 ```
-```
+
+````
 
 - Потребителите виждат само собствените си портфейли
 
 #### 👑 Admin All Access
 ```xml
 <field name="domain_force">[(1, '=', 1)]</field>
-```
+````
 
 - Администраторите имат достъп до всички портфейли
 
 #### ⏰ Time-based Access
+
 ```xml
 <field name="domain_force">[
     '|',
@@ -106,6 +115,7 @@ group_crypto_wallet_admin
 - Временни разрешения с проверка за валидност
 
 #### 🏢 Company Isolation
+
 ```xml
 <field name="domain_force">[
     '|',
@@ -122,12 +132,12 @@ group_crypto_wallet_admin
 
 ### Алгоритми за шифроване
 
-| 🔧 Компонент | 📊 Алгоритъм | 🔢 Параметри |
-|--------------|--------------|--------------|
-| **Symmetric Encryption** | AES-256-GCM (Fernet) | 256-bit ключ |
-| **Key Derivation** | PBKDF2-HMAC-SHA256 | 100,000 итерации |
-| **Salt Generation** | Random | 16 bytes |
-| **Encoding** | Base64 URL-safe | - |
+| 🔧 Компонент             | 📊 Алгоритъм         | 🔢 Параметри     |
+| ------------------------ | -------------------- | ---------------- |
+| **Symmetric Encryption** | AES-256-GCM (Fernet) | 256-bit ключ     |
+| **Key Derivation**       | PBKDF2-HMAC-SHA256   | 100,000 итерации |
+| **Salt Generation**      | Random               | 16 bytes         |
+| **Encoding**             | Base64 URL-safe      | -                |
 
 ### Процес на шифроване
 
@@ -150,7 +160,6 @@ f = Fernet(key)
 encrypted_data = f.encrypt(json.dumps(wallet_data).encode())
 ```
 
-
 ### Master Password Strategy
 
 ```
@@ -165,7 +174,6 @@ graph TD
 
     I[Failure] --> J[Emergency Wallet Creation]
 ```
-
 
 ---
 
@@ -191,7 +199,6 @@ class CryptoWalletPermission(models.Model):
     is_active = fields.Boolean('Active', default=True)
 ```
 
-
 ### Access Control Flow
 
 ```
@@ -208,7 +215,6 @@ flowchart TD
     F -->|No| H
     E -->|No| H
 ```
-
 
 ### Методи за проверка
 
@@ -232,7 +238,6 @@ def _check_record_access(self, operation='read'):
     return bool(self._get_user_permission(operation))
 ```
 
-
 ---
 
 ## 📁 Файлова система и съхранение
@@ -247,24 +252,23 @@ def _check_record_access(self, operation='read'):
 └── [permissions: 700 for dir, 600 for files]
 ```
 
-
 ### Именуване на файлове
 
-| 🏷️ Компонент | 📝 Формат | 💡 Пример |
-|--------------|-----------|-----------|
-| **Тип** | `wallet` или `key` | `wallet` |
-| **DB Short** | Първи 8 символа от DB UUID | `a1b2c3d4` |
-| **User ID** | 4-цифрен ID с padding | `0001` |
-| **Wallet ID** | 4-цифрен ID с padding | `0001` |
-| **Name** | Безопасно име | `system_keys` |
-| **Extension** | `.enc` | `.enc` |
+| 🏷️ Компонент  | 📝 Формат                  | 💡 Пример     |
+| ------------- | -------------------------- | ------------- |
+| **Тип**       | `wallet` или `key`         | `wallet`      |
+| **DB Short**  | Първи 8 символа от DB UUID | `a1b2c3d4`    |
+| **User ID**   | 4-цифрен ID с padding      | `0001`        |
+| **Wallet ID** | 4-цифрен ID с padding      | `0001`        |
+| **Name**      | Безопасно име              | `system_keys` |
+| **Extension** | `.enc`                     | `.enc`        |
 
 ### Файлови права
 
-| 📂 Тип | 🔒 Права | 📋 Описание |
-|--------|----------|-------------|
-| **Директории** | `700` (rwx------) | Само собственик може да достъпва |
-| **Файлове** | `600` (rw-------) | Само собственик може да чете/пише |
+| 📂 Тип         | 🔒 Права          | 📋 Описание                       |
+| -------------- | ----------------- | --------------------------------- |
+| **Директории** | `700` (rwx------) | Само собственик може да достъпва  |
+| **Файлове**    | `600` (rw-------) | Само собственик може да чете/пише |
 
 ---
 
@@ -272,11 +276,11 @@ def _check_record_access(self, operation='read'):
 
 ### Logging Strategy
 
-| 📈 Ниво | 🎯 Използване | 💡 Примери |
-|---------|---------------|-----------|
-| **INFO** | Успешни операции | `Wallet created`, `Permission granted` |
-| **WARNING** | Подозрителни дейности | `Wallet desync`, `Failed authentication` |
-| **ERROR** | Критични грешки | `Encryption failure`, `Unauthorized access` |
+| 📈 Ниво     | 🎯 Използване         | 💡 Примери                                  |
+| ----------- | --------------------- | ------------------------------------------- |
+| **INFO**    | Успешни операции      | `Wallet created`, `Permission granted`      |
+| **WARNING** | Подозрителни дейности | `Wallet desync`, `Failed authentication`    |
+| **ERROR**   | Критични грешки       | `Encryption failure`, `Unauthorized access` |
 
 ### Audit Trail
 
@@ -287,7 +291,6 @@ _logger.info(f"🔑 Granted {permission_level} permission to user {user_id}")
 _logger.warning(f"⚠️ Wallet desync for user {user_id}, reinitializing")
 _logger.error(f"❌ Failed to unlock wallet: unauthorized access attempt")
 ```
-
 
 ### Проследяване на действия
 
@@ -321,7 +324,6 @@ def _is_permission_valid(self, permission):
             permission.expires_date > fields.Datetime.now())
 ```
 
-
 ### Session Security
 
 - 🔐 **Wallet keys** се кешират само в session context
@@ -337,17 +339,16 @@ def _is_permission_valid(self, permission):
 
 ```xml
 <record id="crypto_wallet_company_rule" model="ir.rule">
-    <field name="name">Crypto Wallet: Company Isolation</field>
-    <field name="model_id" ref="model_crypto_wallet"/>
-    <field name="domain_force">[
+  <field name="name">Crypto Wallet: Company Isolation</field>
+  <field name="model_id" ref="model_crypto_wallet" />
+  <field name="domain_force">[
         '|',
         ('user_id.company_ids', 'in', user.company_ids.ids),
         ('user_id.company_id', '=', user.company_id.id)
     ]</field>
-    <field name="groups" eval="[(4, ref('base.group_multi_company'))]"/>
+  <field name="groups" eval="[(4, ref('base.group_multi_company'))]" />
 </record>
 ```
-
 
 ### Функционалности
 
@@ -362,12 +363,12 @@ def _is_permission_valid(self, permission):
 
 ### Exception Management
 
-| 🚨 Тип грешка | 🛠️ Handling | 📋 Action |
-|---------------|-------------|-----------|
-| **InvalidToken** | Криптографска грешка | `UserError('Грешна парола')` |
-| **AccessError** | Права за достъп | `AccessError('Няма права')` |
-| **IOError** | Файлова система | Fallback + logging |
-| **DatabaseError** | База данни | Transaction rollback |
+| 🚨 Тип грешка     | 🛠️ Handling          | 📋 Action                    |
+| ----------------- | -------------------- | ---------------------------- |
+| **InvalidToken**  | Криптографска грешка | `UserError('Грешна парола')` |
+| **AccessError**   | Права за достъп      | `AccessError('Няма права')`  |
+| **IOError**       | Файлова система      | Fallback + logging           |
+| **DatabaseError** | База данни           | Transaction rollback         |
 
 ### Recovery Mechanisms
 
@@ -390,7 +391,6 @@ def _create_emergency_wallet(self, new_password_hash):
         return False
 ```
 
-
 ---
 
 ## 🚀 Performance и Scalability
@@ -408,7 +408,6 @@ def _derive_key(self, password_hash, salt):
     pass
 ```
 
-
 ### Database Optimization
 
 ```sql
@@ -419,7 +418,6 @@ CREATE INDEX idx_permission_user_wallet ON crypto_wallet_permission(user_id, wal
 CREATE INDEX idx_permission_active ON crypto_wallet_permission(is_active, expires_date);
 CREATE INDEX idx_permission_level ON crypto_wallet_permission(permission_level);
 ```
-
 
 ### Scalability Considerations
 
@@ -455,7 +453,6 @@ tar -czf "${BACKUP_DIR}/crypto_wallets_$(date +%Y%m%d_%H%M%S).tar.gz" \
     -C "${FILESTORE_PATH}" .
 ```
 
-
 ### 👨‍💻 За разработчици
 
 #### ✅ Coding Best Practices
@@ -482,7 +479,6 @@ def bad_crypto_operation(self):
     plaintext_key = "sensitive_data"  # Не съхранявай plaintext!
     # Няма error handling!
 ```
-
 
 #### 🔒 Security Guidelines
 
@@ -511,18 +507,21 @@ def bad_crypto_operation(self):
 ### 🔄 Periodic Security Reviews
 
 #### 📅 Месечно
+
 - [ ] Review на user permissions
 - [ ] Анализ на audit logs
 - [ ] Проверка за orphaned файлове
 - [ ] Тест на backup/restore процедури
 
 #### 📅 Тримесечно
+
 - [ ] Security penetration testing
 - [ ] Review на access patterns
 - [ ] Update на security policies
 - [ ] Training за потребителите
 
 #### 📅 Годишно
+
 - [ ] Crypto algorithm review
 - [ ] Infrastructure security audit
 - [ ] Disaster recovery testing
@@ -534,19 +533,20 @@ def bad_crypto_operation(self):
 
 ### 🎯 Key Performance Indicators
 
-| 📈 Метрика | 🎯 Target | 📋 Измерване |
-|------------|-----------|--------------|
-| **Password Strength** | >80% strong | Periodic analysis |
-| **Permission Reviews** | Monthly | Automated reports |
-| **Failed Access Attempts** | <1% | Log monitoring |
-| **Recovery Time** | <15 min | Disaster recovery tests |
-| **Backup Success Rate** | 100% | Automated monitoring |
+| 📈 Метрика                 | 🎯 Target   | 📋 Измерване            |
+| -------------------------- | ----------- | ----------------------- |
+| **Password Strength**      | >80% strong | Periodic analysis       |
+| **Permission Reviews**     | Monthly     | Automated reports       |
+| **Failed Access Attempts** | <1%         | Log monitoring          |
+| **Recovery Time**          | <15 min     | Disaster recovery tests |
+| **Backup Success Rate**    | 100%        | Automated monitoring    |
 
 ---
 
 ## 🎯 Заключение
 
-Модулът `l10n_bg_crypto_wallet` реализира **robust система за сигурност**, която комбинира:
+Модулът `l10n_bg_crypto_wallet` реализира **robust система за сигурност**, която
+комбинира:
 
 ### 🔒 Ключови силни страни
 
@@ -559,11 +559,14 @@ def bad_crypto_operation(self):
 
 ### 🛡️ Defense-in-Depth подход
 
-Системата осигурява **defense-in-depth** подход, където компрометирането на един слой не води до пълна загуба на сигурността. Всеки компонент е проектиран да работи независимо и да предоставя fallback опции при неуспех.
+Системата осигурява **defense-in-depth** подход, където компрометирането на един слой не
+води до пълна загуба на сигурността. Всеки компонент е проектиран да работи независимо и
+да предоставя fallback опции при неуспех.
 
 ### 🏆 Security Score: **A+**
 
 **Високо ниво на сигурност** с:
+
 - 🔐 Military-grade encryption
 - 👥 Granular access control
 - 📊 Comprehensive monitoring
@@ -577,11 +580,11 @@ def bad_crypto_operation(self):
 За въпроси относно сигурността на модула или за докладване на уязвимости:
 
 - 📧 **Email**: security@yourcompany.com
-- 🎫 **Issue Tracker**: [GitHub Issues](https://github.com/yourorg/l10n-bg-crypto-wallet/issues)
+- 🎫 **Issue Tracker**:
+  [GitHub Issues](https://github.com/yourorg/l10n-bg-crypto-wallet/issues)
 - 📖 **Documentation**: [Wiki](https://github.com/yourorg/l10n-bg-crypto-wallet/wiki)
 
 ---
 
-*Последно обновяване: 2025-08-01*
-*Версия на документацията: 1.0*
-*Модул версия: 18.0.1.0.0*
+_Последно обновяване: 2025-08-01_ _Версия на документацията: 1.0_ _Модул версия:
+18.0.1.0.0_

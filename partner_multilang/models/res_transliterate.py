@@ -18,10 +18,16 @@ try:
 
     # Създаваме детектор за поддържаните езици
     SUPPORTED_LANGUAGES = [
-        Language.BULGARIAN, Language.ENGLISH, Language.RUSSIAN,
-        Language.SERBIAN, Language.MACEDONIAN, Language.UKRAINIAN
+        Language.BULGARIAN,
+        Language.ENGLISH,
+        Language.RUSSIAN,
+        Language.SERBIAN,
+        Language.MACEDONIAN,
+        Language.UKRAINIAN,
     ]
-    LINGUA_DETECTOR = LanguageDetectorBuilder.from_languages(*SUPPORTED_LANGUAGES).build()
+    LINGUA_DETECTOR = LanguageDetectorBuilder.from_languages(
+        *SUPPORTED_LANGUAGES
+    ).build()
     HAS_LINGUA = True
 except ImportError:
     HAS_LINGUA = False
@@ -39,26 +45,31 @@ _logger = logging.getLogger(__name__)
 _CYRILLIC_RE = re.compile(r"[\u0400-\u04FF]")
 
 TRANSLITERATE_FIELDS = [
-    'name', 'company_name',
-    'city', 'street', 'street2',
-    'private_city', 'private_street', 'private_street2'
+    "name",
+    "company_name",
+    "city",
+    "street",
+    "street2",
+    "private_city",
+    "private_street",
+    "private_street2",
 ]
 
 # Маппинг за езикови кодове
 LANGUAGE_MAPPING = {
-    'bg': 'bg',  # Български
-    'ru': 'ru',  # Руски
-    'mk': 'mk',  # Македонски
-    'sr': 'sr',  # Сръбски
-    'uk': 'uk',  # Украински
-    'be': 'be',  # Беларуски
+    "bg": "bg",  # Български
+    "ru": "ru",  # Руски
+    "mk": "mk",  # Македонски
+    "sr": "sr",  # Сръбски
+    "uk": "uk",  # Украински
+    "be": "be",  # Беларуски
 }
 
 
 def detect_text_language(text):
     """Разпознава езика на текста с приоритет на библиотеките"""
     if not text or len(text.strip()) < 3:
-        return 'unknown'
+        return "unknown"
 
     # Приоритет 1: Lingua (най-точна)
     if HAS_LINGUA:
@@ -76,19 +87,19 @@ def detect_text_language(text):
         except Exception as e:
             _logger.warning(f"Langdetect failed: {e}")
 
-    return 'unknown'
+    return "unknown"
 
 
 def partner_name_translate(name, lang, transliterate_flag):
     """Транслитерира имена с автоматично разпознаване на език"""
     if lang not in ["en", "en_US"] and transliterate_flag:
         # Ако няма зададен език, опитваме се да го разпознаем
-        if not lang or lang == 'unknown':
+        if not lang or lang == "unknown":
             detected_lang = detect_text_language(name)
-            if detected_lang != 'unknown':
+            if detected_lang != "unknown":
                 lang = detected_lang
 
-        lang_code = lang[:2] if lang else 'unknown'
+        lang_code = lang[:2] if lang else "unknown"
 
         # Опитваме специфична транслитерация по език
         if HAS_TRANSLITERATE and lang_code in LANGUAGE_MAPPING:
@@ -107,14 +118,14 @@ class ResTransliterate(models.AbstractModel):
     _description = "Names transliterate mixin"
 
     transliterate_tracking = fields.Json(
-        string='Transliteration Tracking',
+        string="Transliteration Tracking",
         default=dict,
         copy=False,
-        help='Technical field to track which fields have been transliterated. Format: {"field_name": True}'
+        help='Technical field to track which fields have been transliterated. Format: {"field_name": True}',
     )
 
-    @api.depends_context('lang')
-    @api.depends('name')
+    @api.depends_context("lang")
+    @api.depends("name")
     def _compute_display_name(self):
         """
         Override на _compute_display_name за многоезична поддръжка.
@@ -122,11 +133,11 @@ class ResTransliterate(models.AbstractModel):
         Одоо 18 използва display_name computed field вместо name_get().
         Този метод автоматично извлича правилния език от многоезичното name поле.
         """
-        current_lang = self.env.context.get('lang') or self.env.user.lang or 'en_US'
+        current_lang = self.env.context.get("lang") or self.env.user.lang or "en_US"
 
         for record in self:
             # Проверка дали има name поле
-            if 'name' not in record._fields:
+            if "name" not in record._fields:
                 # Fallback към parent implementation
                 super(ResTransliterate, record)._compute_display_name()
                 continue
@@ -135,7 +146,7 @@ class ResTransliterate(models.AbstractModel):
             name_value = record.name
 
             if not name_value:
-                record.display_name = ''
+                record.display_name = ""
                 continue
 
             # Обработка на jsonb dict (translate=True jsonb колона)
@@ -145,20 +156,20 @@ class ResTransliterate(models.AbstractModel):
 
                 # Fallback към en_US
                 if not display:
-                    display = name_value.get('en_US')
+                    display = name_value.get("en_US")
 
                 # Fallback към първата налична стойност
                 if not display and name_value:
                     try:
-                        display = next(iter(name_value.values()), '')
+                        display = next(iter(name_value.values()), "")
                     except (StopIteration, AttributeError):
-                        display = ''
+                        display = ""
 
-                record.display_name = display or ''
+                record.display_name = display or ""
 
             # Обработка на varchar string (translate=True varchar колона)
             else:
-                record.display_name = str(name_value) if name_value else ''
+                record.display_name = str(name_value) if name_value else ""
 
     def _get_transliterate_languages(self):
         """
@@ -170,7 +181,7 @@ class ResTransliterate(models.AbstractModel):
         Returns:
             list: A list of res.lang recordsets where transliteration is enabled.
         """
-        return self.env['res.lang'].search([('transliterate', '=', True)])
+        return self.env["res.lang"].search([("transliterate", "=", True)])
 
     def _get_code_lang(self, code):
         """
@@ -185,19 +196,21 @@ class ResTransliterate(models.AbstractModel):
         Returns:
             res.lang: The language record that corresponds to the given ISO code.
         """
-        return self.env['res.lang'].search([('iso_code', '=', code)])
+        return self.env["res.lang"].search([("iso_code", "=", code)])
 
     @api.model
     def _get_transliterate_fields(self):
-        return ['name']
+        return ["name"]
 
     def _get_active_lang_codes(self):
         lang_codes = [
-            lang['code']
-            for lang in self.env['res.lang'].sudo().search_read([('active', '=', True)], ['code'])
+            lang["code"]
+            for lang in self.env["res.lang"]
+            .sudo()
+            .search_read([("active", "=", True)], ["code"])
         ]
-        if 'en_US' not in lang_codes:
-            lang_codes.append('en_US')
+        if "en_US" not in lang_codes:
+            lang_codes.append("en_US")
         return lang_codes
 
     def _should_copy_all_languages(self):
@@ -207,7 +220,11 @@ class ResTransliterate(models.AbstractModel):
         if not bg_country:
             return False
         company = self.env.company
-        return bool(company.country_id and company.country_id.id == bg_country.id and not company.transliterate_names)
+        return bool(
+            company.country_id
+            and company.country_id.id == bg_country.id
+            and not company.transliterate_names
+        )
 
     def _is_transliteration_allowed(self):
         self.ensure_one()
@@ -223,7 +240,11 @@ class ResTransliterate(models.AbstractModel):
             bg_country_id = bg_country.id if bg_country else False
             company_country_id = company.country_id.id if company.country_id else False
             partner_country_id = self.country_id.id if self.country_id else False
-            if bg_country_id and company_country_id == bg_country_id and partner_country_id == bg_country_id:
+            if (
+                bg_country_id
+                and company_country_id == bg_country_id
+                and partner_country_id == bg_country_id
+            ):
                 if company.partner_id and self.id == company.partner_id.id:
                     return True
                 return False
@@ -240,9 +261,9 @@ class ResTransliterate(models.AbstractModel):
         transliterate = installed_langs.filtered(lambda r: r.code == lang)
 
         # Ако текущият език не е разпознат, опитваме автоматично разпознаване
-        if not lang or lang == 'unknown':
+        if not lang or lang == "unknown":
             detected_lang = detect_text_language(text)
-            if detected_lang != 'unknown':
+            if detected_lang != "unknown":
                 current_lang = detected_lang
                 # Проверяваме дали разпознатият език поддържа транслитерация
                 transliterate = installed_langs.filtered(
@@ -270,28 +291,28 @@ class ResTransliterate(models.AbstractModel):
             returns an empty string.
         """
         if not lang:
-            lang = self.env.context.get('lang') or self.env.user.lang or 'en_US'
+            lang = self.env.context.get("lang") or self.env.user.lang or "en_US"
 
         if field_name not in self._fields:
-            return ''
+            return ""
 
         field_value = getattr(self, field_name, None)
 
         if not field_value:
-            return ''
+            return ""
 
         # Handle jsonb dict
         if isinstance(field_value, dict):
             return (
-                    field_value.get(lang) or
-                    field_value.get('en_US') or
-                    next(iter(field_value.values()), '')
+                field_value.get(lang)
+                or field_value.get("en_US")
+                or next(iter(field_value.values()), "")
             )
 
         # Handle string
-        return str(field_value) if field_value else ''
+        return str(field_value) if field_value else ""
 
-    @api.depends_context('lang')
+    @api.depends_context("lang")
     def _force_multilanguage(self, vals, new_record=False):
         """
         Forces multilanguage support by checking and potentially transliterating specific fields
@@ -309,7 +330,8 @@ class ResTransliterate(models.AbstractModel):
         # 2. Са в списъка за транслитерация
         # 3. Съществуват в модела
         fields_to_process = [
-            field_name for field_name in vals.keys()
+            field_name
+            for field_name in vals.keys()
             if field_name in transliterate_fields and field_name in self._fields
         ]
 
@@ -327,15 +349,21 @@ class ResTransliterate(models.AbstractModel):
                     if not value:
                         continue
                     for lang_code in lang_codes:
-                        self.with_context(lang=lang_code, update_lang=True).write({field_name: value})
+                        self.with_context(lang=lang_code, update_lang=True).write(
+                            {field_name: value}
+                        )
                     tracking.pop(field_name, None)
                 if tracking != (self.transliterate_tracking or {}):
-                    self.with_context(update_lang=True).write({'transliterate_tracking': tracking})
+                    self.with_context(update_lang=True).write(
+                        {"transliterate_tracking": tracking}
+                    )
             return
 
         # Вземи текущия tracking dict
         tracking = dict(self.transliterate_tracking or {})
-        force_multilanguage_update = self.env.context.get('force_multilanguage_update', False)
+        force_multilanguage_update = self.env.context.get(
+            "force_multilanguage_update", False
+        )
 
         for field_name in fields_to_process:
             # Проверка дали вече е транслитерирано
@@ -346,10 +374,13 @@ class ResTransliterate(models.AbstractModel):
 
             if not new_record:
                 # Проверка дали полето е празно на en_US
-                new_record = not getattr(
-                    self.with_context(**dict(self.env.context, lang="en_US")),
-                    field_name
-                ) or force_multilanguage_update
+                new_record = (
+                    not getattr(
+                        self.with_context(**dict(self.env.context, lang="en_US")),
+                        field_name,
+                    )
+                    or force_multilanguage_update
+                )
 
             if vals.get(field_name) and new_record:
                 value = vals[field_name]
@@ -360,44 +391,52 @@ class ResTransliterate(models.AbstractModel):
                 if current_lang in ("en_US", "en") and _CYRILLIC_RE.search(str(value)):
                     bg_lang = "bg_BG"
                     if not getattr(self.with_context(lang=bg_lang), field_name):
-                        self.with_context(lang=bg_lang, update_lang=True).write({field_name: value})
+                        self.with_context(lang=bg_lang, update_lang=True).write(
+                            {field_name: value}
+                        )
 
                     transliterated_value = partner_name_translate(value, "bg", True)
                     record = self.with_context(
                         **dict(self.env.context, lang="en_US", update_lang=True)
                     )
                     tracking[field_name] = True
-                    record.write({
-                        field_name: transliterated_value,
-                        'transliterate_tracking': tracking
-                    })
+                    record.write(
+                        {
+                            field_name: transliterated_value,
+                            "transliterate_tracking": tracking,
+                        }
+                    )
                     continue
 
                 # Ако е нужна транслитерация и не е en_US
-                if transliterate and current_lang != "en_US" and not force_multilanguage_update:
+                if (
+                    transliterate
+                    and current_lang != "en_US"
+                    and not force_multilanguage_update
+                ):
                     # Записваме транслитерирана версия на en_US
                     record = self.with_context(
                         **dict(self.env.context, lang="en_US", update_lang=True)
                     )
                     transliterated_value = partner_name_translate(
-                        value,
-                        current_lang,
-                        transliterate
+                        value, current_lang, transliterate
                     )
 
                     # Обнови tracking
                     tracking[field_name] = True
 
-                    record.write({
-                        field_name: transliterated_value,
-                        'transliterate_tracking': tracking
-                    })
+                    record.write(
+                        {
+                            field_name: transliterated_value,
+                            "transliterate_tracking": tracking,
+                        }
+                    )
 
     @api.model_create_multi
     def create(self, vals_list):
         """Override create за да добави многоезична поддръжка"""
         res = super().create(vals_list)
-        for record, vals in zip(res, vals_list):
+        for record, vals in zip(res, vals_list, strict=False):
             record._force_multilanguage(vals, new_record=True)
         return res
 
@@ -405,7 +444,7 @@ class ResTransliterate(models.AbstractModel):
         """Override write за да обнови многоезични стойности"""
         res = super().write(vals)
         # Избягваме безкраен цикъл с update_lang флаг
-        if not self.env.context.get('update_lang', False):
+        if not self.env.context.get("update_lang", False):
             for record in self:
                 record._force_multilanguage(vals, new_record=False)
         return res

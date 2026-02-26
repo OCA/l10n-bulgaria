@@ -13,10 +13,7 @@
                     invisible="1"
                     groups="account.group_account_manager"
                 />
-                <field
-                    name="l10n_bg_config_template"
-                    invisible="1"
-                />
+                <field name="l10n_bg_config_template" invisible="1" />
 
                 <app
                     data-string="Bulgaria Localization"
@@ -49,13 +46,19 @@
                                 </div>
                                 <div class="mt16">
                                     <div class="row">
-                                        <label for="is_l10n_bg_multilanguage_text" string="Multilanguage Modules" class="col-lg-3 o_light_label" />
+                                        <label
+                                            for="is_l10n_bg_multilanguage_text"
+                                            string="Multilanguage Modules"
+                                            class="col-lg-3 o_light_label"
+                                        />
                                         <div class="col-lg-9">
-                                            <field name="is_l10n_bg_multilanguage_text"
-                                                   widget="text"
-                                                   readonly="1"
-                                                   nolabel="1"
-                                                   style="font-family: monospace; white-space: pre-wrap;" />
+                                            <field
+                                                name="is_l10n_bg_multilanguage_text"
+                                                widget="text"
+                                                readonly="1"
+                                                nolabel="1"
+                                                style="font-family: monospace; white-space: pre-wrap;"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -73,10 +76,7 @@
                             >
                                 <div class="d-flex">
                                     <field name="l10n_bg_key" class="ml16" />
-                                    <label
-                                        for="l10n_bg_key"
-                                        class="o_light_label"
-                                    />
+                                    <label for="l10n_bg_key" class="o_light_label" />
                                 </div>
                             </div>
                         </setting>
@@ -90,10 +90,12 @@
                                 class="content-group"
                                 name="l10n_bg_config_is_l10n_bg_setting_container"
                             >
-                                <button name="%(l10n_bg_config.action_account_account_settings_xml_file)d"
+                                <button
+                                    name="%(l10n_bg_config.action_account_account_settings_xml_file)d"
                                     string="Upload configuration file"
                                     type="action"
-                                    class="oe_highlight"/>
+                                    class="oe_highlight"
+                                />
                             </div>
                         </setting>
                         <setting
@@ -106,10 +108,12 @@
                                 class="content-group"
                                 name="l10n_bg_config_is_l10n_bg_setting_preview_container"
                             >
-                                <button name="%(l10n_bg_config.action_account_settings_xml_file)d"
+                                <button
+                                    name="%(l10n_bg_config.action_account_settings_xml_file)d"
                                     string="Preview configuration settings"
                                     type="action"
-                                    class="oe_highlight"/>
+                                    class="oe_highlight"
+                                />
                             </div>
                         </setting>
                         <setting
@@ -122,10 +126,12 @@
                                 class="content-group"
                                 name="l10n_bg_config_is_l10n_bg_setting_plugins_container"
                             >
-                                <button name="%(l10n_bg_config.action_account_plugins_wizard)d"
+                                <button
+                                    name="%(l10n_bg_config.action_account_plugins_wizard)d"
                                     string="Config Plugins"
                                     type="action"
-                                    class="oe_highlight"/>
+                                    class="oe_highlight"
+                                />
                             </div>
                         </setting>
                     </block>
@@ -257,7 +263,6 @@
                                         name="module_l10n_bg_vat_reports"
                                         class="ml16"
                                         widget="upgrade_boolean"
-
                                     />
                                     <label
                                         for="module_l10n_bg_vat_reports"

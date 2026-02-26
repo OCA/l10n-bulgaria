@@ -1,8 +1,0 @@
-
-# Credits
-
-## Financial Support
-
-The development of this module has been financially supported by:
-
-- BioPrint Ltd.

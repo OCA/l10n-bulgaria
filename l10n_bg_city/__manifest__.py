@@ -184,7 +184,7 @@ It's a foundational module for any serious Bulgarian localization implementation
     "license": "AGPL-3",
     "author": "Rosen Vladimirov,Odoo Community Association (OCA)",
     "maintainers": ["rosenvladimirov"],
-    "website": "https://github.com/rosenvladimirov/l10n-bulgaria",
+    "website": "https://github.com/OCA/l10n-bulgaria",
     "depends": [
         "base_address_extended",
         "contacts",
@@ -197,13 +197,12 @@ It's a foundational module for any serious Bulgarian localization implementation
     ],
     "demo": [],
     "post_init_hook": "post_init_hook",
-    'images': [
-        'static/description/banner.png',
+    "images": [
+        "static/description/banner.png",
     ],
     "tags": ["localization", "bulgaria", "cities", "ekatte", "geographic"],
     "countries": ["BG"],
-
     # Version requirements
-    'odoo_version': '18.0',
-    'python_version': '>=3.11',
+    "odoo_version": "18.0",
+    "python_version": ">=3.11",
 }

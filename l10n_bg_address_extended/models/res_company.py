@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models
 
 
 class Company(models.Model):
@@ -37,11 +37,24 @@ class Company(models.Model):
         inverse="_inverse_street_sector_number",
     )
     city_id = fields.Many2one(comodel_name="res.city", string="City ID")
-    country_enforce_cities = fields.Boolean(related='partner_id.country_id.enforce_cities')
+    country_enforce_cities = fields.Boolean(
+        related="partner_id.country_id.enforce_cities"
+    )
 
     def _get_company_address_field_names(self):
-        return list(set((super()._get_company_address_field_names() + ["street_name", "street_number", "street_number2", "street_building_number", "street_floor_number", "street_sector_number"])))
-
+        return list(
+            set(
+                super()._get_company_address_field_names()
+                + [
+                    "street_name",
+                    "street_number",
+                    "street_number2",
+                    "street_building_number",
+                    "street_floor_number",
+                    "street_sector_number",
+                ]
+            )
+        )
 
     def _inverse_street_name(self):
         for company in self:
@@ -67,8 +80,7 @@ class Company(models.Model):
         for company in self:
             company.partner_id.street_sector_number = company.street_sector_number
 
-
-    @api.onchange('city_id')
+    @api.onchange("city_id")
     def _onchange_city_id(self):
         if self.city_id:
             self.partner_id.city_id = self.city_id

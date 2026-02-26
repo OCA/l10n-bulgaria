@@ -1,6 +1,6 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, _
+from odoo import _, models
 
 
 class L10nBgVatRatioHistory(models.Model):
@@ -14,12 +14,12 @@ class L10nBgVatRatioHistory(models.Model):
                 "Numerator: %.2f %s\n"
                 "Denominator: %.2f %s"
             ) % (
-                          result["vat_ratio"],
-                          result["numerator_total"],
-                          self.currency_id.symbol,
-                          result["denominator_total"],
-                          self.currency_id.symbol,
-                      )
+                result["vat_ratio"],
+                result["numerator_total"],
+                self.currency_id.symbol,
+                result["denominator_total"],
+                self.currency_id.symbol,
+            )
             if result["is_provisional"]:
                 message += "\n" + _("(Provisional - will be adjusted at year end)")
 
@@ -52,14 +52,12 @@ class L10nBgVatRatioHistory(models.Model):
         month = int(self.month) if self.month else None
 
         try:
-            result = self.compute_ratio_from_vat_declarations(self.year, month, self.company_id)
+            result = self.compute_ratio_from_vat_declarations(
+                self.year, month, self.company_id
+            )
 
             # Update record
-            write_vals = {
-                key: result[key]
-                for key in result
-                if key in self._fields
-            }
+            write_vals = {key: result[key] for key in result if key in self._fields}
             write_vals["notes"] = result.get("notes") or self.notes or ""
             self.write(write_vals)
 
@@ -68,30 +66,30 @@ class L10nBgVatRatioHistory(models.Model):
 
             # Send notification via bus (Odoo 18 style)
             notification_type = notification["type"]
-            if notification_type not in ['success', 'warning', 'danger']:
-                notification_type = 'info'
+            if notification_type not in ["success", "warning", "danger"]:
+                notification_type = "info"
 
-            self.env['bus.bus']._sendone(
+            self.env["bus.bus"]._sendone(
                 self.env.user.partner_id,
-                'simple_notification',
+                "simple_notification",
                 {
-                    'type': notification_type,
-                    'title': _("VAT Ratio Calculation (Art. 73)"),
-                    'message': notification["message"],
-                    'sticky': notification["sticky"],
-                }
+                    "type": notification_type,
+                    "title": _("VAT Ratio Calculation (Art. 73)"),
+                    "message": notification["message"],
+                    "sticky": notification["sticky"],
+                },
             )
 
         except Exception as e:
-            self.env['bus.bus']._sendone(
+            self.env["bus.bus"]._sendone(
                 self.env.user.partner_id,
-                'simple_notification',
+                "simple_notification",
                 {
-                    'type': 'danger',
-                    'title': _("Error"),
-                    'message': _("Error computing VAT ratio: %s") % str(e),
-                    'sticky': True,
-                }
+                    "type": "danger",
+                    "title": _("Error"),
+                    "message": _("Error computing VAT ratio: %s") % str(e),
+                    "sticky": True,
+                },
             )
             raise
 
@@ -100,50 +98,57 @@ class L10nBgVatRatioHistory(models.Model):
         self.ensure_one()
 
         if self.month:
-            self.env['bus.bus']._sendone(
+            self.env["bus.bus"]._sendone(
                 self.env.user.partner_id,
-                'simple_notification',
+                "simple_notification",
                 {
-                    'type': 'danger',
-                    'title': _("Error"),
-                    'message': _("Annual adjustment can only be calculated for annual coefficients (without month)."),
-                    'sticky': True,
-                }
+                    "type": "danger",
+                    "title": _("Error"),
+                    "message": _(
+                        "Annual adjustment can only be calculated for annual coefficients (without month)."
+                    ),
+                    "sticky": True,
+                },
             )
             return
 
         # Get all monthly ratios for the year
-        monthly_ratios = self.search([
-            ("year", "=", self.year),
-            ("month", "!=", False),
-            ("company_id", "=", self.company_id.id),
-            ("active", "=", True),
-        ])
+        monthly_ratios = self.search(
+            [
+                ("year", "=", self.year),
+                ("month", "!=", False),
+                ("company_id", "=", self.company_id.id),
+                ("active", "=", True),
+            ]
+        )
 
         if not monthly_ratios:
-            self.env['bus.bus']._sendone(
+            self.env["bus.bus"]._sendone(
                 self.env.user.partner_id,
-                'simple_notification',
+                "simple_notification",
                 {
-                    'type': 'danger',
-                    'title': _("Error"),
-                    'message': _("No monthly ratios found for year %s. Cannot calculate adjustment.") % self.year,
-                    'sticky': True,
-                }
+                    "type": "danger",
+                    "title": _("Error"),
+                    "message": _(
+                        "No monthly ratios found for year %s. Cannot calculate adjustment."
+                    )
+                    % self.year,
+                    "sticky": True,
+                },
             )
             return
 
         # Send notification via bus (Odoo 18 style)
-        self.env['bus.bus']._sendone(
+        self.env["bus.bus"]._sendone(
             self.env.user.partner_id,
-            'simple_notification',
+            "simple_notification",
             {
-                'type': 'info',
-                'title': _("Information"),
-                'message': _(
+                "type": "info",
+                "title": _("Information"),
+                "message": _(
                     "Annual adjustment calculation requires tracking of partial VAT credits. "
                     "This should be implemented in the VAT return module."
                 ),
-                'sticky': True,
-            }
+                "sticky": True,
+            },
         )

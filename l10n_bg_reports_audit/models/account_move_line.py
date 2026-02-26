@@ -110,15 +110,17 @@ class AccountMoveLine(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
-        if not self.env.context.get('l10n_bg_skip_tax_tag_apply'):
+        if not self.env.context.get("l10n_bg_skip_tax_tag_apply"):
             lines._l10n_bg_apply_tax_tag()
         return lines
 
     def write(self, vals):
         res = super().write(vals)
-        if self.env.context.get('l10n_bg_skip_tax_tag_apply'):
+        if self.env.context.get("l10n_bg_skip_tax_tag_apply"):
             return res
-        if {'tax_line_id', 'account_id', 'balance', 'move_id', 'tax_tag_ids'} & set(vals):
+        if {"tax_line_id", "account_id", "balance", "move_id", "tax_tag_ids"} & set(
+            vals
+        ):
             self._l10n_bg_apply_tax_tag()
         return res
 
@@ -126,7 +128,7 @@ class AccountMoveLine(models.Model):
         super().init()
         tools.create_index(
             self._cr,
-            'account_move_line_account_date_idx',
-            'account_move_line',
-            ['account_id', 'date']
+            "account_move_line_account_date_idx",
+            "account_move_line",
+            ["account_id", "date"],
         )

@@ -1,12 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
+from datetime import date, datetime, timedelta
 
 from psycopg2 import sql
 
-from datetime import datetime, timedelta, date
 from odoo import api, fields, models, tools
-from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import l10n_bg_where, \
-    l10n_bg_get_account_deprecated_sql
+
+from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
+    l10n_bg_get_account_deprecated_sql,
+    l10n_bg_where,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -15,7 +18,9 @@ class AccountBGCalcPartnerLine(models.Model):
     """Base model for new Bulgarian Partner trail balance reports."""
 
     _name = "account.bg.calc.partner.line"
-    _description = "Partner lines for Calculation Partner Trail Balance in Bulgarian Localization"
+    _description = (
+        "Partner lines for Calculation Partner Trail Balance in Bulgarian Localization"
+    )
     _auto = False
     _order = "move_id asc"
 
@@ -44,8 +49,8 @@ class AccountBGCalcPartnerLine(models.Model):
     period = fields.Char(string="Period", readonly=True)
     account_type = fields.Selection(
         [
-        ("asset_receivable", "Receivable"),
-        ("liability_payable", "Payable"),
+            ("asset_receivable", "Receivable"),
+            ("liability_payable", "Payable"),
         ],
         readonly=True,
     )
@@ -130,10 +135,10 @@ class AccountBGCalcPartnerLine(models.Model):
     @api.model
     def _select(self):
         if self._context.get("report_options"):
-            date_from, date_to, tax_period, tax_periods, company_id, state = l10n_bg_where(
-                self.env, self._context.get("report_options")
+            date_from, date_to, tax_period, tax_periods, company_id, state = (
+                l10n_bg_where(self.env, self._context.get("report_options"))
             )
-            date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
+            date_from_obj = datetime.strptime(date_from, "%Y-%m-%d").date()
             # Проверка дали date_from е първо число на годината
             first_day_of_year = date(date_from_obj.year, 1, 1)
 
@@ -153,7 +158,7 @@ class AccountBGCalcPartnerLine(models.Model):
             date_from = "date_trunc('year', CURRENT_DATE)"
             date_to = "CURRENT_DATE"
             company = ""
-        deprecated = l10n_bg_get_account_deprecated_sql(table_alias='acc')
+        deprecated = l10n_bg_get_account_deprecated_sql(table_alias="acc")
 
         return f"""
         /* Начално салдо */
@@ -251,4 +256,3 @@ class AccountBGCalcPartnerLine(models.Model):
         period,
         account_type
         """
-

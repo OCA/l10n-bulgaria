@@ -1,9 +1,8 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
-import base64
 import json
+import xml.etree.ElementTree as ET
 
 from odoo import Command, api, fields, models
-import xml.etree.ElementTree as ET
 
 L10N_BG_MULTILANGUAGE = ("l10n_bg_multilang", "partner_multilang")
 
@@ -69,12 +68,16 @@ class ResCompany(models.Model):
                 ]
             else:
                 record.l10n_bg_represent_contact_id = False
-                record.partner_id.child_ids.filtered(lambda r: r.id == record.id).type = "contact"
+                record.partner_id.child_ids.filtered(
+                    lambda r: r.id == record.id
+                ).type = "contact"
 
     @api.depends("chart_template")
     def _compute_is_l10n_bg_record(self):
         for record in self:
-            record.is_l10n_bg_record = record._check_is_l10n_bg_record(company=record.parent_id)
+            record.is_l10n_bg_record = record._check_is_l10n_bg_record(
+                company=record.parent_id
+            )
 
     def _inverse_is_l10n_bg_record(self):
         for company in self:
@@ -97,11 +100,17 @@ class ResCompany(models.Model):
                     ("state", "=", "installed"),
                 ]
             )
-            company.is_l10n_bg_multilanguage = dict([(x.name, x.state) for x in l10n_bg])
+            company.is_l10n_bg_multilanguage = dict(
+                [(x.name, x.state) for x in l10n_bg]
+            )
 
     def _compute_is_l10n_bg_multilanguage(self):
         for record in self:
-            record.is_l10n_bg_multilanguage = record.is_l10n_bg_multilanguage if record.is_l10n_bg_multilanguage else {}
+            record.is_l10n_bg_multilanguage = (
+                record.is_l10n_bg_multilanguage
+                if record.is_l10n_bg_multilanguage
+                else {}
+            )
 
     def _check_is_l10n_bg_record(self, company=False):
         if company and isinstance(company, int):
@@ -114,11 +123,11 @@ class ResCompany(models.Model):
     def _xml_to_dict(xml_text):
         root = ET.fromstring(xml_text)
         res = {}
-        for setting in root.findall('.//settings/setting'):
-            model = setting.get('model')
-            field = setting.get('field')
-            value_type = setting.get('value')
-            codes = setting.text.strip().split(',')
+        for setting in root.findall(".//settings/setting"):
+            model = setting.get("model")
+            field = setting.get("field")
+            value_type = setting.get("value")
+            codes = setting.text.strip().split(",")
 
             if model not in res:
                 res[model] = {}
@@ -129,15 +138,21 @@ class ResCompany(models.Model):
         return res
 
     def xml_to_dict(self, xml_text):
-        old_settings = self.l10n_bg_config_template and json.loads(self.l10n_bg_config_template) or {}
+        old_settings = (
+            self.l10n_bg_config_template
+            and json.loads(self.l10n_bg_config_template)
+            or {}
+        )
         res = self._xml_to_dict(xml_text)
         if res:
             old_settings.update(res)
-            new_settings = json.dumps(old_settings).encode('utf-8')
-            self.write({
-                'l10n_bg_config_template': new_settings
-                })
-        return self.l10n_bg_config_template and json.loads(self.l10n_bg_config_template) or {}
+            new_settings = json.dumps(old_settings).encode("utf-8")
+            self.write({"l10n_bg_config_template": new_settings})
+        return (
+            self.l10n_bg_config_template
+            and json.loads(self.l10n_bg_config_template)
+            or {}
+        )
 
     def _process_config_file(self):
         pass

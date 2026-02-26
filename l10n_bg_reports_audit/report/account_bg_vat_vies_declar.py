@@ -94,20 +94,23 @@ class AccountBGInfoViesDeclaration(models.Model):
             .with_context(**dict(self._context))
             ._table_query
         )
-        return f"""({sub_select}) AS acc
+        return (
+            f"""({sub_select}) AS acc
 LEFT JOIN res_company AS company
     ON acc.company_id = company.id
 LEFT JOIN res_partner AS company_partner
     ON company.partner_id = company_partner.id
 LEFT JOIN res_partner AS represent_partner
-    ON company.l10n_bg_tax_contact_id = represent_partner.id""" + \
-            l10n_bg_extend_address(self.env) + l10n_bg_extend_address(self.env, model="represent_partner")
+    ON company.l10n_bg_tax_contact_id = represent_partner.id"""
+            + l10n_bg_extend_address(self.env)
+            + l10n_bg_extend_address(self.env, model="represent_partner")
+        )
 
     @api.model
     def _where(self):
         if self._context.get("report_options"):
-            date_from, date_to, tax_period, tax_periods, company_id, state = l10n_bg_where(
-                self.env, self._context.get("report_options")
+            date_from, date_to, tax_period, tax_periods, company_id, state = (
+                l10n_bg_where(self.env, self._context.get("report_options"))
             )
             if len(tax_periods) == 0:
                 return f"""acc.company_id = {company_id} AND acc.state = ANY(ARRAY{state}) AND acc.info_tag_vir_7 = '{tax_period}'"""

@@ -1,21 +1,6 @@
-[ This file is required and contains the instructions on **“how”** to use the module for end-users. 
+To use this module:
 
-If the module does not have a visible impact on the user interface, just add the following sentence: 
-
-> This module does not impact the user interface.
-
-If that’s not the case, please make sure that every usage step is covered and remember that images speak more than words!]
-
-To use this module, you need to:
-
-- Go to *App* > Menu > Menu item
-
-  *insert screenshot!*
-
-- In “Contact” form, add a value to field *xyz* > save
-
-  *insert screenshot!*
-
-- The value of *xyz* is now displayed in the list view.
-
-  *insert screenshot!*
+1. Open a stock picking (incoming, outgoing, or internal).
+2. Use Print to generate the Accepted Delivery Report or the Handover Protocol.
+3. If you want to show sale line descriptions, enable the related access group
+   from the Bulgarian report theme module.

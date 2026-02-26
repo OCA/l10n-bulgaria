@@ -1,8 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import base64
 import json
 
-from odoo import fields, models, api
+from odoo import api, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -15,8 +14,7 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.is_l10n_bg_multilanguage", readonly=False
     )
     is_l10n_bg_multilanguage_text = fields.Text(
-        string="Multilanguage Settings",
-        compute="_compute_multilanguage_text"
+        string="Multilanguage Settings", compute="_compute_multilanguage_text"
     )
 
     module_currency_rate_update_bg_bnb = fields.Boolean(
@@ -79,10 +77,14 @@ class ResConfigSettings(models.TransientModel):
         "Bulgaria - Tax Report  export files (OCA)",
         help="Add tax reports and exports files for Bulgaria base on OCA report engine",
     )
-    l10n_bg_config_template =fields.Binary(related="company_id.l10n_bg_config_template", readonly=False)
-    l10n_bg_key = fields.Char(related="company_id.partner_id.l10n_bg_key", readonly=False)
+    l10n_bg_config_template = fields.Binary(
+        related="company_id.l10n_bg_config_template", readonly=False
+    )
+    l10n_bg_key = fields.Char(
+        related="company_id.partner_id.l10n_bg_key", readonly=False
+    )
 
-    @api.depends('company_id.is_l10n_bg_multilanguage')
+    @api.depends("company_id.is_l10n_bg_multilanguage")
     def _compute_multilanguage_text(self):
         for record in self:
             multilang_data = record.company_id.is_l10n_bg_multilanguage
@@ -90,9 +92,7 @@ class ResConfigSettings(models.TransientModel):
             if multilang_data and isinstance(multilang_data, dict):
                 # Форматиране на JSON за четимост
                 record.is_l10n_bg_multilanguage_text = json.dumps(
-                    multilang_data,
-                    indent=4,
-                    ensure_ascii=False
+                    multilang_data, indent=4, ensure_ascii=False
                 )
             else:
                 record.is_l10n_bg_multilanguage_text = "No data"

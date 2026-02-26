@@ -1,12 +1,11 @@
 /** @odoo-module **/
 
-import { ClosePosPopup } from "@point_of_sale/app/navbar/closing_popup/closing_popup";
-import { patch } from "@web/core/utils/patch";
-import { _t } from "@web/core/l10n/translation";
-import { ErpNetFPPrinter } from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
+import {ClosePosPopup} from "@point_of_sale/app/navbar/closing_popup/closing_popup";
+import {patch} from "@web/core/utils/patch";
+import {_t} from "@web/core/l10n/translation";
+import {ErpNetFPPrinter} from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
 
 patch(ClosePosPopup.prototype, {
-
     /**
      * Получава или създава ErpNetFPPrinter инстанция
      */
@@ -37,24 +36,23 @@ patch(ClosePosPopup.prototype, {
         if (!fiscalPrinter) {
             this.env.services.notification.add(
                 _t("Фискалният принтер не е конфигуриран"),
-                { type: "warning" }
+                {type: "warning"}
             );
             return;
         }
 
         try {
             // Показваме loader
-            this.env.services.notification.add(
-                _t("Генериране на X отчет..."),
-                { type: "info" }
-            );
+            this.env.services.notification.add(_t("Генериране на X отчет..."), {
+                type: "info",
+            });
 
             const result = await fiscalPrinter.printXReport();
 
             if (result.successful) {
                 this.env.services.notification.add(
                     _t("X отчетът е отпечатан успешно"),
-                    { type: "success" }
+                    {type: "success"}
                 );
             } else {
                 throw new Error(result.message?.body || _t("Грешка при печат"));
@@ -63,7 +61,7 @@ patch(ClosePosPopup.prototype, {
             console.error("[ClosePosPopup] X Report error:", error);
             this.env.services.notification.add(
                 _t("Грешка при X отчет: ") + error.message,
-                { type: "danger", sticky: true }
+                {type: "danger", sticky: true}
             );
         }
     },
@@ -79,24 +77,23 @@ patch(ClosePosPopup.prototype, {
         if (!fiscalPrinter) {
             this.env.services.notification.add(
                 _t("Фискалният принтер не е конфигуриран"),
-                { type: "warning" }
+                {type: "warning"}
             );
             return;
         }
 
         try {
             // Показваме loader
-            this.env.services.notification.add(
-                _t("Генериране на Z отчет..."),
-                { type: "info" }
-            );
+            this.env.services.notification.add(_t("Генериране на Z отчет..."), {
+                type: "info",
+            });
 
             const result = await fiscalPrinter.printZReport();
 
             if (result.successful) {
                 this.env.services.notification.add(
                     _t("Z отчетът е отпечатан успешно! Дневните данни са нулирани."),
-                    { type: "success", sticky: true }
+                    {type: "success", sticky: true}
                 );
             } else {
                 throw new Error(result.message?.body || _t("Грешка при печат"));
@@ -105,9 +102,8 @@ patch(ClosePosPopup.prototype, {
             console.error("[ClosePosPopup] Z Report error:", error);
             this.env.services.notification.add(
                 _t("Грешка при Z отчет: ") + error.message,
-                { type: "danger", sticky: true }
+                {type: "danger", sticky: true}
             );
         }
     },
-
 });

@@ -22,12 +22,9 @@ class AccountAccountTag(models.Model):
     applicability = fields.Selection(
         selection_add=[
             ("l10n_bg_partner", "BG-NSI Usage for Partners"),
-            ("l10n_bg_product", "BG-NSI Usage for Products")
+            ("l10n_bg_product", "BG-NSI Usage for Products"),
         ],
-        ondelete={
-        "l10n_bg_partner": "set default",
-        "l10n_bg_product": "set default"
-        },
+        ondelete={"l10n_bg_partner": "set default", "l10n_bg_product": "set default"},
     )
 
     def _get_l10n_bg_applicability(self):
@@ -40,9 +37,9 @@ class AccountAccountTag(models.Model):
     def action_bulk_edit(self):
         self.ensure_one()
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Bulk Edit Tags',
-            'res_model': 'account.account.tag.bulk.edit.wizard',
-            'view_mode': 'form',
-            'target': 'new',
+            "type": "ir.actions.act_window",
+            "name": "Bulk Edit Tags",
+            "res_model": "account.account.tag.bulk.edit.wizard",
+            "view_mode": "form",
+            "target": "new",
         }

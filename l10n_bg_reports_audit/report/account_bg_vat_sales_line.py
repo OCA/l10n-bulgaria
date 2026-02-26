@@ -7,10 +7,9 @@ from odoo import api, fields, models, tools
 
 from odoo.addons.l10n_bg_reports_audit.models.account_move import get_doc_type
 from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
+    l10n_bg_get_tag_negate_sql,
     l10n_bg_lang,
     l10n_bg_where,
-    l10n_bg_odoo_compatible_line,
-    l10n_bg_get_tag_negate_sql,
 )
 
 _logger = logging.getLogger(__name__)
@@ -30,20 +29,12 @@ class AccountBGInfoSaleLine(models.Model):
     _order = "date asc, move_id asc"
 
     date = fields.Date(string="Document date", readonly=True)
-    company_id = fields.Many2one(
-        "res.company",
-        "Company",
-        readonly=True
-    )
+    company_id = fields.Many2one("res.company", "Company", readonly=True)
     company_currency_id = fields.Many2one(
-        related="company_id.currency_id",
-        readonly=True
+        related="company_id.currency_id", readonly=True
     )
     move_id = fields.Many2one(
-        "account.move",
-        string="Account Move",
-        readonly=True,
-        auto_join=True
+        "account.move", string="Account Move", readonly=True, auto_join=True
     )
     id = fields.Integer(string="ID", readonly=True, related="move_id.id")
     partner_id = fields.Many2one("res.partner", "Customer", readonly=True)
@@ -272,8 +263,8 @@ class AccountBGInfoSaleLine(models.Model):
     @api.model
     def _where(self):
         if self._context.get("report_options"):
-            date_from, date_to, tax_period, tax_periods, company_id, state = l10n_bg_where(
-                self.env, self._context.get("report_options")
+            date_from, date_to, tax_period, tax_periods, company_id, state = (
+                l10n_bg_where(self.env, self._context.get("report_options"))
             )
             return f"""am.company_id = {company_id} AND am.state = ANY(ARRAY{state}) AND am.date >= '{date_from}' AND am.date <= '{date_to}'"""
         return """"""
@@ -434,7 +425,7 @@ FROM {self._from()}
 
     @api.model
     def _select(self):
-        return f"""am.company_id AS company_id,
+        return """am.company_id AS company_id,
     am.id AS id,
     am.id AS move_id,
     am.partner_id AS partner_id,
@@ -552,7 +543,7 @@ FROM {self._from()}
 
     @api.model
     def _from(self):
-        tax_negate = l10n_bg_get_tag_negate_sql(table_alias='account_account_tag')
+        tax_negate = l10n_bg_get_tag_negate_sql(table_alias="account_account_tag")
         return f"""account_move_line AS aml
     LEFT JOIN account_move AS am
         ON aml.move_id = am.id
@@ -573,8 +564,8 @@ FROM {self._from()}
     @api.model
     def _where(self):
         if self._context.get("report_options"):
-            date_from, date_to, tax_period, tax_periods, company_id, state = l10n_bg_where(
-                self.env, self._context.get("report_options")
+            date_from, date_to, tax_period, tax_periods, company_id, state = (
+                l10n_bg_where(self.env, self._context.get("report_options"))
             )
             return f"""am.company_id = {company_id} AND am.state = ANY(ARRAY{state}) AND aat.l10n_bg_applicability = 'sale' AND am.date >= '{date_from}' AND am.date <= '{date_to}'"""
         return """aat.l10n_bg_applicability = 'sale'"""

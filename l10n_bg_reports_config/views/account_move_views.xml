@@ -5,10 +5,7 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="l10n_bg_ledger.l10n_bg_move_view_form" />
         <field name="arch" type="xml">
-            <xpath
-                expr="//group[@name='l10n_bg_documents']"
-                position="inside"
-            >
+            <xpath expr="//group[@name='l10n_bg_documents']" position="inside">
                 <field name="l10n_bg_audit_use_tax" invisible="1" />
                 <field name="l10n_bg_name" invisible="1" force_save="1" />
                 <field name="l10n_bg_date" />
@@ -29,13 +26,10 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="l10n_bg_config.view_move_form" />
         <field name="arch" type="xml">
-            <xpath
-                expr="//group[@id='account_bg_vat_entry']"
-                position="inside"
-            >
+            <xpath expr="//group[@id='account_bg_vat_entry']" position="inside">
                 <field name="l10n_bg_audit_use_tax" invisible="1" />
                 <field name="l10n_bg_name" invisible="1" force_save="1" />
-                <field string="Document Number" name="l10n_bg_document_number"/>
+                <field string="Document Number" name="l10n_bg_document_number" />
                 <field name="l10n_bg_date" />
                 <field name="l10n_bg_narration" />
                 <field name="l10n_bg_type_vat" />
@@ -44,8 +38,8 @@
                     name="l10n_bg_customs_base_amount"
                     invisible="not l10n_bg_audit_use_tax"
                 />
-                <field string="Document Type" name="l10n_bg_document_type"/>
-                <field string="Exemption reason" name="l10n_bg_exemption_reason"/>
+                <field string="Document Type" name="l10n_bg_document_type" />
+                <field string="Exemption reason" name="l10n_bg_exemption_reason" />
                 <field name="l10n_bg_doc_type" invisible="1" force_save="1" />
                 <field name="l10n_bg_delivery_type" invisible="1" force_save="1" />
             </xpath>

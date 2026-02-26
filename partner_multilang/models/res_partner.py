@@ -7,10 +7,10 @@ from odoo.osv import expression
 
 
 class Partner(models.Model):
-    _inherit = ['res.partner', 'res.transliterate.mixin']
+    _inherit = ["res.partner", "res.transliterate.mixin"]
     _name = "res.partner"
 
-    name = fields.Char(translate=True, index='trigram')
+    name = fields.Char(translate=True, index="trigram")
     street = fields.Char(translate=True)
     street2 = fields.Char(translate=True)
     city = fields.Char(translate=True)
@@ -18,7 +18,7 @@ class Partner(models.Model):
     company_name = fields.Char(translate=True)
     commercial_company_name = fields.Char(translate=True)
     complete_name_multilanguage = fields.Char(
-        compute='_compute_complete_name_multilanguage',
+        compute="_compute_complete_name_multilanguage",
         store=True,
         index=True,
         translate=True,
@@ -34,71 +34,85 @@ class Partner(models.Model):
         # Ensure the technical JSONB column exists without module upgrade.
         self._cr.execute(
             'ALTER TABLE "res_partner" '
-            'ADD COLUMN IF NOT EXISTS complete_name_multilanguage jsonb'
+            "ADD COLUMN IF NOT EXISTS complete_name_multilanguage jsonb"
         )
 
     @api.model
-    def get_view(self, view_id=None, view_type='form', **options):
+    def get_view(self, view_id=None, view_type="form", **options):
         res = super().get_view(view_id=view_id, view_type=view_type, **options)
         try:
-            node = etree.fromstring(res.get('arch', ''))
+            node = etree.fromstring(res.get("arch", ""))
         except Exception:
             return res
 
         changed = False
         for field_node in node.xpath(".//field[@name='complete_name']"):
-            field_node.set('name', 'complete_name_multilanguage')
+            field_node.set("name", "complete_name_multilanguage")
             changed = True
 
         if not changed:
             return res
 
-        res['arch'] = etree.tostring(node, encoding="unicode").replace('\t', '')
+        res["arch"] = etree.tostring(node, encoding="unicode").replace("\t", "")
 
-        models = {model: set(fields) for model, fields in res.get('models', {}).items()}
+        models = {model: set(fields) for model, fields in res.get("models", {}).items()}
         if self._name in models:
-            models[self._name].add('complete_name_multilanguage')
-            res['models'] = {model: tuple(fields) for model, fields in models.items()}
+            models[self._name].add("complete_name_multilanguage")
+            res["models"] = {model: tuple(fields) for model, fields in models.items()}
         return res
 
     @api.model
     def _get_transliterate_fields(self):
         res = super()._get_transliterate_fields()
-        return res + ['street', 'street2', 'city', 'function', 'company_name', 'commercial_company_name']
+        return res + [
+            "street",
+            "street2",
+            "city",
+            "function",
+            "company_name",
+            "commercial_company_name",
+        ]
 
     # Use core _get_complete_name without override.
 
     @api.model
     def _get_partner_name_lang_codes(self):
         lang_codes = self._get_active_lang_codes()
-        if 'en_US' not in lang_codes:
-            lang_codes.append('en_US')
+        if "en_US" not in lang_codes:
+            lang_codes.append("en_US")
         return lang_codes
 
-    @api.depends('is_company', 'name', 'parent_id.name', 'type', 'company_name', 'commercial_company_name')
+    @api.depends(
+        "is_company",
+        "name",
+        "parent_id.name",
+        "type",
+        "company_name",
+        "commercial_company_name",
+    )
     def _compute_complete_name_multilanguage(self):
         self._update_complete_name_multilanguage()
 
     def _get_complete_name_multilang(self, lang):
         self.ensure_one()
         displayed_types = self._complete_name_displayed_types
-        type_description = dict(self._fields['type']._description_selection(self.env))
+        type_description = dict(self._fields["type"]._description_selection(self.env))
 
         record = self.with_context(lang=lang)
-        name = record.name or ''
+        name = record.name or ""
 
         if record.company_name or record.parent_id:
             if not name and record.type in displayed_types:
                 name = type_description.get(record.type, "")
             if not record.is_company:
                 parent = record.sudo().parent_id
-                parent_name = parent.with_context(lang=lang).name if parent else ''
+                parent_name = parent.with_context(lang=lang).name if parent else ""
                 name = f"{parent_name}, {name}" if parent_name else name
 
-        return (name or '').strip()
+        return (name or "").strip()
 
     def _update_complete_name_multilanguage(self):
-        if self.env.context.get('skip_complete_name_multilang'):
+        if self.env.context.get("skip_complete_name_multilang"):
             return
         lang_codes = self._get_partner_name_lang_codes()
         for partner in self:
@@ -106,29 +120,33 @@ class Partner(models.Model):
                 lang_code: partner._get_complete_name_multilang(lang_code)
                 for lang_code in lang_codes
             }
-            partner.update_field_translations('complete_name_multilanguage', translations)
+            partner.update_field_translations(
+                "complete_name_multilanguage", translations
+            )
 
     @api.model
     def _get_translatable_search_fields(self):
         return [
-            'complete_name_multilanguage',
-            'name',
-            'company_name',
-            'commercial_company_name',
+            "complete_name_multilanguage",
+            "name",
+            "company_name",
+            "commercial_company_name",
         ]
 
     @api.model
     def _get_active_lang_codes(self):
         return [
-            lang['code']
-            for lang in self.env['res.lang'].sudo().search_read([('active', '=', True)], ['code'])
+            lang["code"]
+            for lang in self.env["res.lang"]
+            .sudo()
+            .search_read([("active", "=", True)], ["code"])
         ]
 
     @api.model
     def _resolve_translatable_field(self, field_path):
         model = self
         field = None
-        for fname in field_path.split('.'):
+        for fname in field_path.split("."):
             field = model._fields.get(fname)
             if not field:
                 return None
@@ -147,7 +165,7 @@ class Partner(models.Model):
         if not domain:
             return domain
         lang_codes = set(self._get_active_lang_codes())
-        context_lang = self.env.context.get('lang')
+        context_lang = self.env.context.get("lang")
         if context_lang:
             lang_codes.add(context_lang)
         user_lang = self.env.user.lang
@@ -161,8 +179,8 @@ class Partner(models.Model):
             for token in tokens:
                 if isinstance(token, (list, tuple)) and len(token) >= 3:
                     field_name = token[0]
-                    if isinstance(field_name, str) and '.' in field_name:
-                        base, suffix = field_name.split('.', 1)
+                    if isinstance(field_name, str) and "." in field_name:
+                        base, suffix = field_name.split(".", 1)
                         if suffix in lang_codes:
                             field = self._fields.get(base)
                             if field and field.translate and not field.relational:
@@ -206,11 +224,13 @@ class Partner(models.Model):
             return []
 
         if operator in expression.NEGATIVE_TERM_OPERATORS:
-            return [('id', 'not in', list(ids))]
-        return [('id', 'in', list(ids))]
+            return [("id", "not in", list(ids))]
+        return [("id", "in", list(ids))]
 
     @api.model
-    def _get_translatable_search_domains(self, operator, value, field_list, lang_codes, limit=None):
+    def _get_translatable_search_domains(
+        self, operator, value, field_list, lang_codes, limit=None
+    ):
         ids = set()
         positive_operator = self._positive_search_operator(operator)
         for field_name in field_list:
@@ -229,20 +249,22 @@ class Partner(models.Model):
 
     @api.model
     def _positive_search_operator(self, operator):
-        if operator in ('not ilike', 'not like'):
+        if operator in ("not ilike", "not like"):
             return operator[4:]
-        if operator in ('!=', '<>'):
-            return '='
-        if operator == 'not in':
-            return 'in'
+        if operator in ("!=", "<>"):
+            return "="
+        if operator == "not in":
+            return "in"
         return operator
 
     @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
+    def name_search(self, name="", args=None, operator="ilike", limit=100):
         """Override за многоезично търсене при избор на партньор"""
         args = list(args) if args else []
 
-        base_results = super().name_search(name=name, args=args, operator=operator, limit=limit)
+        base_results = super().name_search(
+            name=name, args=args, operator=operator, limit=limit
+        )
         if not name:
             return base_results
 
@@ -250,12 +272,14 @@ class Partner(models.Model):
         search_fields = self._get_translatable_search_fields()
 
         # Генерираме многоезичен домейн
-        multi_lang_domain = self._search_multi_lang(operator, name, search_fields, limit=limit)
+        multi_lang_domain = self._search_multi_lang(
+            operator, name, search_fields, limit=limit
+        )
         if not multi_lang_domain:
             return base_results
 
         domain = expression.AND([args, multi_lang_domain])
-        records = self.search_fetch(domain, ['display_name'], limit=limit)
+        records = self.search_fetch(domain, ["display_name"], limit=limit)
         extra_results = [(record.id, record.display_name) for record in records.sudo()]
 
         # Събиране на резултатите без дублиране, със спазване на limit.
@@ -274,7 +298,9 @@ class Partner(models.Model):
     def _search_display_name(self, operator, value):
         domain = super()._search_display_name(operator, value)
         domain = self._strip_lang_suffix_in_domain(domain)
-        search_fnames = list(self._rec_names_search or ([self._rec_name] if self._rec_name else []))
+        search_fnames = list(
+            self._rec_names_search or ([self._rec_name] if self._rec_name else [])
+        )
         if not search_fnames:
             return domain
 
@@ -287,7 +313,9 @@ class Partner(models.Model):
         if not lang_codes:
             return domain
 
-        search_fields = [fname for fname in search_fnames if self._resolve_translatable_field(fname)]
+        search_fields = [
+            fname for fname in search_fnames if self._resolve_translatable_field(fname)
+        ]
         if not search_fields:
             return domain
 
@@ -301,8 +329,8 @@ class Partner(models.Model):
             return domain
 
         if operator in expression.NEGATIVE_TERM_OPERATORS:
-            return expression.AND([domain, [('id', 'not in', list(ids))]])
-        return expression.OR([domain, [('id', 'in', list(ids))]])
+            return expression.AND([domain, [("id", "not in", list(ids))]])
+        return expression.OR([domain, [("id", "in", list(ids))]])
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -312,15 +340,15 @@ class Partner(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if self.env.context.get('skip_complete_name_multilang'):
+        if self.env.context.get("skip_complete_name_multilang"):
             return res
         trigger_fields = {
-            'name',
-            'company_name',
-            'commercial_company_name',
-            'parent_id',
-            'is_company',
-            'type',
+            "name",
+            "company_name",
+            "commercial_company_name",
+            "parent_id",
+            "is_company",
+            "type",
         }
         if trigger_fields.intersection(vals.keys()):
             self._update_complete_name_multilanguage()

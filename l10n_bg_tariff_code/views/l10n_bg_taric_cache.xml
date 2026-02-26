@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- TARIC Cache Tree View -->
     <record id="view_l10n_bg_taric_cache_tree" model="ir.ui.view">
@@ -6,14 +6,14 @@
         <field name="model">l10n_bg.taric.cache</field>
         <field name="arch" type="xml">
             <list string="TARIC Cache" create="false">
-                <field name="cn_code"/>
-                <field name="country_code"/>
-                <field name="duty_rate"/>
-                <field name="measure_type"/>
-                <field name="valid_from"/>
-                <field name="valid_to"/>
-                <field name="source"/>
-                <field name="last_update"/>
+                <field name="cn_code" />
+                <field name="country_code" />
+                <field name="duty_rate" />
+                <field name="measure_type" />
+                <field name="valid_from" />
+                <field name="valid_to" />
+                <field name="source" />
+                <field name="last_update" />
             </list>
         </field>
     </record>
@@ -27,20 +27,20 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="cn_code"/>
-                            <field name="country_code"/>
-                            <field name="duty_rate"/>
-                            <field name="measure_type"/>
+                            <field name="cn_code" />
+                            <field name="country_code" />
+                            <field name="duty_rate" />
+                            <field name="measure_type" />
                         </group>
                         <group>
-                            <field name="valid_from"/>
-                            <field name="valid_to"/>
-                            <field name="source"/>
-                            <field name="last_update"/>
+                            <field name="valid_from" />
+                            <field name="valid_to" />
+                            <field name="source" />
+                            <field name="last_update" />
                         </group>
                     </group>
                     <group>
-                        <field name="description"/>
+                        <field name="description" />
                     </group>
                 </sheet>
             </form>
@@ -53,18 +53,45 @@
         <field name="model">l10n_bg.taric.cache</field>
         <field name="arch" type="xml">
             <search string="Search TARIC Cache">
-                <field name="cn_code"/>
-                <field name="country_code"/>
-                <field name="description"/>
-                <filter string="Valid Today" name="valid_today"
-                        domain="[('valid_from', '&lt;=', context_today().strftime('%Y-%m-%d')), ('valid_to', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
-                <filter string="From API" name="source_api" domain="[('source', '=', 'api')]"/>
-                <filter string="From CIRCABC" name="source_circabc" domain="[('source', '=', 'circabc')]"/>
-                <filter string="Manual" name="source_manual" domain="[('source', '=', 'manual')]"/>
+                <field name="cn_code" />
+                <field name="country_code" />
+                <field name="description" />
+                <filter
+                    string="Valid Today"
+                    name="valid_today"
+                    domain="[('valid_from', '&lt;=', context_today().strftime('%Y-%m-%d')), ('valid_to', '&gt;=', context_today().strftime('%Y-%m-%d'))]"
+                />
+                <filter
+                    string="From API"
+                    name="source_api"
+                    domain="[('source', '=', 'api')]"
+                />
+                <filter
+                    string="From CIRCABC"
+                    name="source_circabc"
+                    domain="[('source', '=', 'circabc')]"
+                />
+                <filter
+                    string="Manual"
+                    name="source_manual"
+                    domain="[('source', '=', 'manual')]"
+                />
                 <group expand="0" string="Group By">
-                    <filter string="Country" name="group_country" context="{'group_by': 'country_code'}"/>
-                    <filter string="Source" name="group_source" context="{'group_by': 'source'}"/>
-                    <filter string="Valid From" name="group_valid_from" context="{'group_by': 'valid_from'}"/>
+                    <filter
+                        string="Country"
+                        name="group_country"
+                        context="{'group_by': 'country_code'}"
+                    />
+                    <filter
+                        string="Source"
+                        name="group_source"
+                        context="{'group_by': 'source'}"
+                    />
+                    <filter
+                        string="Valid From"
+                        name="group_valid_from"
+                        context="{'group_by': 'valid_from'}"
+                    />
                 </group>
             </search>
         </field>
@@ -85,5 +112,4 @@
             </p>
         </field>
     </record>
-
 </odoo>

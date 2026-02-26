@@ -5,16 +5,17 @@ import os
 import re
 import shutil
 from pathlib import Path
-from odoo import api, fields, models, Command
-from odoo.tools import config
-from webcolors import hex_to_rgb, rgb_to_hex
+
+from webcolors import hex_to_rgb
+
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
 # Constants
-SCSS_FILE_NAME = 'report_variable_colors.scss'
-SCSS_MODULE_PATH = ['static', 'src', 'webclient', 'actions', 'reports', SCSS_FILE_NAME]
+SCSS_FILE_NAME = "report_variable_colors.scss"
+SCSS_MODULE_PATH = ["static", "src", "webclient", "actions", "reports", SCSS_FILE_NAME]
 RGB_FORMAT = "rgb({}, {}, {})"
 SCSS_VAR_FORMAT = "${}: {};\n"
 
@@ -22,7 +23,7 @@ SCSS_VAR_FORMAT = "${}: {};\n"
 def get_odoo_home_scss_dir():
     """Връща директорията за SCSS файловете в home директорията на потребителя"""
     home_dir = Path.home()
-    scss_dir = home_dir / 'odoo_custom_scss'
+    scss_dir = home_dir / "odoo_custom_scss"
     if not scss_dir.exists():
         scss_dir.mkdir(parents=True, exist_ok=True)
         # Задай правилни permissions за папката
@@ -93,13 +94,15 @@ def _convert_hex_to_rgb(hex_color):
 
 
 class DocumentLayoutColorManager(models.TransientModel):
-    _name = 'base.document.layout.colors'
-    _description = 'Document Layout Colors Configuration'
+    _name = "base.document.layout.colors"
+    _description = "Document Layout Colors Configuration"
 
     name = fields.Char(string="Name")
-    color = fields.Char(string="Color", inverse='_inverse_color')
+    color = fields.Char(string="Color", inverse="_inverse_color")
     color_rgb = fields.Char(string="Color RGB", compute="_compute_color_rgb")
-    base_document_layout_id = fields.Many2one('base.document.layout', string="Layout", ondelete='cascade')
+    base_document_layout_id = fields.Many2one(
+        "base.document.layout", string="Layout", ondelete="cascade"
+    )
 
     def _compute_color_rgb(self):
         for record in self:
@@ -127,20 +130,24 @@ class DocumentLayoutColorManager(models.TransientModel):
         scss_file_path = get_scss_file_path(use_custom=True, company_id=company_id)
 
         try:
-            with open(scss_file_path, 'r', encoding='utf-8') as file:
+            with open(scss_file_path, encoding="utf-8") as file:
                 scss_content = file.read()
-                pattern = r'\$([a-zA-Z-]+):\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)(?:\s*!default)?\s*;'
+                pattern = r"\$([a-zA-Z-]+):\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)(?:\s*!default)?\s*;"
                 matches = re.findall(pattern, scss_content)
 
                 for var_name, r, g, b in matches:
-                    hex_color = "#{:02x}{:02x}{:02x}".format(int(r), int(g), int(b))
+                    hex_color = f"#{int(r):02x}{int(g):02x}{int(b):02x}"
                     rgb_value = RGB_FORMAT.format(r, g, b)
 
-                    res.append(Command.create({
-                        'name': var_name,
-                        'color': hex_color,
-                        'color_rgb': rgb_value
-                    }))
+                    res.append(
+                        Command.create(
+                            {
+                                "name": var_name,
+                                "color": hex_color,
+                                "color_rgb": rgb_value,
+                            }
+                        )
+                    )
                     res_dict[var_name] = SCSS_VAR_FORMAT.format(var_name, rgb_value)
 
         except FileNotFoundError:
@@ -164,22 +171,24 @@ class DocumentLayoutColorManager(models.TransientModel):
 
             company = self.base_document_layout_id.company_id or self.env.company
             scss_file_path = get_scss_file_path(use_custom=True, company_id=company.id)
-            color_records = self.load_scss_colors(force_dict=True, company_id=company.id)
+            color_records = self.load_scss_colors(
+                force_dict=True, company_id=company.id
+            )
             color_records[name] = SCSS_VAR_FORMAT.format(name, color_rgb)
 
             scss_content = "/* colors */\n" + "".join(color_records.values())
 
-            with open(scss_file_path, 'w', encoding='utf-8') as file:
+            with open(scss_file_path, "w", encoding="utf-8") as file:
                 file.write(scss_content)
 
             # Запази пътя в компанията
             if company:
                 company.custom_scss_path = scss_file_path
                 # Актуализирай динамичния асет на Odoo 18.0
-                if hasattr(company, '_update_asset_style'):
+                if hasattr(company, "_update_asset_style"):
                     company._update_asset_style()
                 # Инвалидиране на кеша на асетите за прегенериране на CSS
-                self.env.registry.clear_cache('assets')
+                self.env.registry.clear_cache("assets")
 
             _logger.info(f"Saved SCSS colors to: {scss_file_path}")
 

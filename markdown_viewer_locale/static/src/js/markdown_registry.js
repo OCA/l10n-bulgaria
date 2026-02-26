@@ -1,4 +1,3 @@
-
 /** @odoo-module **/
 
 /**
@@ -11,19 +10,27 @@ class MarkdownRegistry {
 
     /**
      * Регистрира Markdown файл
-     * @param {string} key - Уникален идентификатор
-     * @param {string} moduleName - Име на модула
-     * @param {string} fileName - Име на файла
-     * @param {string} title - Заглавие за показване
-     * @param {string} category - Категория (General, Sales, Accounting, etc.)
-     * @param {string} description - Кратко описание
+     * @param {String} key - Уникален идентификатор
+     * @param {String} moduleName - Име на модула
+     * @param {String} fileName - Име на файла
+     * @param {String} title - Заглавие за показване
+     * @param {String} category - Категория (General, Sales, Accounting, etc.)
+     * @param {String} description - Кратко описание
      * @param {Array|string|null} models - Odoo модели за които е документацията (null = всички)
      */
-    register(key, moduleName, fileName, title = 'Documentation', category = 'General', description = '', models = null) {
+    register(
+        key,
+        moduleName,
+        fileName,
+        title = "Documentation",
+        category = "General",
+        description = "",
+        models = null
+    ) {
         // Нормализираме models към Array
         let modelsList = null;
         if (models) {
-            if (typeof models === 'string') {
+            if (typeof models === "string") {
                 modelsList = [models];
             } else if (Array.isArray(models)) {
                 modelsList = models;
@@ -37,11 +44,13 @@ class MarkdownRegistry {
             title: title,
             category: category,
             description: description,
-            models: modelsList  // null = показва се за всички модели
+            models: modelsList, // Null = показва се за всички модели
         });
 
-        const modelsInfo = modelsList ? modelsList.join(', ') : 'all models';
-        console.log(`📝 Регистриран Markdown: ${key} -> ${moduleName}/${fileName} (${modelsInfo})`);
+        const modelsInfo = modelsList ? modelsList.join(", ") : "all models";
+        console.log(
+            `📝 Регистриран Markdown: ${key} -> ${moduleName}/${fileName} (${modelsInfo})`
+        );
     }
 
     /**
@@ -67,11 +76,11 @@ class MarkdownRegistry {
 
         if (!resModel) {
             // Ако няма модел, връщаме само общите документации
-            return allDocs.filter(doc => doc.models === null);
+            return allDocs.filter((doc) => doc.models === null);
         }
 
         // Филтрираме документации които са или за този модел, или общи
-        return allDocs.filter(doc => {
+        return allDocs.filter((doc) => {
             // Общи документации (models === null)
             if (doc.models === null) {
                 return true;
@@ -92,7 +101,7 @@ class MarkdownRegistry {
         const items = this.getForModel(resModel);
         const grouped = {};
 
-        items.forEach(item => {
+        items.forEach((item) => {
             if (!grouped[item.category]) {
                 grouped[item.category] = [];
             }
@@ -119,13 +128,17 @@ export const markdownRegistry = new MarkdownRegistry();
 
 // ОБЩИ ДОКУМЕНТАЦИИ (за всички модели)
 markdownRegistry.register(
-    'welcome',
-    'markdown_viewer_locale',
-    'readme.md',
-    'Welcome Guide',
-    'General',
-    'Getting started with the system',
-    null  // null = показва се навсякъде
+    "welcome",
+    "markdown_viewer_locale",
+    "readme.md",
+    "Welcome Guide",
+    "General",
+    "Getting started with the system",
+    null // Null = показва се навсякъде
 );
 
-console.log("✅ Markdown Registry инициализиран с", markdownRegistry.getAll().length, "документации");
+console.log(
+    "✅ Markdown Registry инициализиран с",
+    markdownRegistry.getAll().length,
+    "документации"
+);

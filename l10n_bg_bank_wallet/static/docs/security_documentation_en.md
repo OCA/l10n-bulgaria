@@ -2,7 +2,9 @@
 
 ## Overview
 
-The `l10n_bg_crypto_wallet` module implements a **three-layer security system** for cryptographic key management in Odoo 18. The system combines data-level cryptographic protection with multi-tier access control based on the Odoo security framework.
+The `l10n_bg_crypto_wallet` module implements a **three-layer security system** for
+cryptographic key management in Odoo 18. The system combines data-level cryptographic
+protection with multi-tier access control based on the Odoo security framework.
 
 ---
 
@@ -25,6 +27,7 @@ The `l10n_bg_crypto_wallet` module implements a **three-layer security system** 
 ## 🔒 Security Architecture
 
 ### Three-Layer Protection
+
 ```
 
 ┌─────────────────────────────────────────────────────────────┐
@@ -45,11 +48,13 @@ The `l10n_bg_crypto_wallet` module implements a **three-layer security system** 
 │  • Protected files (600 permissions)                        │
 └─────────────────────────────────────────────────────────────┘
 ```
+
 ---
 
 ## 🛡️ Security Models
 
 ### Security Groups
+
 ```
 
 group_crypto_wallet_admin
@@ -59,38 +64,43 @@ group_crypto_wallet_admin
 └── group_crypto_wallet_export
     └── group_crypto_wallet_read
 ```
-| 🔑 Group | 📋 Rights | 🔗 Inherits |
-|----------|-----------|-------------|
-| `read` | Read wallets | - |
-| `write` | Read + Write | read |
-| `generate` | Generate keys | write |
-| `export` | Export functionality | read |
-| `admin` | Full administrative rights | generate + export |
+
+| 🔑 Group   | 📋 Rights                  | 🔗 Inherits       |
+| ---------- | -------------------------- | ----------------- |
+| `read`     | Read wallets               | -                 |
+| `write`    | Read + Write               | read              |
+| `generate` | Generate keys              | write             |
+| `export`   | Export functionality       | read              |
+| `admin`    | Full administrative rights | generate + export |
 
 ### Model Access Rights
 
 | 👥 Group\Operation | 📖 Read | ✏️ Write | ➕ Create | 🗑️ Delete |
-|-------------------|---------|----------|-----------|-----------|
-| **read** | ✅ | ❌ | ❌ | ❌ |
-| **write** | ✅ | ✅ | ✅ | ❌ |
-| **generate** | ✅ | ✅ | ✅ | ❌ |
-| **export** | ✅ | ❌ | ❌ | ❌ |
-| **admin** | ✅ | ✅ | ✅ | ✅ |
+| ------------------ | ------- | -------- | --------- | --------- |
+| **read**           | ✅      | ❌       | ❌        | ❌        |
+| **write**          | ✅      | ✅       | ✅        | ❌        |
+| **generate**       | ✅      | ✅       | ✅        | ❌        |
+| **export**         | ✅      | ❌       | ❌        | ❌        |
+| **admin**          | ✅      | ✅       | ✅        | ✅        |
 
 ### Record Rules
 
 #### 🔐 User Own Records
+
 ```
 xml
 <field name="domain_force">[('user_id', '=', user.id)]</field>
 ```
+
 - Users only see their own wallets
 
 #### 👑 Admin All Access
+
 ```xml
 <field name="domain_force">[(1, '=', 1)]</field>
 ```
-```
+
+````
 
 - Administrators have access to all wallets
 
@@ -101,11 +111,12 @@ xml
     ('user_id', '=', user.id),
     ('id', 'in', [p.wallet_id.id for p in valid_permissions])
 ]</field>
-```
+````
 
 - Temporal permissions with validity checks
 
 #### 🏢 Company Isolation
+
 ```xml
 <field name="domain_force">[
     '|',
@@ -122,12 +133,12 @@ xml
 
 ### Encryption Algorithms
 
-| 🔧 Component | 📊 Algorithm | 🔢 Parameters |
-|--------------|--------------|---------------|
-| **Symmetric Encryption** | AES-256-GCM (Fernet) | 256-bit key |
-| **Key Derivation** | PBKDF2-HMAC-SHA256 | 100,000 iterations |
-| **Salt Generation** | Random | 16 bytes |
-| **Encoding** | Base64 URL-safe | - |
+| 🔧 Component             | 📊 Algorithm         | 🔢 Parameters      |
+| ------------------------ | -------------------- | ------------------ |
+| **Symmetric Encryption** | AES-256-GCM (Fernet) | 256-bit key        |
+| **Key Derivation**       | PBKDF2-HMAC-SHA256   | 100,000 iterations |
+| **Salt Generation**      | Random               | 16 bytes           |
+| **Encoding**             | Base64 URL-safe      | -                  |
 
 ### Encryption Process
 
@@ -150,7 +161,6 @@ f = Fernet(key)
 encrypted_data = f.encrypt(json.dumps(wallet_data).encode())
 ```
 
-
 ### Master Password Strategy
 
 ```
@@ -165,7 +175,6 @@ graph TD
 
     I[Failure] --> J[Emergency Wallet Creation]
 ```
-
 
 ---
 
@@ -191,7 +200,6 @@ class CryptoWalletPermission(models.Model):
     is_active = fields.Boolean('Active', default=True)
 ```
 
-
 ### Access Control Flow
 
 ```
@@ -208,7 +216,6 @@ flowchart TD
     F -->|No| H
     E -->|No| H
 ```
-
 
 ### Check Methods
 
@@ -232,7 +239,6 @@ def _check_record_access(self, operation='read'):
     return bool(self._get_user_permission(operation))
 ```
 
-
 ---
 
 ## 📁 File System and Storage
@@ -247,24 +253,23 @@ def _check_record_access(self, operation='read'):
 └── [permissions: 700 for dir, 600 for files]
 ```
 
-
 ### File Naming Convention
 
-| 🏷️ Component | 📝 Format | 💡 Example |
-|--------------|-----------|-----------|
-| **Type** | `wallet` or `key` | `wallet` |
-| **DB Short** | First 8 chars of DB UUID | `a1b2c3d4` |
-| **User ID** | 4-digit padded ID | `0001` |
-| **Wallet ID** | 4-digit padded ID | `0001` |
-| **Name** | Safe filename | `system_keys` |
-| **Extension** | `.enc` | `.enc` |
+| 🏷️ Component  | 📝 Format                | 💡 Example    |
+| ------------- | ------------------------ | ------------- |
+| **Type**      | `wallet` or `key`        | `wallet`      |
+| **DB Short**  | First 8 chars of DB UUID | `a1b2c3d4`    |
+| **User ID**   | 4-digit padded ID        | `0001`        |
+| **Wallet ID** | 4-digit padded ID        | `0001`        |
+| **Name**      | Safe filename            | `system_keys` |
+| **Extension** | `.enc`                   | `.enc`        |
 
 ### File Permissions
 
-| 📂 Type | 🔒 Rights | 📋 Description |
-|---------|-----------|---------------|
-| **Directories** | `700` (rwx------) | Owner-only access |
-| **Files** | `600` (rw-------) | Owner read/write only |
+| 📂 Type         | 🔒 Rights         | 📋 Description        |
+| --------------- | ----------------- | --------------------- |
+| **Directories** | `700` (rwx------) | Owner-only access     |
+| **Files**       | `600` (rw-------) | Owner read/write only |
 
 ---
 
@@ -272,11 +277,11 @@ def _check_record_access(self, operation='read'):
 
 ### Logging Strategy
 
-| 📈 Level | 🎯 Usage | 💡 Examples |
-|----------|----------|-------------|
-| **INFO** | Successful operations | `Wallet created`, `Permission granted` |
-| **WARNING** | Suspicious activities | `Wallet desync`, `Failed authentication` |
-| **ERROR** | Critical errors | `Encryption failure`, `Unauthorized access` |
+| 📈 Level    | 🎯 Usage              | 💡 Examples                                 |
+| ----------- | --------------------- | ------------------------------------------- |
+| **INFO**    | Successful operations | `Wallet created`, `Permission granted`      |
+| **WARNING** | Suspicious activities | `Wallet desync`, `Failed authentication`    |
+| **ERROR**   | Critical errors       | `Encryption failure`, `Unauthorized access` |
 
 ### Audit Trail
 
@@ -287,7 +292,6 @@ _logger.info(f"🔑 Granted {permission_level} permission to user {user_id}")
 _logger.warning(f"⚠️ Wallet desync for user {user_id}, reinitializing")
 _logger.error(f"❌ Failed to unlock wallet: unauthorized access attempt")
 ```
-
 
 ### Activity Tracking
 
@@ -321,7 +325,6 @@ def _is_permission_valid(self, permission):
             permission.expires_date > fields.Datetime.now())
 ```
 
-
 ### Session Security
 
 - 🔐 **Wallet keys** cached only in session context
@@ -337,17 +340,16 @@ def _is_permission_valid(self, permission):
 
 ```xml
 <record id="crypto_wallet_company_rule" model="ir.rule">
-    <field name="name">Crypto Wallet: Company Isolation</field>
-    <field name="model_id" ref="model_crypto_wallet"/>
-    <field name="domain_force">[
+  <field name="name">Crypto Wallet: Company Isolation</field>
+  <field name="model_id" ref="model_crypto_wallet" />
+  <field name="domain_force">[
         '|',
         ('user_id.company_ids', 'in', user.company_ids.ids),
         ('user_id.company_id', '=', user.company_id.id)
     ]</field>
-    <field name="groups" eval="[(4, ref('base.group_multi_company'))]"/>
+  <field name="groups" eval="[(4, ref('base.group_multi_company'))]" />
 </record>
 ```
-
 
 ### Features
 
@@ -362,12 +364,12 @@ def _is_permission_valid(self, permission):
 
 ### Exception Management
 
-| 🚨 Error Type | 🛠️ Handling | 📋 Action |
-|---------------|-------------|-----------|
-| **InvalidToken** | Cryptographic error | `UserError('Wrong password')` |
-| **AccessError** | Access rights | `AccessError('No permission')` |
-| **IOError** | File system | Fallback + logging |
-| **DatabaseError** | Database | Transaction rollback |
+| 🚨 Error Type     | 🛠️ Handling         | 📋 Action                      |
+| ----------------- | ------------------- | ------------------------------ |
+| **InvalidToken**  | Cryptographic error | `UserError('Wrong password')`  |
+| **AccessError**   | Access rights       | `AccessError('No permission')` |
+| **IOError**       | File system         | Fallback + logging             |
+| **DatabaseError** | Database            | Transaction rollback           |
 
 ### Recovery Mechanisms
 
@@ -390,7 +392,6 @@ def _create_emergency_wallet(self, new_password_hash):
         return False
 ```
 
-
 ---
 
 ## 🚀 Performance and Scalability
@@ -408,7 +409,6 @@ def _derive_key(self, password_hash, salt):
     pass
 ```
 
-
 ### Database Optimization
 
 ```sql
@@ -419,7 +419,6 @@ CREATE INDEX idx_permission_user_wallet ON crypto_wallet_permission(user_id, wal
 CREATE INDEX idx_permission_active ON crypto_wallet_permission(is_active, expires_date);
 CREATE INDEX idx_permission_level ON crypto_wallet_permission(permission_level);
 ```
-
 
 ### Scalability Considerations
 
@@ -455,7 +454,6 @@ tar -czf "${BACKUP_DIR}/crypto_wallets_$(date +%Y%m%d_%H%M%S).tar.gz" \
     -C "${FILESTORE_PATH}" .
 ```
 
-
 ### 👨‍💻 For Developers
 
 #### ✅ Coding Best Practices
@@ -482,7 +480,6 @@ def bad_crypto_operation(self):
     plaintext_key = "sensitive_data"  # Don't store plaintext!
     # No error handling!
 ```
-
 
 #### 🔒 Security Guidelines
 
@@ -511,18 +508,21 @@ def bad_crypto_operation(self):
 ### 🔄 Periodic Security Reviews
 
 #### 📅 Monthly
+
 - [ ] Review user permissions
 - [ ] Analyze audit logs
 - [ ] Check for orphaned files
 - [ ] Test backup/restore procedures
 
 #### 📅 Quarterly
+
 - [ ] Security penetration testing
 - [ ] Review access patterns
 - [ ] Update security policies
 - [ ] User training sessions
 
 #### 📅 Annually
+
 - [ ] Crypto algorithm review
 - [ ] Infrastructure security audit
 - [ ] Disaster recovery testing
@@ -534,19 +534,20 @@ def bad_crypto_operation(self):
 
 ### 🎯 Key Performance Indicators
 
-| 📈 Metric | 🎯 Target | 📋 Measurement |
-|-----------|-----------|----------------|
-| **Password Strength** | >80% strong | Periodic analysis |
-| **Permission Reviews** | Monthly | Automated reports |
-| **Failed Access Attempts** | <1% | Log monitoring |
-| **Recovery Time** | <15 min | Disaster recovery tests |
-| **Backup Success Rate** | 100% | Automated monitoring |
+| 📈 Metric                  | 🎯 Target   | 📋 Measurement          |
+| -------------------------- | ----------- | ----------------------- |
+| **Password Strength**      | >80% strong | Periodic analysis       |
+| **Permission Reviews**     | Monthly     | Automated reports       |
+| **Failed Access Attempts** | <1%         | Log monitoring          |
+| **Recovery Time**          | <15 min     | Disaster recovery tests |
+| **Backup Success Rate**    | 100%        | Automated monitoring    |
 
 ---
 
 ## 🎯 Conclusion
 
-The `l10n_bg_crypto_wallet` module implements a **robust security system** that combines:
+The `l10n_bg_crypto_wallet` module implements a **robust security system** that
+combines:
 
 ### 🔒 Key Strengths
 
@@ -559,11 +560,14 @@ The `l10n_bg_crypto_wallet` module implements a **robust security system** that 
 
 ### 🛡️ Defense-in-Depth Approach
 
-The system provides a **defense-in-depth** approach where compromising one layer does not lead to complete security loss. Each component is designed to work independently and provide fallback options on failure.
+The system provides a **defense-in-depth** approach where compromising one layer does
+not lead to complete security loss. Each component is designed to work independently and
+provide fallback options on failure.
 
 ### 🏆 Security Score: **A+**
 
 **High security level** with:
+
 - 🔐 Military-grade encryption
 - 👥 Granular access control
 - 📊 Comprehensive monitoring
@@ -577,11 +581,10 @@ The system provides a **defense-in-depth** approach where compromising one layer
 For security-related questions or vulnerability reporting:
 
 - 📧 **Email**: security@yourcompany.com
-- 🎫 **Issue Tracker**: [GitHub Issues](https://github.com/yourorg/l10n-bg-crypto-wallet/issues)
+- 🎫 **Issue Tracker**:
+  [GitHub Issues](https://github.com/yourorg/l10n-bg-crypto-wallet/issues)
 - 📖 **Documentation**: [Wiki](https://github.com/yourorg/l10n-bg-crypto-wallet/wiki)
 
 ---
 
-*Last updated: 2025-08-01*
-*Documentation version: 1.0*
-*Module version: 18.0.1.0.0*
+_Last updated: 2025-08-01_ _Documentation version: 1.0_ _Module version: 18.0.1.0.0_

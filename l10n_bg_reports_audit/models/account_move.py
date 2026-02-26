@@ -1,6 +1,6 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import fields, models, tools
+from odoo import fields, models
 
 from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
     get_delivery_type,
@@ -49,13 +49,13 @@ class AccountMove(models.Model):
 
     # Related полета за обратна съвместимост
     l10n_bg_doc_type = fields.Selection(
-        related='l10n_bg_document_type',
+        related="l10n_bg_document_type",
         string="VAT type document",
         store=True,
         readonly=False,
     )
     l10n_bg_delivery_type = fields.Selection(
-        related='l10n_bg_exemption_reason',
+        related="l10n_bg_exemption_reason",
         string="VAT type delivery",
         store=True,
         readonly=False,
@@ -75,7 +75,7 @@ class AccountMove(models.Model):
         return get_doc_type()
 
     def write(self, vals):
-        track_tag = 'l10n_bg_tax_tag_id' in vals
+        track_tag = "l10n_bg_tax_tag_id" in vals
         old_tags = {}
         if track_tag:
             for move in self:

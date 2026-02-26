@@ -4,18 +4,17 @@ import re
 
 from odoo import _, api, models
 from odoo.exceptions import UserError
+
 from .bank_custom_tags import (
-    BankTransactionParser,
     ProCreditCustomerReference,
-    UniCreditCustomerReference,
     UBBCustomerReference,
+    UniCreditCustomerReference,
 )
 
 _logger = logging.getLogger(__name__)
 
 try:
     import mt940
-    from mt940 import tags
 except ImportError:
     _logger.debug("mt-940 not found.")
     mt940 = None
@@ -57,11 +56,15 @@ class AccountStatementImport(models.TransientModel):
         if account_identification and "UBBS" in account_identification.upper():
             return "ubb"
         # ProCredit has BIC starting with BUIN or PRCB
-        if account_identification and ("BUIN" in account_identification.upper() or "PRCB" in account_identification.upper()):
+        if account_identification and (
+            "BUIN" in account_identification.upper()
+            or "PRCB" in account_identification.upper()
+        ):
             return "procredit"
         # Unicredit Bulbank has BIC starting with UNCR
         if account_identification and "UNCR" in account_identification.upper():
-            return "procredit"  # Uses same format as ProCredit (+ separator, fields 21/30/31/32)
+            # Uses same format as ProCredit (+ separator, fields 21/30/31/32)
+            return "procredit"
         # Default to ProCredit format for backward compatibility
         return "procredit"
 
@@ -98,12 +101,7 @@ class AccountStatementImport(models.TransientModel):
                 # Parse the detail using the appropriate bank parser
                 parser = self._get_bank_parser(bank_format, detail_row_22)
                 parsed_data = parser.get_data()
-                res.update(
-                    {
-                        "22": detail_row_22,
-                        "bank_customer_data": parsed_data
-                    }
-                )
+                res.update({"22": detail_row_22, "bank_customer_data": parsed_data})
             elif detail.startswith("30"):
                 res.update({"30": detail.replace("30", "", 1)})
             elif detail.startswith("31"):
@@ -121,26 +119,27 @@ class AccountStatementImport(models.TransientModel):
         """Parse UBB (ОББ) bank format (uses // and / as separators).
 
         Format: Business_Code//Description//Data/Data/IBAN//Reference/Bank////Date//
-        Example: 245//PLASHTANE DANAK// TEST POLUCHATEL/ STSABGSF/ BG00STSA00000000000000//171030065/ BANKA DSK////20240201/ /
+        Example: 245//PLASHTANE DANAK// TEST POLUCHATEL/ STSABGSF/
+        BG00STSA00000000000000//171030065/ BANKA DSK////20240201/ /
         """
         res = {}
         _logger.info(f"UBB Detail: {transaction_details}")
 
         # Extract business code (1-4 digits at the beginning)
-        business_code_match = re.match(r'^(\d{1,4})', transaction_details.strip())
+        business_code_match = re.match(r"^(\d{1,4})", transaction_details.strip())
         if business_code_match:
             res["business_code"] = business_code_match.group(1)
-            transaction_details = transaction_details[len(res["business_code"]):]
+            transaction_details = transaction_details[len(res["business_code"]) :]
 
         # Split by // for major sections
         parts = transaction_details.split("//")
 
         # Extract data from parts
         description_parts = []
-        iban_pattern = re.compile(r'BG\d{2}[A-Z]{4}\d{14}')
-        bic_pattern = re.compile(r'[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?')
+        iban_pattern = re.compile(r"BG\d{2}[A-Z]{4}\d{14}")
+        bic_pattern = re.compile(r"[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?")
 
-        for i, part in enumerate(parts):
+        for _i, part in enumerate(parts):
             if not part.strip():
                 continue
 
@@ -187,7 +186,9 @@ class AccountStatementImport(models.TransientModel):
             return self._get_detail_data_procredit(transaction_details, bank_format)
 
     @api.model
-    def _prepare_mt940_transaction_line(self, transaction, bank_format="procredit", transaction_index=0):
+    def _prepare_mt940_transaction_line(
+        self, transaction, bank_format="procredit", transaction_index=0
+    ):
         detail_data = {}
         transaction_details = transaction["transaction_details"]
         detail_data = self._get_detail_data(transaction_details, bank_format)
@@ -197,7 +198,8 @@ class AccountStatementImport(models.TransientModel):
         payment_ref = transaction.get("customer_reference", "")
 
         if bank_format == "ubb":
-            # UBB format: IBAN in field 38, partner name in field 32, payment ref in field 20
+            # UBB format: IBAN in field 38, partner name in field 32,
+            # payment ref in field 20
             account_number = detail_data.get("38", "")
             partner_name = detail_data.get("32", "")
             payment_ref = detail_data.get("20", payment_ref)
@@ -214,8 +216,8 @@ class AccountStatementImport(models.TransientModel):
             # Use generic bank_customer_data from parser (works for all banks)
             if detail_data.get("bank_customer_data"):
                 bank_data = detail_data.get("bank_customer_data")
-                partner_name = bank_data.get('ПОЛУЧАТЕЛ:', partner_name)
-                account_number = bank_data.get('СМЕТКА:', account_number)
+                partner_name = bank_data.get("ПОЛУЧАТЕЛ:", partner_name)
+                account_number = bank_data.get("СМЕТКА:", account_number)
 
             payment_ref = detail_data.get("21", payment_ref)
 
@@ -223,11 +225,11 @@ class AccountStatementImport(models.TransientModel):
         if not payment_ref:
             # Try fallback options in order of preference
             payment_ref = (
-                detail_data.get("20", "") or  # Field 20 (additional description)
-                detail_data.get("00", "") or  # Field 00 (main description)
-                transaction.get("id", "") or  # Transaction ID (NFIT, NFOB, etc.)
-                transaction.get("customer_reference", "") or  # Customer reference
-                "/"  # Last resort - empty reference marker
+                detail_data.get("20", "")  # Field 20 (additional description)
+                or detail_data.get("00", "")  # Field 00 (main description)
+                or transaction.get("id", "")  # Transaction ID (NFIT, NFOB, etc.)
+                or transaction.get("customer_reference", "")  # Customer reference
+                or "/"  # Last resort - empty reference marker
             )
 
         # Generate unique_import_id with multiple fallbacks to avoid duplicates
@@ -241,11 +243,13 @@ class AccountStatementImport(models.TransientModel):
 
         # Create a hash from transaction details to ensure uniqueness
         transaction_details = transaction.get("transaction_details", "")
-        details_hash = hashlib.md5(transaction_details.encode('utf-8')).hexdigest()[:8]
+        details_hash = hashlib.md5(transaction_details.encode("utf-8")).hexdigest()[:8]
 
         # Build unique ID: date-amount-transid-index-hash-customerref
         # Include transaction_index to handle identical transactions on same day
-        unique_import_id = f"{date_str}-{amount_str}-{trans_id}-{transaction_index}-{details_hash}"
+        unique_import_id = (
+            f"{date_str}-{amount_str}-{trans_id}-{transaction_index}-{details_hash}"
+        )
         if customer_ref:
             unique_import_id += f"-{customer_ref}"
 
@@ -273,15 +277,23 @@ class AccountStatementImport(models.TransientModel):
             mt940_transactions_data = mt940_transactions.data
 
             # Detect bank format based on account identification
-            account_identification = mt940_transactions_data.get("account_identification", "")
+            account_identification = mt940_transactions_data.get(
+                "account_identification", ""
+            )
             bank_format = self._detect_bank_format(account_identification)
-            _logger.info(f"Detected bank format: {bank_format} for account: {account_identification}")
+            _logger.info(
+                "Detected bank format: %s for account: %s",
+                bank_format,
+                account_identification,
+            )
 
             for transaction_index, account in enumerate(mt940_transactions):
                 if not account:
                     continue
 
-                vals = self._prepare_mt940_transaction_line(account.data, bank_format, transaction_index)
+                vals = self._prepare_mt940_transaction_line(
+                    account.data, bank_format, transaction_index
+                )
                 if vals:
                     transactions.append(vals)
                     total_amt += vals["amount"]

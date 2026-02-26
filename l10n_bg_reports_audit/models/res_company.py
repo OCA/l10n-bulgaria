@@ -1,8 +1,7 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
-import base64
 import json
 
-from odoo import Command, _, api, fields, models
+from odoo import Command, api, fields, models
 
 L10N_BG_INTRASTAT = [
     ("standard", "Standard base on levelling up"),
@@ -28,7 +27,8 @@ class ResCompany(models.Model):
     )
 
     l10n_bg_intra_stat_type = fields.Selection(
-        L10N_BG_INTRASTAT, string="Level of registration",
+        L10N_BG_INTRASTAT,
+        string="Level of registration",
         compute="_compute_l10n_bg_intrastat_fields",
         inverse="_inverse_l10n_bg_intrastat_fields",
         store=True,
@@ -51,7 +51,7 @@ class ResCompany(models.Model):
         string="VAT Ratio (Art. 73)",
         default=0.0,
         help="Annual VAT ratio coefficient according to Art. 73, Para. 2 of VAT Act. "
-             "This is automatically updated from the current fiscal year's annual VAT ratio history.",
+        "This is automatically updated from the current fiscal year's annual VAT ratio history.",
     )
 
     l10n_bg_vat_ratio_history_id = fields.Many2one(
@@ -86,14 +86,20 @@ class ResCompany(models.Model):
     def _inverse_l10n_bg_tax_contact_id(self):
         for record in self:
             if record.l10n_bg_tax_contact_id:
-                if record.l10n_bg_tax_contact_id.type not in ["represent", "agent", "tax"]:
+                if record.l10n_bg_tax_contact_id.type not in [
+                    "represent",
+                    "agent",
+                    "tax",
+                ]:
                     record.l10n_bg_tax_contact_id.type = "represent"
                 record.partner_id.child_ids = [
                     Command.link(record.l10n_bg_tax_contact_id.id)
                 ]
             else:
                 record.l10n_bg_tax_contact_id = False
-                record.partner_id.child_ids.filtered(lambda r: r.id == record.id).type = "contact"
+                record.partner_id.child_ids.filtered(
+                    lambda r: r.id == record.id
+                ).type = "contact"
 
     def _compute_l10n_bg_vat_ratio_history_id(self):
         """Find the annual VAT ratio for the current year."""
@@ -102,12 +108,15 @@ class ResCompany(models.Model):
             current_year = fields.Date.context_today(record).year
 
             # Find annual VAT ratio history for the current year
-            ratio_history = record.env['l10n.bg.vat.ratio.history'].search([
-                ('company_id', '=', record.id),
-                ('year', '=', current_year),
-                ('month', '=', False),  # Annual only
-                ('active', '=', True),
-            ], limit=1)
+            ratio_history = record.env["l10n.bg.vat.ratio.history"].search(
+                [
+                    ("company_id", "=", record.id),
+                    ("year", "=", current_year),
+                    ("month", "=", False),  # Annual only
+                    ("active", "=", True),
+                ],
+                limit=1,
+            )
 
             record.l10n_bg_vat_ratio_history_id = ratio_history
 
@@ -132,15 +141,19 @@ class ResCompany(models.Model):
             today = fields.Date.context_today(record)
 
             # Find the most recent monthly threshold
-            threshold = record.env['l10n.bg.intrastat.threshold'].search([
-                ('company_id', '=', record.id),
-                ('month', '!=', False),  # Only monthly records
-                ('active', '=', True),
-                ('date_from', '<=', today),
-                '|',
-                ('date_to', '=', False),
-                ('date_to', '>=', today),
-            ], order='year desc, month desc', limit=1)
+            threshold = record.env["l10n.bg.intrastat.threshold"].search(
+                [
+                    ("company_id", "=", record.id),
+                    ("month", "!=", False),  # Only monthly records
+                    ("active", "=", True),
+                    ("date_from", "<=", today),
+                    "|",
+                    ("date_to", "=", False),
+                    ("date_to", ">=", today),
+                ],
+                order="year desc, month desc",
+                limit=1,
+            )
 
             record.l10n_bg_intrastat_threshold_id = threshold
 
@@ -160,12 +173,12 @@ class ResCompany(models.Model):
             if threshold:
                 # Determine a registration type based on thresholds
                 has_extended = (
-                    threshold.threshold_arrivals_extended > 0 or
-                    threshold.threshold_dispatches_extended > 0
+                    threshold.threshold_arrivals_extended > 0
+                    or threshold.threshold_dispatches_extended > 0
                 )
                 has_standard = (
-                    threshold.threshold_arrivals_standard > 0 or
-                    threshold.threshold_dispatches_standard > 0
+                    threshold.threshold_arrivals_standard > 0
+                    or threshold.threshold_dispatches_standard > 0
                 )
 
                 if has_extended:
@@ -177,12 +190,12 @@ class ResCompany(models.Model):
 
                 # Set obligations based on threshold values
                 record.l10n_bg_intra_stat_incomes = (
-                    threshold.threshold_dispatches_standard > 0 or
-                    threshold.threshold_dispatches_extended > 0
+                    threshold.threshold_dispatches_standard > 0
+                    or threshold.threshold_dispatches_extended > 0
                 )
                 record.l10n_bg_intra_stat_outcomes = (
-                    threshold.threshold_arrivals_standard > 0 or
-                    threshold.threshold_arrivals_extended > 0
+                    threshold.threshold_arrivals_standard > 0
+                    or threshold.threshold_arrivals_extended > 0
                 )
             else:
                 record.l10n_bg_intra_stat_type = False
@@ -196,11 +209,15 @@ class ResCompany(models.Model):
         pass
 
     def _process_l10n_bg_report_audit_config_file(self):
-        file_content_json = self.l10n_bg_config_template and json.loads(self.l10n_bg_config_template) or {}
-        for key, value in file_content_json.get('account.account.tag', {}).items():
+        file_content_json = (
+            self.l10n_bg_config_template
+            and json.loads(self.l10n_bg_config_template)
+            or {}
+        )
+        for key, value in file_content_json.get("account.account.tag", {}).items():
             for tag_key, tags in value.items():
-                tag_id = self.env['account.account.tag'].search([('name', 'in', list(map(str, tags)))])
+                tag_id = self.env["account.account.tag"].search(
+                    [("name", "in", list(map(str, tags)))]
+                )
                 if tag_id:
-                    tag_id.write({
-                        key: tag_key
-                    })
+                    tag_id.write({key: tag_key})

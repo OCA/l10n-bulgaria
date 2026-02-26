@@ -25,4 +25,6 @@ def migrate(cr, version):
                    """)
         _logger.info(f"Updated {cr.rowcount} records")
     else:
-        _logger.info("Column l10n_bg_document_number does not exist yet, skipping migration")
+        _logger.info(
+            "Column l10n_bg_document_number does not exist yet, skipping migration"
+        )

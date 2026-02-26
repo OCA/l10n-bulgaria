@@ -3,7 +3,8 @@
 import logging
 import math
 from datetime import timedelta
-from odoo import api, fields, models, _
+
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ VAT_RATIO_BOX_FIELDS = {
 
 class L10nBgVatRatioHistory(models.Model):
     _name = "l10n.bg.vat.ratio.history"
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = "Bulgarian VAT Ratio History (Art. 73, Para. 5)"
     _order = "company_id, year desc, month desc"
     _rec_name = "display_name"
@@ -87,7 +88,7 @@ class L10nBgVatRatioHistory(models.Model):
         digits=(5, 2),
         default=0.0,
         help="VAT ratio coefficient according to Art. 73, Para. 2 of VAT Act (in percentage). "
-             "Rounded to second decimal place.",
+        "Rounded to second decimal place.",
         tracking=True,
     )
 
@@ -109,7 +110,7 @@ class L10nBgVatRatioHistory(models.Model):
         currency_field="currency_id",
         default=0.0,
         help="Tax base of supplies with place of performance outside Bulgaria, "
-             "equated to taxable (Art. 73, Para. 3, Item 3)",
+        "equated to taxable (Art. 73, Para. 3, Item 3)",
     )
     numerator_box_15 = fields.Monetary(
         string="Box 15 - Payments for Box 14",
@@ -222,7 +223,9 @@ class L10nBgVatRatioHistory(models.Model):
     @api.depends("company_id")
     def _compute_currency_id(self):
         for record in self:
-            record.currency_id = record.company_id.currency_id or self.env.ref("base.BGN", raise_if_not_found=False)
+            record.currency_id = record.company_id.currency_id or self.env.ref(
+                "base.BGN", raise_if_not_found=False
+            )
 
     @api.depends("month")
     def _compute_period_type(self):
@@ -231,7 +234,7 @@ class L10nBgVatRatioHistory(models.Model):
 
     @api.depends("year", "month")
     def _compute_dates(self):
-        from datetime import date, timedelta
+        from datetime import date
 
         for record in self:
             if not record.year:
@@ -265,21 +268,25 @@ class L10nBgVatRatioHistory(models.Model):
     def _compute_numerator_denominator(self):
         for record in self:
             # Calculate numerator (Art. 73, Para. 3)
-            record.numerator_total = sum([
-                record.numerator_box_11,
-                record.numerator_box_13,
-                record.numerator_box_14,
-                record.numerator_box_15,
-                record.numerator_box_16,
-            ])
+            record.numerator_total = sum(
+                [
+                    record.numerator_box_11,
+                    record.numerator_box_13,
+                    record.numerator_box_14,
+                    record.numerator_box_15,
+                    record.numerator_box_16,
+                ]
+            )
 
             # Calculate denominator (Art. 73, Para. 4)
-            record.denominator_total = record.numerator_total + sum([
-                record.denominator_box_17,
-                record.denominator_box_18,
-                record.denominator_box_19,
-                record.denominator_box_42,
-            ])
+            record.denominator_total = record.numerator_total + sum(
+                [
+                    record.denominator_box_17,
+                    record.denominator_box_18,
+                    record.denominator_box_19,
+                    record.denominator_box_42,
+                ]
+            )
 
             # Calculate ratio
             if record.denominator_total > 0:
@@ -296,7 +303,9 @@ class L10nBgVatRatioHistory(models.Model):
                 month_name = dict(self._fields["month"].selection)[record.month]
                 record.display_name = f"[{company_name}] {month_name} {record.year} - {record.vat_ratio:.2f}%"
             else:
-                record.display_name = f"[{company_name}] {record.year} (Annual) - {record.vat_ratio:.2f}%"
+                record.display_name = (
+                    f"[{company_name}] {record.year} (Annual) - {record.vat_ratio:.2f}%"
+                )
 
     @staticmethod
     def _round_vat_ratio(ratio):
@@ -310,11 +319,15 @@ class L10nBgVatRatioHistory(models.Model):
     def _check_ratio_calculation(self):
         for record in self:
             if not record.is_manual and record.denominator_total > 0:
-                computed_ratio = (record.numerator_total / record.denominator_total) * 100
+                computed_ratio = (
+                    record.numerator_total / record.denominator_total
+                ) * 100
                 computed_ratio_rounded = self._round_vat_ratio(computed_ratio)
                 if abs(computed_ratio_rounded - record.vat_ratio) > 0.01:
                     raise ValidationError(
-                        _("The VAT ratio (%.2f%%) does not match the calculated ratio (%.2f%%).")
+                        _(
+                            "The VAT ratio (%.2f%%) does not match the calculated ratio (%.2f%%)."
+                        )
                         % (record.vat_ratio, computed_ratio_rounded)
                     )
 
@@ -362,12 +375,15 @@ class L10nBgVatRatioHistory(models.Model):
 
     def _build_vat_boxes_query(self, company_id, tax_period, year):
         """Build SQL query to fetch VAT box data."""
-        calc_declar_query = self.env['account.bg.vat.calc.declar']._table_query
+        calc_declar_query = self.env["account.bg.vat.calc.declar"]._table_query
 
-        box_fields = ", ".join([
-            f"COALESCE(SUM(account_tag_{box}), 0.0) AS box_{box}"
-            for box in VAT_RATIO_BOX_FIELDS["numerator"] + VAT_RATIO_BOX_FIELDS["denominator"]
-        ])
+        box_fields = ", ".join(
+            [
+                f"COALESCE(SUM(account_tag_{box}), 0.0) AS box_{box}"
+                for box in VAT_RATIO_BOX_FIELDS["numerator"]
+                + VAT_RATIO_BOX_FIELDS["denominator"]
+            ]
+        )
 
         if tax_period:
             # Monthly calculation
@@ -393,7 +409,9 @@ class L10nBgVatRatioHistory(models.Model):
     @staticmethod
     def _extract_boxes_from_result(result):
         """Extract and validate box values from query result."""
-        all_boxes = VAT_RATIO_BOX_FIELDS["numerator"] + VAT_RATIO_BOX_FIELDS["denominator"]
+        all_boxes = (
+            VAT_RATIO_BOX_FIELDS["numerator"] + VAT_RATIO_BOX_FIELDS["denominator"]
+        )
         boxes = {box: 0.0 for box in all_boxes}
         has_data = False
 
@@ -414,13 +432,15 @@ class L10nBgVatRatioHistory(models.Model):
         ]
 
         if month:
-            domain.extend([
-                "|",
-                ("year", "<", year),
-                "&",
-                ("year", "=", year),
-                ("month", "<", str(month)),
-            ])
+            domain.extend(
+                [
+                    "|",
+                    ("year", "<", year),
+                    "&",
+                    ("year", "=", year),
+                    ("month", "<", str(month)),
+                ]
+            )
         else:
             domain.append(("year", "<", year))
 
@@ -430,7 +450,9 @@ class L10nBgVatRatioHistory(models.Model):
             _logger.info(
                 f"Found last known coefficient: {last_ratio.display_name} = {last_ratio.vat_ratio}%"
             )
-            return self._build_ratio_result_from_record(last_ratio, tax_period, year, is_copied=True)
+            return self._build_ratio_result_from_record(
+                last_ratio, tax_period, year, is_copied=True
+            )
 
         _logger.warning(
             f"No previous coefficient found for company {company.name}. Manual entry required."
@@ -487,15 +509,18 @@ class L10nBgVatRatioHistory(models.Model):
             "is_manual": True,
             "is_computed": False,
             "is_provisional": bool(month),
-            "notes": _("No VAT declaration data found for period %s. Manual entry required.") % (
-                tax_period or year
-            ),
+            "notes": _(
+                "No VAT declaration data found for period %s. Manual entry required."
+            )
+            % (tax_period or year),
         }
 
     def _calculate_ratio_from_boxes(self, boxes):
         """Calculate VAT ratio from box values."""
         numerator_total = sum(boxes[box] for box in VAT_RATIO_BOX_FIELDS["numerator"])
-        denominator_total = numerator_total + sum(boxes[box] for box in VAT_RATIO_BOX_FIELDS["denominator"])
+        denominator_total = numerator_total + sum(
+            boxes[box] for box in VAT_RATIO_BOX_FIELDS["denominator"]
+        )
 
         vat_ratio = 0.0
         if denominator_total > 0:
@@ -509,8 +534,14 @@ class L10nBgVatRatioHistory(models.Model):
 
         return {
             "vat_ratio": vat_ratio,
-            **{f"numerator_box_{box}": boxes[box] for box in VAT_RATIO_BOX_FIELDS["numerator"]},
-            **{f"denominator_box_{box}": boxes[box] for box in VAT_RATIO_BOX_FIELDS["denominator"]},
+            **{
+                f"numerator_box_{box}": boxes[box]
+                for box in VAT_RATIO_BOX_FIELDS["numerator"]
+            },
+            **{
+                f"denominator_box_{box}": boxes[box]
+                for box in VAT_RATIO_BOX_FIELDS["denominator"]
+            },
             "numerator_total": numerator_total,
             "denominator_total": denominator_total,
         }
@@ -546,12 +577,14 @@ class L10nBgVatRatioHistory(models.Model):
 
         # Calculate a ratio from boxes
         ratio_result = self._calculate_ratio_from_boxes(boxes)
-        ratio_result.update({
-            "is_manual": False,
-            "is_computed": True,
-            "is_provisional": bool(month),
-            "notes": "",
-        })
+        ratio_result.update(
+            {
+                "is_manual": False,
+                "is_computed": True,
+                "is_provisional": bool(month),
+                "notes": "",
+            }
+        )
 
         return ratio_result
 

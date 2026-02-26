@@ -10,7 +10,7 @@
                     <field name="l10n_bg_uic" readonly="0" />
                     <field name="l10n_bg_uic_type" readonly="0" />
                     <field name="l10n_bg_represent_contact_id" />
-                    <field name="l10n_bg_departament_code"/>
+                    <field name="l10n_bg_departament_code" />
                 </group>
             </xpath>
         </field>

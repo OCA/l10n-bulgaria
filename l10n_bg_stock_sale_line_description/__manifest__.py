@@ -6,11 +6,9 @@
     "summary": "Show sale order line description on pickings and delivery slips",
     "version": "18.0.1.0.0",
     "license": "AGPL-3",
-    "author": "Rosen Vladimirov",
-    "depends": [
-        "stock",
-        "sale_stock",
-    ],
+    "author": "Rosen Vladimirov,Odoo Community Association (OCA)",
+    "website": "https://github.com/OCA/l10n-bulgaria",
+    "depends": ["stock", "sale_stock"],
     "data": [
         "security/res_groups.xml",
         "views/stock_picking_views.xml",
@@ -20,4 +18,6 @@
     "tags": ["stock", "sale", "reports"],
     "odoo_version": "18.0",
     "python_version": ">=3.11",
+    "images": ["static/description/banner.png"],
+    "maintainers": ["rosenvladimirov"],
 }

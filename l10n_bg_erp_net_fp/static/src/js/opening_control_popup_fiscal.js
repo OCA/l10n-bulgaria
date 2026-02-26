@@ -1,10 +1,10 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
-import { patch } from "@web/core/utils/patch";
-import { parseFloat } from "@web/views/fields/parsers";
-import { OpeningControlPopup } from "@point_of_sale/app/store/opening_control_popup/opening_control_popup";
-import { ErpNetFPPrinter } from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
+import {_t} from "@web/core/l10n/translation";
+import {patch} from "@web/core/utils/patch";
+import {parseFloat} from "@web/views/fields/parsers";
+import {OpeningControlPopup} from "@point_of_sale/app/store/opening_control_popup/opening_control_popup";
+import {ErpNetFPPrinter} from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
 
 // Запазваме оригиналния confirm на popup-а
 const superConfirm = OpeningControlPopup.prototype.confirm;
@@ -22,7 +22,9 @@ patch(OpeningControlPopup.prototype, {
         const notification = this.env.services.notification;
 
         if (!amount) {
-            console.log("[FiscalOpeningControl] ⚠️ No opening cash amount, proceeding normally...");
+            console.log(
+                "[FiscalOpeningControl] ⚠️ No opening cash amount, proceeding normally..."
+            );
             // 🔧 ВАЖНО: използваме superConfirm, а НЕ this._super
             if (typeof superConfirm === "function") {
                 return await superConfirm.apply(this, args);
@@ -37,7 +39,9 @@ patch(OpeningControlPopup.prototype, {
         console.log("[FiscalOpeningControl] Fiscal printer ID:", fiscalPrinterId);
 
         if (fiscalPrinterHost && fiscalPrinterId) {
-            console.log("[FiscalOpeningControl] 🚀 Fiscal printer configured, sending opening deposit...");
+            console.log(
+                "[FiscalOpeningControl] 🚀 Fiscal printer configured, sending opening deposit..."
+            );
 
             try {
                 const fiscalPrinter = new ErpNetFPPrinter(this.env, {
@@ -55,7 +59,10 @@ patch(OpeningControlPopup.prototype, {
                 console.log("[FiscalOpeningControl] Fiscal printer result:", result);
 
                 if (!result.successful) {
-                    console.error("[FiscalOpeningControl] ❌ Fiscal opening deposit FAILED:", result);
+                    console.error(
+                        "[FiscalOpeningControl] ❌ Fiscal opening deposit FAILED:",
+                        result
+                    );
 
                     notification.add(
                         _t(
@@ -65,7 +72,7 @@ patch(OpeningControlPopup.prototype, {
                             _t(
                                 "\n\nОперацията НЕ МОЖЕ да бъде завършена без фискален принтер!"
                             ),
-                        { type: "danger", sticky: true }
+                        {type: "danger", sticky: true}
                     );
 
                     console.log(
@@ -88,7 +95,7 @@ patch(OpeningControlPopup.prototype, {
                         _t(
                             "\n\nОперацията НЕ МОЖЕ да бъде завършена без фискален принтер!"
                         ),
-                    { type: "danger", sticky: true }
+                    {type: "danger", sticky: true}
                 );
 
                 console.log(

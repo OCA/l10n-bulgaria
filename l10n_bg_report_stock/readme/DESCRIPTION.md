@@ -1,7 +1,6 @@
-[ This file must be max 2-3 paragraphs, and is required.
+This module adds Bulgarian stock documents to Odoo pickings, including an
+Accepted Delivery Report and a Handover Protocol, built on the Bulgarian report
+theme.
 
-The goal of this document is to explain quickly the features of this module: “what” this module does and “what” it is for. ]
-
-Example:
-
-This module extends the functionality of ... to support ... and to allow users to ...
+It also extends delivery slip lines to optionally show the sale line description
+for better compliance and clarity in customer-facing documents.

@@ -14,7 +14,7 @@
                     id="account_bg_vat_entry"
                     invisible="not is_l10n_bg_record"
                 >
-                    <field name="l10n_bg_deal_date"/>
+                    <field name="l10n_bg_deal_date" />
                 </group>
             </xpath>
         </field>
@@ -24,11 +24,8 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="l10n_bg_ledger.l10n_bg_move_view_form" />
         <field name="arch" type="xml">
-            <xpath
-                expr="//group[@name='l10n_bg_documents']"
-                position="inside"
-            >
-                <field name="l10n_bg_deal_date"/>
+            <xpath expr="//group[@name='l10n_bg_documents']" position="inside">
+                <field name="l10n_bg_deal_date" />
             </xpath>
         </field>
     </record>

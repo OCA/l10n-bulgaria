@@ -1,4 +1,3 @@
-
 def migrate(cr, version):
     """Мигрира данните от старите полета към стандартните l10n_bg_ledger полета"""
     if not version:
@@ -14,7 +13,7 @@ def migrate(cr, version):
     existing_columns = [row[0] for row in cr.fetchall()]
 
     # Копиране на l10n_bg_doc_type → l10n_bg_document_type
-    if 'l10n_bg_doc_type' in existing_columns:
+    if "l10n_bg_doc_type" in existing_columns:
         cr.execute("""
             UPDATE account_move
             SET l10n_bg_document_type = l10n_bg_doc_type
@@ -23,7 +22,7 @@ def migrate(cr, version):
         """)
 
     # Копиране на l10n_bg_delivery_type → l10n_bg_exemption_reason
-    if 'l10n_bg_delivery_type' in existing_columns:
+    if "l10n_bg_delivery_type" in existing_columns:
         cr.execute("""
             UPDATE account_move
             SET l10n_bg_exemption_reason = l10n_bg_delivery_type

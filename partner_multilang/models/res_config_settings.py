@@ -10,5 +10,5 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.transliterate_names",
         readonly=False,
         string="Transliterate names",
-        help="Enable automatic transliteration of partner and company names."
+        help="Enable automatic transliteration of partner and company names.",
     )

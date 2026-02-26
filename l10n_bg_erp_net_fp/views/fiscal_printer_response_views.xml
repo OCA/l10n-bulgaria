@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- List View (в Odoo 18 вече не е 'tree', а 'list') -->
     <record id="view_fiscal_printer_response_list" model="ir.ui.view">
@@ -6,11 +6,11 @@
         <field name="model">fiscal.printer.response</field>
         <field name="arch" type="xml">
             <list string="Printer Responses" create="false" edit="false">
-                <field name="create_date"/>
-                <field name="request_id"/>
-                <field name="printer_id"/>
-                <field name="success"/>
-                <field name="error_message"/>
+                <field name="create_date" />
+                <field name="request_id" />
+                <field name="printer_id" />
+                <field name="success" />
+                <field name="error_message" />
             </list>
         </field>
     </record>
@@ -24,17 +24,17 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="request_id"/>
-                            <field name="printer_id"/>
-                            <field name="success"/>
-                            <field name="create_date"/>
+                            <field name="request_id" />
+                            <field name="printer_id" />
+                            <field name="success" />
+                            <field name="create_date" />
                         </group>
                         <group>
-                            <field name="error_message" invisible="not success"/>
+                            <field name="error_message" invisible="not success" />
                         </group>
                     </group>
                     <group string="Response Data" invisible="not success">
-                        <field name="response_data" widget="text"/>
+                        <field name="response_data" widget="text" />
                     </group>
                 </sheet>
             </form>
@@ -57,5 +57,4 @@
             </p>
         </field>
     </record>
-
 </odoo>

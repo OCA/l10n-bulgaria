@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { _t } from "@web/core/l10n/translation";
+import {_t} from "@web/core/l10n/translation";
 
 /**
  * ErpNet.FP Fiscal Printer - Самостоятелен клас
@@ -90,15 +90,21 @@ export class ErpNetFPPrinter {
         console.log("[ErpNetFPPrinter] ✅ Valid order received");
 
         // Взимаме pos config от order ако е налично
-        const posConfig = order.pos?.config || order.config || { name: "POS" };
+        const posConfig = order.pos?.config || order.config || {name: "POS"};
 
         // Подготвяме данните за фискален бон
         const receiptData = this._prepareFiscalReceiptData(order, posConfig);
 
         console.log("[ErpNetFPPrinter] 📋 Receipt data prepared:");
-        console.log("[ErpNetFPPrinter]    Unique sale number:", receiptData.uniqueSaleNumber);
+        console.log(
+            "[ErpNetFPPrinter]    Unique sale number:",
+            receiptData.uniqueSaleNumber
+        );
         console.log("[ErpNetFPPrinter]    Items count:", receiptData.items.length);
-        console.log("[ErpNetFPPrinter]    Payments count:", receiptData.payments.length);
+        console.log(
+            "[ErpNetFPPrinter]    Payments count:",
+            receiptData.payments.length
+        );
 
         try {
             // Изпращаме към fiscal printer
@@ -107,8 +113,14 @@ export class ErpNetFPPrinter {
             if (result && result.ok) {
                 console.log("[ErpNetFPPrinter] ✅ Fiscal print SUCCESS!");
                 console.log("[ErpNetFPPrinter]    Receipt #:", result.receiptNumber);
-                console.log("[ErpNetFPPrinter]    Receipt DateTime:", result.receiptDateTime);
-                console.log("[ErpNetFPPrinter]    Fiscal Memory #:", result.fiscalMemorySerialNumber);
+                console.log(
+                    "[ErpNetFPPrinter]    Receipt DateTime:",
+                    result.receiptDateTime
+                );
+                console.log(
+                    "[ErpNetFPPrinter]    Fiscal Memory #:",
+                    result.fiscalMemorySerialNumber
+                );
 
                 // Актуализираме order с фискалните данни
                 if (order) {
@@ -119,30 +131,40 @@ export class ErpNetFPPrinter {
                     if (result.receiptDateTime) {
                         // Заменяме 'T' с интервал и премахваме всичко след секундите
                         const dateTimeStr = result.receiptDateTime
-                            .replace('T', ' ')     // 2019-05-17T13:55:18 -> 2019-05-17 13:55:18
-                            .replace('Z', '')      // Премахваме Z ако има
-                            .split('.')[0];        // Премахваме милисекунди ако има
+                            .replace("T", " ") // 2019-05-17T13:55:18 -> 2019-05-17 13:55:18
+                            .replace("Z", "") // Премахваме Z ако има
+                            .split(".")[0]; // Премахваме милисекунди ако има
 
                         order.l10n_bg_fiscal_receipt_datetime = dateTimeStr;
                     } else {
                         // Fallback към текущо време в Odoo формат
                         const now = new Date();
                         const year = now.getFullYear();
-                        const month = String(now.getMonth() + 1).padStart(2, '0');
-                        const day = String(now.getDate()).padStart(2, '0');
-                        const hours = String(now.getHours()).padStart(2, '0');
-                        const minutes = String(now.getMinutes()).padStart(2, '0');
-                        const seconds = String(now.getSeconds()).padStart(2, '0');
+                        const month = String(now.getMonth() + 1).padStart(2, "0");
+                        const day = String(now.getDate()).padStart(2, "0");
+                        const hours = String(now.getHours()).padStart(2, "0");
+                        const minutes = String(now.getMinutes()).padStart(2, "0");
+                        const seconds = String(now.getSeconds()).padStart(2, "0");
 
                         order.l10n_bg_fiscal_receipt_datetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
                     }
-                    order.l10n_bg_fiscal_memory_number = result.fiscalMemorySerialNumber;
+                    order.l10n_bg_fiscal_memory_number =
+                        result.fiscalMemorySerialNumber;
                     order.l10n_bg_is_fiscalized = true;
 
                     console.log("[ErpNetFPPrinter] ✅ Order updated with fiscal data");
-                    console.log("[ErpNetFPPrinter]    order.l10n_bg_fiscal_receipt_number:", order.l10n_bg_fiscal_receipt_number);
-                    console.log("[ErpNetFPPrinter]    order.l10n_bg_fiscal_receipt_datetime:", order.l10n_bg_fiscal_receipt_datetime);
-                    console.log("[ErpNetFPPrinter]    order.l10n_bg_fiscal_memory_number:", order.l10n_bg_fiscal_memory_number);
+                    console.log(
+                        "[ErpNetFPPrinter]    order.l10n_bg_fiscal_receipt_number:",
+                        order.l10n_bg_fiscal_receipt_number
+                    );
+                    console.log(
+                        "[ErpNetFPPrinter]    order.l10n_bg_fiscal_receipt_datetime:",
+                        order.l10n_bg_fiscal_receipt_datetime
+                    );
+                    console.log(
+                        "[ErpNetFPPrinter]    order.l10n_bg_fiscal_memory_number:",
+                        order.l10n_bg_fiscal_memory_number
+                    );
                 }
 
                 return {
@@ -153,9 +175,8 @@ export class ErpNetFPPrinter {
                         fiscalMemorySerialNumber: result.fiscalMemorySerialNumber,
                     },
                 };
-            } else {
-                throw new Error(result?.error || _t("Принтерът върна грешка"));
             }
+            throw new Error(result?.error || _t("Принтерът върна грешка"));
         } catch (error) {
             console.error("[ErpNetFPPrinter] ❌ Printing error:", error);
             return {
@@ -183,7 +204,7 @@ export class ErpNetFPPrinter {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
             });
 
@@ -198,7 +219,6 @@ export class ErpNetFPPrinter {
             return false;
         }
     }
-
 
     /**
      * Подготвя данните за фискален бон
@@ -231,10 +251,11 @@ export class ErpNetFPPrinter {
             }
 
             const item = {
-                text: line.get_full_product_name?.() ||
-                      line.full_product_name ||
-                      line.product?.display_name ||
-                      _t("Product"),
+                text:
+                    line.get_full_product_name?.() ||
+                    line.full_product_name ||
+                    line.product?.display_name ||
+                    _t("Product"),
                 quantity: quantity,
                 unitPrice: unitPrice,
                 taxGroup: this._getTaxGroup(line, order),
@@ -245,7 +266,9 @@ export class ErpNetFPPrinter {
             if (discount && discount > 0) {
                 item.priceModifierType = "discount-percent";
                 item.priceModifierValue = discount;
-                item.unitPrice = line.getUnitDisplayPriceBeforeDiscount?.() || (item.unitPrice / (1 - discount / 100));
+                item.unitPrice =
+                    line.getUnitDisplayPriceBeforeDiscount?.() ||
+                    item.unitPrice / (1 - discount / 100);
             }
             items.push(item);
         }
@@ -268,7 +291,12 @@ export class ErpNetFPPrinter {
             }
 
             const paymentType = this._getPaymentType(payment);
-            console.log("[ErpNetFPPrinter] Payment:", payment, "Amount:", paymentAmount);
+            console.log(
+                "[ErpNetFPPrinter] Payment:",
+                payment,
+                "Amount:",
+                paymentAmount
+            );
 
             if (paymentAmount === 0) continue;
             all_payments += paymentAmount;
@@ -280,10 +308,15 @@ export class ErpNetFPPrinter {
         }
 
         // Добавяме рестото ако има (само за нормални бонове, не за сторно)
-        if (!isReversal && all_payments > 0 && amount_return > 0 && all_payments - amount_return !== 0) {
+        if (
+            !isReversal &&
+            all_payments > 0 &&
+            amount_return > 0 &&
+            all_payments - amount_return !== 0
+        ) {
             payments.push({
                 amount: parseFloat(((all_payments - amount_return) * -1).toFixed(2)),
-                paymentType: 'change',
+                paymentType: "change",
             });
         }
 
@@ -336,7 +369,7 @@ export class ErpNetFPPrinter {
         let letters = "";
         let digits = "";
 
-        for (let char of printerIdUpper) {
+        for (const char of printerIdUpper) {
             if (/[A-Z]/.test(char) && letters.length < 2) {
                 letters += char;
             } else if (/[0-9]/.test(char) && digits.length < 6) {
@@ -352,7 +385,7 @@ export class ErpNetFPPrinter {
 
         // Част 2: 4 буквено-цифрени символа - POS config ID като 4-символен код
         const posId = posConfig?.id || posConfig?.session_id || 1;
-        const posPart = String(posId).padStart(4, '0').slice(-4);
+        const posPart = String(posId).padStart(4, "0").slice(-4);
 
         // Част 3: 7 цифри - order sequence number
         // Опитваме се да извлечем числа от order.name
@@ -362,18 +395,22 @@ export class ErpNetFPPrinter {
             const matches = order.name.match(/\d+/g);
             if (matches && matches.length > 0) {
                 // Вземаме всички числа и ги комбинираме
-                orderNumber = matches.join('');
+                orderNumber = matches.join("");
             }
         }
 
         // Вземаме последните 7 цифри или допълваме с нули
-        const orderSeq = orderNumber.padStart(7, '0').slice(-7);
+        const orderSeq = orderNumber.padStart(7, "0").slice(-7);
 
         // Комбинираме всички части
         const uniqueSaleNumber = `${printerPart}-${posPart}-${orderSeq}`;
 
         console.log("[ErpNetFPPrinter] Generated uniqueSaleNumber:", uniqueSaleNumber);
-        console.log("[ErpNetFPPrinter]    Printer ID part:", printerPart, `(from ${this.printerId})`);
+        console.log(
+            "[ErpNetFPPrinter]    Printer ID part:",
+            printerPart,
+            `(from ${this.printerId})`
+        );
         console.log("[ErpNetFPPrinter]    POS/Session part:", posPart);
         console.log("[ErpNetFPPrinter]    Order seq:", orderSeq);
 
@@ -410,16 +447,16 @@ export class ErpNetFPPrinter {
             }
 
             if (taxGroup && taxGroup.l10n_bg_fiscal_tax_group !== undefined) {
-                const groupMap = { А: 0, Б: 2, В: 2, Г: 3 };
+                const groupMap = {А: 0, Б: 2, В: 2, Г: 3};
                 return groupMap[taxGroup.l10n_bg_fiscal_tax_group] || 0;
             }
         }
 
         // Fallback към ръчно определяне по процент
         const rate = tax.amount || 0;
-        if (Math.abs(rate - 20) < 0.001) return 2;  // 20% ДДС
-        if (Math.abs(rate - 9) < 0.001) return 3;   // 9% ДДС
-        if (Math.abs(rate - 0) < 0.001) return 1;   // 0% ДДС
+        if (Math.abs(rate - 20) < 0.001) return 2; // 20% ДДС
+        if (Math.abs(rate - 9) < 0.001) return 3; // 9% ДДС
+        if (Math.abs(rate - 0) < 0.001) return 1; // 0% ДДС
 
         return 0;
     }
@@ -428,7 +465,11 @@ export class ErpNetFPPrinter {
      * Определя типа на плащането
      */
     _getPaymentType(payment) {
-        const methodName = (payment.payment_method?.name || payment.name || "").toLowerCase();
+        const methodName = (
+            payment.payment_method?.name ||
+            payment.name ||
+            ""
+        ).toLowerCase();
 
         if (
             methodName.includes("cash") ||
@@ -457,14 +498,18 @@ export class ErpNetFPPrinter {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/json",
+                Accept: "application/json",
             },
             body: JSON.stringify(data),
         });
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error("[ErpNetFPPrinter] ❌ HTTP error:", response.status, errorText);
+            console.error(
+                "[ErpNetFPPrinter] ❌ HTTP error:",
+                response.status,
+                errorText
+            );
             throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
@@ -550,7 +595,9 @@ export class ErpNetFPPrinter {
                 successful: false,
                 message: {
                     title: _t("Липсва оригинална поръчка"),
-                    body: _t("Не може да се намери оригиналната поръчка за сторниране."),
+                    body: _t(
+                        "Не може да се намери оригиналната поръчка за сторниране."
+                    ),
                 },
             };
         }
@@ -566,10 +613,22 @@ export class ErpNetFPPrinter {
         };
 
         console.log("[ErpNetFPPrinter] 📋 Original fiscal data:");
-        console.log("[ErpNetFPPrinter]    Receipt #:", originalFiscalData.receiptNumber);
-        console.log("[ErpNetFPPrinter]    Receipt DateTime:", originalFiscalData.receiptDateTime);
-        console.log("[ErpNetFPPrinter]    Fiscal Memory #:", originalFiscalData.fiscalMemorySerialNumber);
-        console.log("[ErpNetFPPrinter]    Unique Sale #:", originalFiscalData.uniqueSaleNumber);
+        console.log(
+            "[ErpNetFPPrinter]    Receipt #:",
+            originalFiscalData.receiptNumber
+        );
+        console.log(
+            "[ErpNetFPPrinter]    Receipt DateTime:",
+            originalFiscalData.receiptDateTime
+        );
+        console.log(
+            "[ErpNetFPPrinter]    Fiscal Memory #:",
+            originalFiscalData.fiscalMemorySerialNumber
+        );
+        console.log(
+            "[ErpNetFPPrinter]    Unique Sale #:",
+            originalFiscalData.uniqueSaleNumber
+        );
 
         // Валидация
         if (!originalFiscalData.receiptNumber) {
@@ -577,46 +636,71 @@ export class ErpNetFPPrinter {
                 successful: false,
                 message: {
                     title: _t("Липсва фискален номер"),
-                    body: _t("Оригиналната поръчка няма фискален номер. Не може да се направи сторно."),
+                    body: _t(
+                        "Оригиналната поръчка няма фискален номер. Не може да се направи сторно."
+                    ),
                 },
             };
         }
 
         // Ако няма uniqueSaleNumber, опитваме се да го реконструираме
         if (!originalFiscalData.uniqueSaleNumber) {
-            console.warn("[ErpNetFPPrinter] ⚠️ uniqueSaleNumber not found in original order, reconstructing...");
-            const posConfig = originalOrder.pos?.config || originalOrder.config || { name: "POS" };
-            originalFiscalData.uniqueSaleNumber = this._formatUniqueSaleNumber(originalOrder, posConfig);
+            console.warn(
+                "[ErpNetFPPrinter] ⚠️ uniqueSaleNumber not found in original order, reconstructing..."
+            );
+            const posConfig = originalOrder.pos?.config ||
+                originalOrder.config || {name: "POS"};
+            originalFiscalData.uniqueSaleNumber = this._formatUniqueSaleNumber(
+                originalOrder,
+                posConfig
+            );
         }
 
         // Конвертираме receiptDateTime към ErpNet.FP формат ако е в Odoo формат
-        if (originalFiscalData.receiptDateTime && originalFiscalData.receiptDateTime.includes(' ')) {
+        if (
+            originalFiscalData.receiptDateTime &&
+            originalFiscalData.receiptDateTime.includes(" ")
+        ) {
             // От "2019-05-17 13:55:18" към "2019-05-17T13:55:18"
-            originalFiscalData.receiptDateTime = originalFiscalData.receiptDateTime.replace(' ', 'T');
+            originalFiscalData.receiptDateTime =
+                originalFiscalData.receiptDateTime.replace(" ", "T");
         }
 
         // ════════════════════════════════════════════════════════════
         // ПОДГОТВЯМЕ СТОРНО ДАННИТЕ С ПОЛОЖИТЕЛНИ СТОЙНОСТИ
         // ════════════════════════════════════════════════════════════
-        const posConfig = refundOrder.pos?.config || refundOrder.config || { name: "POS" };
+        const posConfig = refundOrder.pos?.config ||
+            refundOrder.config || {name: "POS"};
 
         // ВАЖНО: Подаваме isReversal: true за да конвертира към положителни стойности
-        const receiptData = this._prepareFiscalReceiptData(refundOrder, posConfig, { isReversal: true });
+        const receiptData = this._prepareFiscalReceiptData(refundOrder, posConfig, {
+            isReversal: true,
+        });
 
         // Добавяме данните от оригиналния бон
         receiptData.receiptNumber = originalFiscalData.receiptNumber;
         receiptData.receiptDateTime = originalFiscalData.receiptDateTime;
-        receiptData.fiscalMemorySerialNumber = originalFiscalData.fiscalMemorySerialNumber;
+        receiptData.fiscalMemorySerialNumber =
+            originalFiscalData.fiscalMemorySerialNumber;
         receiptData.reason = reason;
 
         // ВАЖНО: uniqueSaleNumber трябва да е същият като оригиналния!
         receiptData.uniqueSaleNumber = originalFiscalData.uniqueSaleNumber;
 
         console.log("[ErpNetFPPrinter] 📤 Reversal receipt data:");
-        console.log("[ErpNetFPPrinter]    uniqueSaleNumber:", receiptData.uniqueSaleNumber);
+        console.log(
+            "[ErpNetFPPrinter]    uniqueSaleNumber:",
+            receiptData.uniqueSaleNumber
+        );
         console.log("[ErpNetFPPrinter]    receiptNumber:", receiptData.receiptNumber);
-        console.log("[ErpNetFPPrinter]    receiptDateTime:", receiptData.receiptDateTime);
-        console.log("[ErpNetFPPrinter]    fiscalMemorySerialNumber:", receiptData.fiscalMemorySerialNumber);
+        console.log(
+            "[ErpNetFPPrinter]    receiptDateTime:",
+            receiptData.receiptDateTime
+        );
+        console.log(
+            "[ErpNetFPPrinter]    fiscalMemorySerialNumber:",
+            receiptData.fiscalMemorySerialNumber
+        );
         console.log("[ErpNetFPPrinter]    reason:", receiptData.reason);
         console.log("[ErpNetFPPrinter]    items:", receiptData.items);
         console.log("[ErpNetFPPrinter]    payments:", receiptData.payments);
@@ -628,20 +712,27 @@ export class ErpNetFPPrinter {
             const url = `${this.baseUrl}/printers/${encodeURIComponent(this.printerId)}/reversalreceipt`;
 
             console.log("[ErpNetFPPrinter] 🌐 POST reversal to:", url);
-            console.log("[ErpNetFPPrinter] 📤 Body:", JSON.stringify(receiptData, null, 2));
+            console.log(
+                "[ErpNetFPPrinter] 📤 Body:",
+                JSON.stringify(receiptData, null, 2)
+            );
 
             const response = await this._fetchWithTimeout(url, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
                 body: JSON.stringify(receiptData),
             });
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error("[ErpNetFPPrinter] ❌ HTTP error:", response.status, errorText);
+                console.error(
+                    "[ErpNetFPPrinter] ❌ HTTP error:",
+                    response.status,
+                    errorText
+                );
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
 
@@ -650,7 +741,10 @@ export class ErpNetFPPrinter {
 
             if (result.ok) {
                 console.log("[ErpNetFPPrinter] ✅ Reversal print SUCCESS!");
-                console.log("[ErpNetFPPrinter]    Reversal Receipt #:", result.receiptNumber);
+                console.log(
+                    "[ErpNetFPPrinter]    Reversal Receipt #:",
+                    result.receiptNumber
+                );
 
                 // Актуализираме refund order с данните от сторно бона
                 if (refundOrder) {
@@ -658,17 +752,20 @@ export class ErpNetFPPrinter {
 
                     if (result.receiptDateTime) {
                         const dateTimeStr = result.receiptDateTime
-                            .replace('T', ' ')
-                            .replace('Z', '')
-                            .split('.')[0];
+                            .replace("T", " ")
+                            .replace("Z", "")
+                            .split(".")[0];
                         refundOrder.l10n_bg_fiscal_receipt_datetime = dateTimeStr;
                     }
 
-                    refundOrder.l10n_bg_fiscal_memory_number = result.fiscalMemorySerialNumber;
+                    refundOrder.l10n_bg_fiscal_memory_number =
+                        result.fiscalMemorySerialNumber;
                     refundOrder.l10n_bg_is_fiscalized = true;
-                    refundOrder.l10n_bg_is_reversal = true;  // Маркираме като сторно
+                    refundOrder.l10n_bg_is_reversal = true; // Маркираме като сторно
 
-                    console.log("[ErpNetFPPrinter] ✅ Reversal order updated with fiscal data");
+                    console.log(
+                        "[ErpNetFPPrinter] ✅ Reversal order updated with fiscal data"
+                    );
                 }
 
                 return {
@@ -679,9 +776,8 @@ export class ErpNetFPPrinter {
                         fiscalMemorySerialNumber: result.fiscalMemorySerialNumber,
                     },
                 };
-            } else {
-                throw new Error(this._extractErrorMessages(result));
             }
+            throw new Error(this._extractErrorMessages(result));
         } catch (error) {
             console.error("[ErpNetFPPrinter] ❌ Reversal error:", error);
             return {
@@ -716,7 +812,7 @@ export class ErpNetFPPrinter {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
                 body: JSON.stringify({
                     operator: operator,
@@ -732,10 +828,9 @@ export class ErpNetFPPrinter {
 
             if (result.ok) {
                 console.log("[ErpNetFPPrinter] ✅ X Report SUCCESS!");
-                return { successful: true };
-            } else {
-                throw new Error(this._extractErrorMessages(result));
+                return {successful: true};
             }
+            throw new Error(this._extractErrorMessages(result));
         } catch (error) {
             console.error("[ErpNetFPPrinter] ❌ X Report error:", error);
             return {
@@ -770,7 +865,7 @@ export class ErpNetFPPrinter {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
                 body: JSON.stringify({
                     operator: operator,
@@ -786,10 +881,9 @@ export class ErpNetFPPrinter {
 
             if (result.ok) {
                 console.log("[ErpNetFPPrinter] ✅ Z Report SUCCESS!");
-                return { successful: true };
-            } else {
-                throw new Error(this._extractErrorMessages(result));
+                return {successful: true};
             }
+            throw new Error(this._extractErrorMessages(result));
         } catch (error) {
             console.error("[ErpNetFPPrinter] ❌ Z Report error:", error);
             return {
@@ -823,7 +917,7 @@ export class ErpNetFPPrinter {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
                 body: JSON.stringify({
                     amount: amount,
@@ -839,10 +933,9 @@ export class ErpNetFPPrinter {
 
             if (result.ok) {
                 console.log("[ErpNetFPPrinter] ✅ Deposit SUCCESS!");
-                return { successful: true };
-            } else {
-                throw new Error(this._extractErrorMessages(result));
+                return {successful: true};
             }
+            throw new Error(this._extractErrorMessages(result));
         } catch (error) {
             console.error("[ErpNetFPPrinter] ❌ Deposit error:", error);
             return {
@@ -876,7 +969,7 @@ export class ErpNetFPPrinter {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
                 body: JSON.stringify({
                     amount: amount,
@@ -892,10 +985,9 @@ export class ErpNetFPPrinter {
 
             if (result.ok) {
                 console.log("[ErpNetFPPrinter] ✅ Withdraw SUCCESS!");
-                return { successful: true };
-            } else {
-                throw new Error(this._extractErrorMessages(result));
+                return {successful: true};
             }
+            throw new Error(this._extractErrorMessages(result));
         } catch (error) {
             console.error("[ErpNetFPPrinter] ❌ Withdraw error:", error);
             return {
@@ -915,18 +1007,22 @@ export class ErpNetFPPrinter {
      */
     async getStatus() {
         if (!this.baseUrl || !this.printerId) {
-            return { successful: false, online: false };
+            return {successful: false, online: false};
         }
 
         try {
             const url = `${this.baseUrl}/printers/${encodeURIComponent(this.printerId)}/status`;
 
-            const response = await this._fetchWithTimeout(url, {
-                method: "GET",
-                headers: {
-                    "Accept": "application/json",
+            const response = await this._fetchWithTimeout(
+                url,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                    },
                 },
-            }, 5000); // По-кратък timeout за status check
+                5000
+            ); // По-кратък timeout за status check
 
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
@@ -956,7 +1052,7 @@ export class ErpNetFPPrinter {
      */
     async getPrinterInfo() {
         if (!this.baseUrl || !this.printerId) {
-            return { successful: false };
+            return {successful: false};
         }
 
         try {
@@ -965,7 +1061,7 @@ export class ErpNetFPPrinter {
             const response = await this._fetchWithTimeout(url, {
                 method: "GET",
                 headers: {
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
             });
 
@@ -995,7 +1091,7 @@ export class ErpNetFPPrinter {
      */
     async getCurrentCash() {
         if (!this.baseUrl || !this.printerId) {
-            return { successful: false };
+            return {successful: false};
         }
 
         try {
@@ -1004,7 +1100,7 @@ export class ErpNetFPPrinter {
             const response = await this._fetchWithTimeout(url, {
                 method: "GET",
                 headers: {
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
             });
 
@@ -1019,9 +1115,8 @@ export class ErpNetFPPrinter {
                     successful: true,
                     amount: result.amount,
                 };
-            } else {
-                throw new Error(this._extractErrorMessages(result));
             }
+            throw new Error(this._extractErrorMessages(result));
         } catch (error) {
             console.error("[ErpNetFPPrinter] Get cash error:", error);
             return {
@@ -1050,7 +1145,7 @@ export class ErpNetFPPrinter {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
             });
 
@@ -1062,10 +1157,9 @@ export class ErpNetFPPrinter {
 
             if (result.ok) {
                 console.log("[ErpNetFPPrinter] ✅ Duplicate print SUCCESS!");
-                return { successful: true };
-            } else {
-                throw new Error(this._extractErrorMessages(result));
+                return {successful: true};
             }
+            throw new Error(this._extractErrorMessages(result));
         } catch (error) {
             console.error("[ErpNetFPPrinter] ❌ Duplicate print error:", error);
             return {

@@ -1,9 +1,9 @@
 {
-    'name': 'Bulgaria - HR Holidays',
-    'version': '18.0.1.0.4',
-    'category': 'Human Resources/Time Off',
-    'summary': 'Bulgarian localization for HR Holidays',
-    'description': """
+    "name": "Bulgaria - HR Holidays",
+    "version": "18.0.1.0.4",
+    "category": "Human Resources/Time Off",
+    "summary": "Bulgarian localization for HR Holidays",
+    "description": """
 Bulgarian Leave Types for Odoo
 ===============================
 
@@ -61,32 +61,31 @@ Full documentation available in the module's data folder:
 * quick_reference_bg.md - Quick reference guide
 * README.md - Installation and usage guide
     """,
-    'author': 'Rosen Vladimirov',
-    'website': 'https://github.com/rosenvladimirov/l10n-bulgaria',
-    'license': 'LGPL-3',
-    'depends': [
-        'hr_contract',
-        'hr_holidays',
-        'l10n_bg',
+    "author": "Rosen Vladimirov",
+    "website": "https://github.com/OCA/l10n-bulgaria",
+    "license": "LGPL-3",
+    "depends": [
+        "hr_contract",
+        "hr_holidays",
+        "l10n_bg",
     ],
-    'data': [
-        'data/nssi.leave.reason.csv',
-        'data/hr_holidays_data.xml',
-        'security/ir.model.access.csv',
-        'views/hr_leave_views.xml',
-        'views/hr_leave_type_views.xml',
-        'views/l10n_bg_nssi_leave_reason.xml',
+    "data": [
+        "data/nssi.leave.reason.csv",
+        "data/hr_holidays_data.xml",
+        "security/ir.model.access.csv",
+        "views/hr_leave_views.xml",
+        "views/hr_leave_type_views.xml",
+        "views/l10n_bg_nssi_leave_reason.xml",
     ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-    'maintainers': ['rosenvladimirov'],
-    'contributors': ['Rosen Vladimirov'],
-    'support': 'https://github.com/rosenvladimirov/l10n-bulgaria/issues',
-    'countries': ['BG'],
-    'images': [
-        'static/description/banner.png',
+    "demo": [],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
+    "maintainers": ["rosenvladimirov"],
+    "contributors": ["Rosen Vladimirov"],
+    "support": "https://github.com/OCA/l10n-bulgaria/issues",
+    "countries": ["BG"],
+    "images": [
+        "static/description/banner.png",
     ],
 }

@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- Дървовиден изглед -->
     <record id="view_nssi_leave_reason_tree" model="ir.ui.view">
         <field name="name">nssi.leave.reason.tree</field>
         <field name="model">nssi.leave.reason</field>
         <field name="arch" type="xml">
             <list string="NSSI Leave Reasons" default_order="code">
-                <field name="code" width="80"/>
-                <field name="name"/>
+                <field name="code" width="80" />
+                <field name="name" />
             </list>
         </field>
     </record>
@@ -21,8 +20,8 @@
             <form string="NSSI Leave Reason">
                 <sheet>
                     <group>
-                        <field name="code"/>
-                        <field name="name"/>
+                        <field name="code" />
+                        <field name="name" />
                     </group>
                 </sheet>
             </form>
@@ -41,5 +40,4 @@
             <p>Official list used in Appendix №9 to NSSI.</p>
         </field>
     </record>
-
 </odoo>

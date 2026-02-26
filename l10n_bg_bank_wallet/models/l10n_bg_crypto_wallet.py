@@ -1,43 +1,43 @@
+import base64
+import json
 import logging
 import os
-import json
-import base64
 import uuid
-
 from datetime import datetime
 from pathlib import Path
+
 from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.backends import default_backend
 
-from odoo import models, fields, api, tools
-from odoo.exceptions import UserError, AccessError
+from odoo import api, fields, models, tools
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
 # Constants extracted to improve maintainability
 CRYPTO_CONFIG = {
-    'SALT_SIZE': 16,
-    'KEY_LENGTH': 32,
-    'ITERATIONS': 100000,
-    'MAX_KEY_SIZE_BYTES': 65536,  # 64KB
-    'FILE_PERMISSIONS': 0o600,
-    'DIRECTORY_PERMISSIONS': 0o700,
-    'WALLET_VERSION': '1.1',
-    'KEY_GENERATION_PARAMS': {
-        'rsa': {'key_size': 2048, 'public_exponent': 65537},
-        'ec': {'curve': 'SECP256R1'}
-    }
+    "SALT_SIZE": 16,
+    "KEY_LENGTH": 32,
+    "ITERATIONS": 100000,
+    "MAX_KEY_SIZE_BYTES": 65536,  # 64KB
+    "FILE_PERMISSIONS": 0o600,
+    "DIRECTORY_PERMISSIONS": 0o700,
+    "WALLET_VERSION": "1.1",
+    "KEY_GENERATION_PARAMS": {
+        "rsa": {"key_size": 2048, "public_exponent": 65537},
+        "ec": {"curve": "SECP256R1"},
+    },
 }
 
 # Updated permission levels with correct group references
 PERMISSION_LEVELS = {
-    'read': 'l10n_bg_bank_wallet.group_crypto_wallet_read',
-    'write': 'l10n_bg_bank_wallet.group_crypto_wallet_write',
-    'admin': 'l10n_bg_bank_wallet.group_crypto_wallet_admin',
-    'generate': 'l10n_bg_bank_wallet.group_crypto_wallet_generate',
-    'export': 'l10n_bg_bank_wallet.group_crypto_wallet_export'
+    "read": "l10n_bg_bank_wallet.group_crypto_wallet_read",
+    "write": "l10n_bg_bank_wallet.group_crypto_wallet_write",
+    "admin": "l10n_bg_bank_wallet.group_crypto_wallet_admin",
+    "generate": "l10n_bg_bank_wallet.group_crypto_wallet_generate",
+    "export": "l10n_bg_bank_wallet.group_crypto_wallet_export",
 }
 
 
@@ -47,17 +47,17 @@ class CryptographyManager:
     @staticmethod
     def generate_salt():
         """Generate cryptographic salt"""
-        return os.urandom(CRYPTO_CONFIG['SALT_SIZE'])
+        return os.urandom(CRYPTO_CONFIG["SALT_SIZE"])
 
     @staticmethod
     def derive_key(password: str, salt: bytes):
         """Derive an encryption key from password and salt"""
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
-            length=CRYPTO_CONFIG['KEY_LENGTH'],
+            length=CRYPTO_CONFIG["KEY_LENGTH"],
             salt=salt,
-            iterations=CRYPTO_CONFIG['ITERATIONS'],
-            backend=default_backend()
+            iterations=CRYPTO_CONFIG["ITERATIONS"],
+            backend=default_backend(),
         )
         return base64.urlsafe_b64encode(kdf.derive(password.encode()))
 
@@ -77,13 +77,13 @@ class CryptographyManager:
     def create_wallet_envelope(cls, wallet_data: dict) -> dict:
         """Create initial wallet data structure"""
         return {
-            'version': CRYPTO_CONFIG['WALLET_VERSION'],
-            'keys': wallet_data.get('keys', {}),
-            'metadata': {
-                'created': fields.Datetime.now().isoformat(),
-                'key_count': len(wallet_data.get('keys', {})),
-                'last_modified': fields.Datetime.now().isoformat()
-            }
+            "version": CRYPTO_CONFIG["WALLET_VERSION"],
+            "keys": wallet_data.get("keys", {}),
+            "metadata": {
+                "created": fields.Datetime.now().isoformat(),
+                "key_count": len(wallet_data.get("keys", {})),
+                "last_modified": fields.Datetime.now().isoformat(),
+            },
         }
 
 
@@ -97,9 +97,11 @@ class FileSystemManager:
         """Get and create a wallet storage directory"""
         db_name = self.env.cr.dbname
         filestore_path = tools.config.filestore(db_name)
-        wallet_dir = Path(filestore_path) / 'crypto_wallets'
+        wallet_dir = Path(filestore_path) / "crypto_wallets"
 
-        wallet_dir.mkdir(mode=CRYPTO_CONFIG['DIRECTORY_PERMISSIONS'], parents=True, exist_ok=True)
+        wallet_dir.mkdir(
+            mode=CRYPTO_CONFIG["DIRECTORY_PERMISSIONS"], parents=True, exist_ok=True
+        )
         return wallet_dir
 
     def generate_wallet_filename(self, wallet_record, key_name=None):
@@ -107,10 +109,10 @@ class FileSystemManager:
         wallet_dir = self.get_wallet_directory()
 
         # Get or create database UUID
-        db_uid = self.env['ir.config_parameter'].sudo().get_param('database.uuid')
+        db_uid = self.env["ir.config_parameter"].sudo().get_param("database.uuid")
         if not db_uid:
             db_uid = str(uuid.uuid4())
-            self.env['ir.config_parameter'].sudo().set_param('database.uuid', db_uid)
+            self.env["ir.config_parameter"].sudo().set_param("database.uuid", db_uid)
 
         # Create abbreviated identifiers
         db_short = db_uid[:8]
@@ -118,24 +120,28 @@ class FileSystemManager:
         wallet_short = str(wallet_record.id).zfill(4)
 
         if key_name:
-            safe_key_name = "".join(c for c in key_name if c.isalnum() or c in '-_').lower()
+            safe_key_name = "".join(
+                c for c in key_name if c.isalnum() or c in "-_"
+            ).lower()
             filename = f"key_{db_short}_{user_short}_{wallet_short}_{safe_key_name}.enc"
         else:
-            safe_wallet_name = wallet_record.name.lower().replace(' ', '_')
-            filename = f"wallet_{db_short}_{user_short}_{wallet_short}_{safe_wallet_name}.enc"
+            safe_wallet_name = wallet_record.name.lower().replace(" ", "_")
+            filename = (
+                f"wallet_{db_short}_{user_short}_{wallet_short}_{safe_wallet_name}.enc"
+            )
 
         return wallet_dir / filename
 
     def save_encrypted_file(self, file_path: Path, encrypted_data: bytes):
         """Save encrypted data to file with secure permissions"""
         try:
-            with open(file_path, 'wb') as f:
+            with open(file_path, "wb") as f:
                 f.write(encrypted_data)
-            os.chmod(file_path, CRYPTO_CONFIG['FILE_PERMISSIONS'])
+            os.chmod(file_path, CRYPTO_CONFIG["FILE_PERMISSIONS"])
             _logger.info(f"Wallet data saved to disk: {file_path}")
         except Exception as e:
             _logger.error(f"Failed to save wallet to disk: {str(e)}")
-            raise UserError(f'Грешка при записването на диск: {str(e)}')
+            raise UserError(f"Грешка при записването на диск: {str(e)}")
 
     def load_encrypted_file(self, file_path: Path) -> bytes | None:
         """Load encrypted data from a file"""
@@ -143,7 +149,7 @@ class FileSystemManager:
             return None
 
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 return f.read()
         except Exception as e:
             _logger.error(f"Failed to load wallet from disk: {str(e)}")
@@ -151,22 +157,26 @@ class FileSystemManager:
 
 
 class CryptoWallet(models.Model):
-    _name = 'crypto.wallet'
-    _description = 'Virtual encrypted wallet for keys'
-    _rec_name = 'name'
+    _name = "crypto.wallet"
+    _description = "Virtual encrypted wallet for keys"
+    _rec_name = "name"
 
-    name = fields.Char('Stored key name', required=True)
-    user_id = fields.Many2one('res.users', 'User', required=True, default=lambda self: self.env.user)
-    encrypted_data = fields.Text('Encrypted data', readonly=True)
-    salt = fields.Text('Salt to encrypt', readonly=True)
-    is_locked = fields.Boolean('Locked', default=True)
-    created_date = fields.Datetime('Created on', default=fields.Datetime.now, readonly=True)
-    last_accessed = fields.Datetime('Last opened', readonly=True)
-    file_path = fields.Char('File path on disk', readonly=True)
+    name = fields.Char("Stored key name", required=True)
+    user_id = fields.Many2one(
+        "res.users", "User", required=True, default=lambda self: self.env.user
+    )
+    encrypted_data = fields.Text("Encrypted data", readonly=True)
+    salt = fields.Text("Salt to encrypt", readonly=True)
+    is_locked = fields.Boolean("Locked", default=True)
+    created_date = fields.Datetime(
+        "Created on", default=fields.Datetime.now, readonly=True
+    )
+    last_accessed = fields.Datetime("Last opened", readonly=True)
+    file_path = fields.Char("File path on disk", readonly=True)
 
     # Virtual fields (not stored in DB)
-    master_password = fields.Char('Master password', store=False)
-    decrypted_keys = fields.Text('Decrypted Keys', store=False, readonly=True)
+    master_password = fields.Char("Master password", store=False)
+    decrypted_keys = fields.Text("Decrypted Keys", store=False, readonly=True)
 
     _crypto_manager = None
     _filesystem_manager = None
@@ -174,7 +184,7 @@ class CryptoWallet(models.Model):
     @property
     def crypto_manager(self):
         """Lazy initialization of crypto manager"""
-        if not hasattr(self, '_crypto_manager') or not self._crypto_manager:
+        if not hasattr(self, "_crypto_manager") or not self._crypto_manager:
             self._crypto_manager = CryptographyManager()
         return self._crypto_manager
 
@@ -193,14 +203,16 @@ class CryptoWallet(models.Model):
             return True
 
         # Check if system admin - using the correct group reference
-        if self.env.user.has_group(PERMISSION_LEVELS['admin']):
+        if self.env.user.has_group(PERMISSION_LEVELS["admin"]):
             return True
 
-        raise AccessError(f'Нямате разрешение за операция: {permission_level}')
+        raise AccessError(f"Нямате разрешение за операция: {permission_level}")
 
-    def _validate_record_access(self, operation='read'):
+    def _validate_record_access(self, operation="read"):
         """Check if the current user has access to this wallet record"""
-        if self.user_id != self.env.user and not self.env.user.has_group(PERMISSION_LEVELS['admin']):
+        if self.user_id != self.env.user and not self.env.user.has_group(
+            PERMISSION_LEVELS["admin"]
+        ):
             raise AccessError(f'Нямате достъп до портфел "{self.name}"')
         return True
 
@@ -222,11 +234,15 @@ class CryptoWallet(models.Model):
         key = self._crypto_manager.derive_key(master_password, salt)
         empty_wallet = self._crypto_manager.create_wallet_envelope({})
 
-        encrypted_data = self._crypto_manager.encrypt_data(json.dumps(empty_wallet), key)
+        encrypted_data = self._crypto_manager.encrypt_data(
+            json.dumps(empty_wallet), key
+        )
         self.encrypted_data = base64.b64encode(encrypted_data).decode()
 
         self._persist_wallet_to_disk()
-        _logger.info(f"Initialized crypto wallet '{self.name}' for user {self.user_id.name}")
+        _logger.info(
+            f"Initialized crypto wallet '{self.name}' for user {self.user_id.name}"
+        )
 
     def _persist_wallet_to_disk(self):
         """Save wallet data to disk - extracted method"""
@@ -248,7 +264,7 @@ class CryptoWallet(models.Model):
 
     def unlock_wallet_with_password(self, master_password):
         """Unlock wallet with master password - renamed for clarity"""
-        self._check_permission_level('read')
+        self._check_permission_level("read")
 
         try:
             # Load from disk if needed
@@ -272,7 +288,7 @@ class CryptoWallet(models.Model):
 
         except Exception as e:
             _logger.error(f"Failed to unlock wallet '{self.name}': {str(e)}")
-            raise UserError('Грешна главна парола или повредени данни в портфела')
+            raise UserError("Грешна главна парола или повредени данни в портфела")
 
     def _update_session_state(self, encryption_key, wallet_data):
         """Update session state after successful unlock - extracted method"""
@@ -283,48 +299,50 @@ class CryptoWallet(models.Model):
 
     def lock_wallet(self):
         """Lock the wallet"""
-        self._check_permission_level('read')
+        self._check_permission_level("read")
         self.is_locked = True
         self.decrypted_keys = False
         # Clear key from context
-        if 'wallet_key' in self.env.context:
-            self.env.context = {k: v for k, v in self.env.context.items() if k != 'wallet_key'}
+        if "wallet_key" in self.env.context:
+            self.env.context = {
+                k: v for k, v in self.env.context.items() if k != "wallet_key"
+            }
         _logger.debug(f"Wallet '{self.name}' locked")
 
     # === SIMPLIFIED USER INTERFACE METHODS ===
     def get_user_master_password(self):
         """Get master password for current user - renamed for clarity"""
-        self._check_permission_level('read')
+        self._check_permission_level("read")
         return self.user_id.password
 
     def unlock_with_user_password(self):
         """Unlock wallet using user's master password"""
-        self._check_permission_level('read')
+        self._check_permission_level("read")
         master_password = self.get_user_master_password()
         return self.unlock_wallet_with_password(master_password)
 
     # === KEY MANAGEMENT OPERATIONS ===
     def add_key_with_user_password(self, key_name, key_type, key_data):
         """Add key using user's master password"""
-        self._check_permission_level('write')
+        self._check_permission_level("write")
         master_password = self.get_user_master_password()
         return self._add_key_to_wallet(key_name, key_type, key_data, master_password)
 
     def get_key_with_user_password(self, key_name):
         """Get key using user's password"""
-        self._check_permission_level('read')
+        self._check_permission_level("read")
         master_password = self.get_user_master_password()
         return self._get_key_from_wallet(key_name, master_password)
 
     def remove_key_with_user_password(self, key_name):
         """Remove key using user's password"""
-        self._check_permission_level('write')
+        self._check_permission_level("write")
         master_password = self.get_user_master_password()
         return self._remove_key_from_wallet(key_name, master_password)
 
     def list_keys_with_user_password(self):
         """List keys using user's password"""
-        self._check_permission_level('read')
+        self._check_permission_level("read")
         master_password = self.get_user_master_password()
         return self._list_wallet_keys(master_password)
 
@@ -333,18 +351,20 @@ class CryptoWallet(models.Model):
         """Internal method to add key to wallet - extracted for reuse"""
         wallet_data = self._get_or_unlock_wallet(master_password)
 
-        wallet_data['keys'][key_name] = {
-            'type': key_type,
-            'data': key_data,
-            'created': fields.Datetime.now().isoformat(),
-            'metadata': {}
+        wallet_data["keys"][key_name] = {
+            "type": key_type,
+            "data": key_data,
+            "created": fields.Datetime.now().isoformat(),
+            "metadata": {},
         }
 
         self._update_wallet_metadata(wallet_data)
         self._save_wallet_data(wallet_data)
-        self._save_individual_key_to_disk(key_name, wallet_data['keys'][key_name])
+        self._save_individual_key_to_disk(key_name, wallet_data["keys"][key_name])
 
-        _logger.debug(f"Added key '{key_name}' of type '{key_type}' to wallet '{self.name}'")
+        _logger.debug(
+            f"Added key '{key_name}' of type '{key_type}' to wallet '{self.name}'"
+        )
         return True
 
     def _get_key_from_wallet(self, key_name, master_password):
@@ -357,25 +377,27 @@ class CryptoWallet(models.Model):
         # If no individual file, use main wallet
         wallet_data = self._get_or_unlock_wallet(master_password)
 
-        if key_name not in wallet_data['keys']:
+        if key_name not in wallet_data["keys"]:
             raise UserError(f'Ключ "{key_name}" не съществува в портфела')
 
-        return wallet_data['keys'][key_name]
+        return wallet_data["keys"][key_name]
 
     def _remove_key_from_wallet(self, key_name, master_password):
         """Internal method to remove key from wallet"""
         wallet_data = self._get_or_unlock_wallet(master_password)
 
-        if key_name not in wallet_data['keys']:
+        if key_name not in wallet_data["keys"]:
             raise UserError(f'Ключ "{key_name}" не съществува в портфела')
 
         # Remove key
-        del wallet_data['keys'][key_name]
+        del wallet_data["keys"][key_name]
         self._update_wallet_metadata(wallet_data)
         self._save_wallet_data(wallet_data)
 
         # Remove individual file if exists
-        individual_key_path = self.filesystem_manager.generate_wallet_filename(self, key_name)
+        individual_key_path = self.filesystem_manager.generate_wallet_filename(
+            self, key_name
+        )
         if individual_key_path.exists():
             try:
                 individual_key_path.unlink()
@@ -391,12 +413,14 @@ class CryptoWallet(models.Model):
         wallet_data = self._get_or_unlock_wallet(master_password)
 
         keys_info = []
-        for key_name, key_info in wallet_data['keys'].items():
-            keys_info.append({
-                'name': key_name,
-                'type': key_info['type'],
-                'created': key_info['created']
-            })
+        for key_name, key_info in wallet_data["keys"].items():
+            keys_info.append(
+                {
+                    "name": key_name,
+                    "type": key_info["type"],
+                    "created": key_info["created"],
+                }
+            )
 
         return keys_info
 
@@ -405,28 +429,32 @@ class CryptoWallet(models.Model):
         if self.is_locked:
             return self.unlock_wallet_with_password(master_password)
 
-        wallet_key = self.env.context.get('wallet_key')
+        wallet_key = self.env.context.get("wallet_key")
         if not wallet_key:
             return self.unlock_wallet_with_password(master_password)
 
         encrypted_data = base64.b64decode(self.encrypted_data)
-        decrypted_json = self._crypto_manager.decrypt_data(encrypted_data, wallet_key.encode())
+        decrypted_json = self._crypto_manager.decrypt_data(
+            encrypted_data, wallet_key.encode()
+        )
         return json.loads(decrypted_json)
 
     def _update_wallet_metadata(self, wallet_data):
         """Update wallet metadata - extracted method"""
-        wallet_data['metadata']['key_count'] = len(wallet_data['keys'])
-        wallet_data['metadata']['last_modified'] = fields.Datetime.now().isoformat()
+        wallet_data["metadata"]["key_count"] = len(wallet_data["keys"])
+        wallet_data["metadata"]["last_modified"] = fields.Datetime.now().isoformat()
 
     def _save_wallet_data(self, wallet_data):
         """Save wallet data with current encryption key - extracted method"""
-        wallet_key = self.env.context.get('wallet_key')
+        wallet_key = self.env.context.get("wallet_key")
         if not wallet_key:
             master_password = self.get_user_master_password()
             self.unlock_wallet_with_password(master_password)
-            wallet_key = self.env.context.get('wallet_key')
+            wallet_key = self.env.context.get("wallet_key")
 
-        encrypted_data = self._crypto_manager.encrypt_data(json.dumps(wallet_data), wallet_key.encode())
+        encrypted_data = self._crypto_manager.encrypt_data(
+            json.dumps(wallet_data), wallet_key.encode()
+        )
         self.encrypted_data = base64.b64encode(encrypted_data).decode()
 
         self._persist_wallet_to_disk()
@@ -438,11 +466,11 @@ class CryptoWallet(models.Model):
         file_path = self.filesystem_manager.generate_wallet_filename(self, key_name)
 
         key_envelope = {
-            'key_name': key_name,
-            'wallet_id': self.id,
-            'user_id': self.user_id.id,
-            'created': fields.Datetime.now().isoformat(),
-            'data': key_data
+            "key_name": key_name,
+            "wallet_id": self.id,
+            "user_id": self.user_id.id,
+            "created": fields.Datetime.now().isoformat(),
+            "data": key_data,
         }
 
         master_password = self.get_user_master_password()
@@ -450,14 +478,16 @@ class CryptoWallet(models.Model):
         key = self._crypto_manager.derive_key(master_password, salt)
 
         encrypted_envelope = {
-            'salt': base64.b64encode(salt).decode(),
-            'data': base64.b64encode(self._crypto_manager.encrypt_data(json.dumps(key_envelope), key)).decode()
+            "salt": base64.b64encode(salt).decode(),
+            "data": base64.b64encode(
+                self._crypto_manager.encrypt_data(json.dumps(key_envelope), key)
+            ).decode(),
         }
 
         # Save as JSON file
-        with open(file_path, 'w') as file:
+        with open(file_path, "w") as file:
             json.dump(encrypted_envelope, file)
-        os.chmod(file_path, CRYPTO_CONFIG['FILE_PERMISSIONS'])
+        os.chmod(file_path, CRYPTO_CONFIG["FILE_PERMISSIONS"])
 
         _logger.info(f"Individual key saved to disk: {file_path}")
         return str(file_path)
@@ -470,40 +500,42 @@ class CryptoWallet(models.Model):
             return None
 
         try:
-            with open(file_path, 'r') as file:
+            with open(file_path) as file:
                 encrypted_envelope = json.load(file)
 
             # Decrypt data
             master_password = self.get_user_master_password()
-            salt = base64.b64decode(encrypted_envelope['salt'])
+            salt = base64.b64decode(encrypted_envelope["salt"])
             key = self._crypto_manager.derive_key(master_password, salt)
 
             decrypted_data = self._crypto_manager.decrypt_data(
-                base64.b64decode(encrypted_envelope['data']), key
+                base64.b64decode(encrypted_envelope["data"]), key
             )
             key_envelope = json.loads(decrypted_data)
 
-            return key_envelope['data']
+            return key_envelope["data"]
 
         except Exception as e:
             _logger.error(f"Failed to load individual key from disk: {str(e)}")
             return None
 
     # === CRYPTOGRAPHIC KEY GENERATION ===
-    def generate_keypair(self, key_name, key_type='rsa'):
+    def generate_keypair(self, key_name, key_type="rsa"):
         """Generate keypair (public/private)"""
-        self._check_permission_level('generate')
+        self._check_permission_level("generate")
 
-        from cryptography.hazmat.primitives.asymmetric import rsa, ec
         from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ec, rsa
 
         try:
-            if key_type.lower() == 'rsa':
+            if key_type.lower() == "rsa":
                 # Generate RSA keypair
                 private_key = rsa.generate_private_key(
-                    public_exponent=CRYPTO_CONFIG['KEY_GENERATION_PARAMS']['rsa']['public_exponent'],
-                    key_size=CRYPTO_CONFIG['KEY_GENERATION_PARAMS']['rsa']['key_size'],
-                    backend=default_backend()
+                    public_exponent=CRYPTO_CONFIG["KEY_GENERATION_PARAMS"]["rsa"][
+                        "public_exponent"
+                    ],
+                    key_size=CRYPTO_CONFIG["KEY_GENERATION_PARAMS"]["rsa"]["key_size"],
+                    backend=default_backend(),
                 )
                 public_key = private_key.public_key()
 
@@ -511,15 +543,15 @@ class CryptoWallet(models.Model):
                 private_pem = private_key.private_bytes(
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PrivateFormat.PKCS8,
-                    encryption_algorithm=serialization.NoEncryption()
+                    encryption_algorithm=serialization.NoEncryption(),
                 )
 
                 public_pem = public_key.public_bytes(
                     encoding=serialization.Encoding.PEM,
-                    format=serialization.PublicFormat.SubjectPublicKeyInfo
+                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
                 )
 
-            elif key_type.lower() == 'ec':
+            elif key_type.lower() == "ec":
                 # Generate elliptic curve keypair
                 private_key = ec.generate_private_key(ec.SECP256R1(), default_backend())
                 public_key = private_key.public_key()
@@ -527,65 +559,67 @@ class CryptoWallet(models.Model):
                 private_pem = private_key.private_bytes(
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PrivateFormat.PKCS8,
-                    encryption_algorithm=serialization.NoEncryption()
+                    encryption_algorithm=serialization.NoEncryption(),
                 )
 
                 public_pem = public_key.public_bytes(
                     encoding=serialization.Encoding.PEM,
-                    format=serialization.PublicFormat.SubjectPublicKeyInfo
+                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
                 )
             else:
-                raise UserError(f'Неподдържан тип ключ: {key_type}')
+                raise UserError(f"Неподдържан тип ключ: {key_type}")
 
             # Save private key
             self.add_key_with_user_password(
-                f'{key_name}_private',
-                f'{key_type}_private',
-                private_pem.decode('utf-8')
+                f"{key_name}_private",
+                f"{key_type}_private",
+                private_pem.decode("utf-8"),
             )
 
             # Save public key
             self.add_key_with_user_password(
-                f'{key_name}_public',
-                f'{key_type}_public',
-                public_pem.decode('utf-8')
+                f"{key_name}_public", f"{key_type}_public", public_pem.decode("utf-8")
             )
 
             _logger.info(f"Generated {key_type.upper()} keypair: {key_name}")
 
             return {
-                'private_key_name': f'{key_name}_private',
-                'public_key_name': f'{key_name}_public',
-                'key_type': key_type
+                "private_key_name": f"{key_name}_private",
+                "public_key_name": f"{key_name}_public",
+                "key_type": key_type,
             }
 
         except Exception as e:
             _logger.error(f"Failed to generate keypair: {str(e)}")
-            raise UserError(f'Грешка при генериране на ключове: {str(e)}')
+            raise UserError(f"Грешка при генериране на ключове: {str(e)}")
 
     # === USER WALLET MANAGEMENT ===
     @api.model
     def get_user_wallet_or_create(self, user_id=None):
         """Get user wallet, create if doesn't exist - renamed for clarity"""
-        self._check_permission_level('read')
+        self._check_permission_level("read")
 
         if not user_id:
             user_id = self.env.user.id
 
-        user = self.env['res.users'].browse(user_id)
+        user = self.env["res.users"].browse(user_id)
         current_hash = user.password
 
-        wallet = self.search([('user_id', '=', user_id), ('name', '=', 'System Keys')], limit=1)
+        wallet = self.search(
+            [("user_id", "=", user_id), ("name", "=", "System Keys")], limit=1
+        )
 
         if not wallet:
-            if not self.env.user.has_group(PERMISSION_LEVELS['write']):
-                raise AccessError('Нямате права за създаване на портфейл')
+            if not self.env.user.has_group(PERMISSION_LEVELS["write"]):
+                raise AccessError("Нямате права за създаване на портфейл")
 
-            wallet = self.create({
-                'name': 'System Keys',
-                'user_id': user_id,
-                'master_password': current_hash
-            })
+            wallet = self.create(
+                {
+                    "name": "System Keys",
+                    "user_id": user_id,
+                    "master_password": current_hash,
+                }
+            )
             _logger.info(f"Created new crypto wallet for user {user_id}")
         else:
             # Verify wallet sync
@@ -601,61 +635,66 @@ class CryptoWallet(models.Model):
     @api.model
     def get_user_wallet(self, user_id=None):
         """Get a user wallet without creating if it doesn't exist"""
-        self._check_permission_level('read')
+        self._check_permission_level("read")
 
         if not user_id:
             user_id = self.env.user.id
 
-        wallet = self.search([('user_id', '=', user_id), ('name', '=', 'System Keys')], limit=1)
+        wallet = self.search(
+            [("user_id", "=", user_id), ("name", "=", "System Keys")], limit=1
+        )
 
         if not wallet:
-            raise UserError(f'Няма създаден портфейл за потребител с ID {user_id}')
+            raise UserError(f"Няма създаден портфейл за потребител с ID {user_id}")
 
         return wallet
 
     def quick_access(self, key_name, user_id=None):
         """Quick access to the key"""
-        self._check_permission_level('read')
+        self._check_permission_level("read")
         wallet = self.get_user_wallet_or_create(user_id)
-        user = self.env['res.users'].browse(user_id or self.env.user.id)
+        user = self.env["res.users"].browse(user_id or self.env.user.id)
         return wallet._get_key_from_wallet(key_name, user.password)
 
     def quick_store(self, key_name, key_type, key_data, user_id=None):
         """Quick key storage"""
-        self._check_permission_level('write')
+        self._check_permission_level("write")
         wallet = self.get_user_wallet_or_create(user_id)
-        user = self.env['res.users'].browse(user_id or self.env.user.id)
+        user = self.env["res.users"].browse(user_id or self.env.user.id)
         return wallet._add_key_to_wallet(key_name, key_type, key_data, user.password)
 
     # === WALLET LIFECYCLE METHODS ===
     @api.model_create_multi
     def create(self, vals_list):
         """Create new crypto wallet records"""
-        self._check_permission_level('write')
+        self._check_permission_level("write")
 
         processed_vals_list = []
         master_passwords = []
 
         for vals in vals_list:
             processed_vals = vals.copy()
-            master_password = processed_vals.pop('master_password', None) or self.get_user_master_password()
+            master_password = (
+                processed_vals.pop("master_password", None)
+                or self.get_user_master_password()
+            )
 
             master_passwords.append(master_password)
             processed_vals_list.append(processed_vals)
 
         wallets = super().create(processed_vals_list)
 
-        for wallet, master_password in zip(wallets, master_passwords):
+        for wallet, master_password in zip(wallets, master_passwords, strict=False):
             wallet._initialize_empty_wallet(master_password)
 
         return wallets
 
     def write(self, vals):
         """Update crypto wallet records"""
-        self._check_permission_level('write')
+        self._check_permission_level("write")
 
-        if 'master_password' in vals:
-            master_password = vals.pop('master_password')
+        if "master_password" in vals:
+            master_password = vals.pop("master_password")
 
             # First standard update
             result = super().write(vals)
@@ -666,10 +705,16 @@ class CryptoWallet(models.Model):
                     # If wallet has data, re-encrypt with new password
                     try:
                         current_password = wallet.get_user_master_password()
-                        wallet_data = wallet.unlock_wallet_with_password(current_password)
-                        wallet._reencrypt_wallet_with_new_key(wallet_data, master_password)
+                        wallet_data = wallet.unlock_wallet_with_password(
+                            current_password
+                        )
+                        wallet._reencrypt_wallet_with_new_key(
+                            wallet_data, master_password
+                        )
                     except Exception as e:
-                        _logger.error(f"Failed to reencrypt wallet during write: {str(e)}")
+                        _logger.error(
+                            f"Failed to reencrypt wallet during write: {str(e)}"
+                        )
                         # Fallback - create new wallet
                         wallet._initialize_empty_wallet(master_password)
                 else:
@@ -683,7 +728,7 @@ class CryptoWallet(models.Model):
 
     def unlink(self):
         """Remove wallet and file from disk"""
-        self._check_permission_level('admin')
+        self._check_permission_level("admin")
 
         for wallet in self:
             if wallet.file_path and os.path.exists(wallet.file_path):
@@ -698,7 +743,7 @@ class CryptoWallet(models.Model):
     # === PASSWORD MANAGEMENT ===
     def change_master_password(self, old_password, new_password):
         """Change wallet master password"""
-        self._check_permission_level('admin')
+        self._check_permission_level("admin")
 
         # First unlock with old password
         wallet_data = self.unlock_wallet_with_password(old_password)
@@ -719,11 +764,13 @@ class CryptoWallet(models.Model):
         new_key = self._crypto_manager.derive_key(new_master_password, salt)
 
         # Update metadata
-        wallet_data['metadata']['reencrypted'] = fields.Datetime.now().isoformat()
-        wallet_data['metadata']['reencryption_reason'] = 'password_change'
+        wallet_data["metadata"]["reencrypted"] = fields.Datetime.now().isoformat()
+        wallet_data["metadata"]["reencryption_reason"] = "password_change"
 
         # Encrypt with a new key
-        encrypted_data = self._crypto_manager.encrypt_data(json.dumps(wallet_data), new_key)
+        encrypted_data = self._crypto_manager.encrypt_data(
+            json.dumps(wallet_data), new_key
+        )
         self.encrypted_data = base64.b64encode(encrypted_data).decode()
 
         # Save to disk
@@ -738,7 +785,7 @@ class CryptoWallet(models.Model):
     # === EXPORT FUNCTIONALITY ===
     def export_wallet(self, master_password=None, export_password=None):
         """Export wallet for backup"""
-        self._check_permission_level('export')
+        self._check_permission_level("export")
 
         if not master_password:
             master_password = self.get_user_master_password()
@@ -746,9 +793,9 @@ class CryptoWallet(models.Model):
         wallet_data = self.unlock_wallet_with_password(master_password)
 
         export_data = {
-            'wallet_name': self.name,
-            'export_date': fields.Datetime.now().isoformat(),
-            'data': wallet_data
+            "wallet_name": self.name,
+            "export_date": fields.Datetime.now().isoformat(),
+            "data": wallet_data,
         }
 
         if export_password:
@@ -756,26 +803,27 @@ class CryptoWallet(models.Model):
             salt = self._crypto_manager.generate_salt()
             key = self._crypto_manager.derive_key(export_password, salt)
 
-            encrypted_export = self._crypto_manager.encrypt_data(json.dumps(export_data), key)
+            encrypted_export = self._crypto_manager.encrypt_data(
+                json.dumps(export_data), key
+            )
 
             return {
-                'encrypted': True,
-                'salt': base64.b64encode(salt).decode(),
-                'data': base64.b64encode(encrypted_export).decode()
+                "encrypted": True,
+                "salt": base64.b64encode(salt).decode(),
+                "data": base64.b64encode(encrypted_export).decode(),
             }
         else:
-            return {
-                'encrypted': False,
-                'data': export_data
-            }
+            return {"encrypted": False, "data": export_data}
 
     # === FILE SYSTEM UTILITIES ===
     def list_wallet_files_on_disk(self):
         """Show all wallet files on disk"""
-        self._check_permission_level('admin')
+        self._check_permission_level("admin")
 
         wallet_dir = self.filesystem_manager.get_wallet_directory()
-        db_uid = self.env['ir.config_parameter'].sudo().get_param('database.uuid', 'unknown')
+        db_uid = (
+            self.env["ir.config_parameter"].sudo().get_param("database.uuid", "unknown")
+        )
         db_short = db_uid[:8]
         user_short = str(self.user_id.id).zfill(4)
         wallet_short = str(self.id).zfill(4)
@@ -787,20 +835,22 @@ class CryptoWallet(models.Model):
         file_info = []
         for file_path in files:
             stat = file_path.stat()
-            file_info.append({
-                'name': file_path.name,
-                'path': str(file_path),
-                'size': stat.st_size,
-                'created': datetime.fromtimestamp(stat.st_ctime),
-                'modified': datetime.fromtimestamp(stat.st_mtime),
-                'permissions': oct(stat.st_mode)[-3:]
-            })
+            file_info.append(
+                {
+                    "name": file_path.name,
+                    "path": str(file_path),
+                    "size": stat.st_size,
+                    "created": datetime.fromtimestamp(stat.st_ctime),
+                    "modified": datetime.fromtimestamp(stat.st_mtime),
+                    "permissions": oct(stat.st_mode)[-3:],
+                }
+            )
 
         return file_info
 
     def cleanup_orphaned_files(self):
         """Clean up files without corresponding records in database"""
-        self._check_permission_level('admin')
+        self._check_permission_level("admin")
 
         wallet_dir = self.filesystem_manager.get_wallet_directory()
         all_files = list(wallet_dir.glob("*.enc"))
@@ -810,7 +860,11 @@ class CryptoWallet(models.Model):
         active_patterns = set()
 
         for wallet in active_wallets:
-            db_uid = self.env['ir.config_parameter'].sudo().get_param('database.uuid', 'unknown')
+            db_uid = (
+                self.env["ir.config_parameter"]
+                .sudo()
+                .get_param("database.uuid", "unknown")
+            )
             db_short = db_uid[:8]
             user_short = str(wallet.user_id.id).zfill(4)
             wallet_short = str(wallet.id).zfill(4)
@@ -818,7 +872,9 @@ class CryptoWallet(models.Model):
 
         orphaned_files = []
         for file_path in all_files:
-            file_pattern = "_".join(file_path.stem.split("_")[1:4])  # take db_user_wallet part
+            file_pattern = "_".join(
+                file_path.stem.split("_")[1:4]
+            )  # take db_user_wallet part
             if file_pattern not in active_patterns:
                 orphaned_files.append(file_path)
 
@@ -833,8 +889,8 @@ class CryptoWallet(models.Model):
                 _logger.error(f"Failed to remove orphaned file {file_path}: {str(e)}")
 
         return {
-            'removed_count': removed_count,
-            'orphaned_files': [str(f) for f in orphaned_files]
+            "removed_count": removed_count,
+            "orphaned_files": [str(f) for f in orphaned_files],
         }
 
     # === BUTTON ACTIONS FOR UI ===
@@ -842,60 +898,60 @@ class CryptoWallet(models.Model):
         """Action for 'Unlock Wallet' button - opens wizard"""
         self.ensure_one()
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Отключи портфела',
-            'res_model': 'crypto.wallet.unlock.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_wallet_id': self.id},
+            "type": "ir.actions.act_window",
+            "name": "Отключи портфела",
+            "res_model": "crypto.wallet.unlock.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_wallet_id": self.id},
         }
 
     def action_change_master_password(self):
         """Action for 'Change Master Password' button - opens wizard"""
         self.ensure_one()
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Промени главната парола',
-            'res_model': 'crypto.wallet.change.password.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_wallet_id': self.id},
+            "type": "ir.actions.act_window",
+            "name": "Промени главната парола",
+            "res_model": "crypto.wallet.change.password.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_wallet_id": self.id},
         }
 
     def action_export_wallet(self):
         """Action for 'Export Wallet' button - opens wizard"""
         self.ensure_one()
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Експортирай портфела',
-            'res_model': 'crypto.wallet.export.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_wallet_id': self.id},
+            "type": "ir.actions.act_window",
+            "name": "Експортирай портфела",
+            "res_model": "crypto.wallet.export.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_wallet_id": self.id},
         }
 
     def action_manage_keys(self):
         """Action for the 'Manage Keys' button-shows key management interface"""
         self.ensure_one()
         return {
-            'type': 'ir.actions.act_window',
-            'name': f'Ключове в портфел "{self.name}"',
-            'res_model': 'crypto.wallet.key.manager',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_wallet_id': self.id},
+            "type": "ir.actions.act_window",
+            "name": f'Ключове в портфел "{self.name}"',
+            "res_model": "crypto.wallet.key.manager",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_wallet_id": self.id},
         }
 
     def action_add_key(self):
         """Action for 'Add Key' button - opens wizard"""
         self.ensure_one()
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Добави ключ',
-            'res_model': 'crypto.wallet.add.key.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_wallet_id': self.id},
+            "type": "ir.actions.act_window",
+            "name": "Добави ключ",
+            "res_model": "crypto.wallet.add.key.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_wallet_id": self.id},
         }
 
     def action_list_keys(self):
@@ -906,20 +962,22 @@ class CryptoWallet(models.Model):
 
             if not keys_info:
                 return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': 'Информация',
-                        'message': 'Няма съхранени ключове в този портфел.',
-                        'type': 'info',
-                        'sticky': False,
-                    }
+                    "type": "ir.actions.client",
+                    "tag": "display_notification",
+                    "params": {
+                        "title": "Информация",
+                        "message": "Няма съхранени ключове в този портфел.",
+                        "type": "info",
+                        "sticky": False,
+                    },
                 }
 
             # Generate text representation of keys
             keys_text = []
             for key_info in keys_info:
-                keys_text.append(f"• {key_info['name']} ({key_info['type']}) - създаден {key_info['created']}")
+                keys_text.append(
+                    f"• {key_info['name']} ({key_info['type']}) - създаден {key_info['created']}"
+                )
 
             message = f"""
             <strong>Ключове в портфел "{self.name}":</strong><br/>
@@ -930,32 +988,32 @@ class CryptoWallet(models.Model):
             """
 
             return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': f'Ключове в портфел "{self.name}"',
-                    'message': message,
-                    'type': 'info',
-                    'sticky': True,
-                }
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": f'Ключове в портфел "{self.name}"',
+                    "message": message,
+                    "type": "info",
+                    "sticky": True,
+                },
             }
 
         except Exception as e:
             return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': 'Грешка',
-                    'message': f'Не може да се заредят ключовете: {str(e)}',
-                    'type': 'danger',
-                    'sticky': False,
-                }
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": "Грешка",
+                    "message": f"Не може да се заредят ключовете: {str(e)}",
+                    "type": "danger",
+                    "sticky": False,
+                },
             }
 
     # === COPY KEY FUNCTIONALITY ===
     def copy_key_to_user(self, key_name, target_user_id):
         """Copy key to another user's wallet"""
-        self._check_permission_level('admin')  # Only admins can copy keys between users
+        self._check_permission_level("admin")  # Only admins can copy keys between users
 
         # Get key from current wallet
         my_key_data = self.get_key_with_user_password(key_name)
@@ -966,9 +1024,11 @@ class CryptoWallet(models.Model):
         # Add copy of key to their wallet (encrypted with their password)
         target_wallet.add_key_with_user_password(
             key_name=f"shared_{key_name}",
-            key_type=my_key_data['type'],
-            key_data=my_key_data['data']
+            key_type=my_key_data["type"],
+            key_data=my_key_data["data"],
         )
 
-        _logger.info(f"Copied key '{key_name}' from user {self.user_id.id} to user {target_user_id}")
+        _logger.info(
+            f"Copied key '{key_name}' from user {self.user_id.id} to user {target_user_id}"
+        )
         return True

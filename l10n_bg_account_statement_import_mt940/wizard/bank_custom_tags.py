@@ -1,10 +1,9 @@
-import re
 import logging
 
 _logger = logging.getLogger(__name__)
 
 
-class BankTransactionParser(object):
+class BankTransactionParser:
     """Base class for parsing bank transaction descriptions in Bulgarian MT940 files."""
 
     # Common patterns for Bulgarian bank statements

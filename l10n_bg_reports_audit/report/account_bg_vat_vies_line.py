@@ -5,7 +5,10 @@ from psycopg2 import sql
 
 from odoo import api, fields, models, tools
 
-from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import l10n_bg_where, l10n_bg_get_tag_negate_sql
+from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
+    l10n_bg_get_tag_negate_sql,
+    l10n_bg_where,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -97,7 +100,7 @@ FROM {self._from()}
 
     @api.model
     def _from(self):
-        tax_negate = l10n_bg_get_tag_negate_sql(table_alias='account_account_tag')
+        tax_negate = l10n_bg_get_tag_negate_sql(table_alias="account_account_tag")
         return f"""account_move_line AS aml
     LEFT JOIN account_move AS am
         ON aml.move_id = am.id
@@ -120,8 +123,8 @@ FROM {self._from()}
     @api.model
     def _where(self):
         if self._context.get("report_options"):
-            date_from, date_to, tax_period, tax_periods, company_id, state = l10n_bg_where(
-                self.env, self._context.get("report_options")
+            date_from, date_to, tax_period, tax_periods, company_id, state = (
+                l10n_bg_where(self.env, self._context.get("report_options"))
             )
             return f"""am.company_id = {company_id} AND am.state = ANY(ARRAY{state}) AND aat.l10n_bg_applicability = 'sale' AND aat.tag_name = ANY(ARRAY[15, 25, 17]) AND aml.balance != 0 AND am.date >= '{date_from}' AND am.date <= '{date_to}'"""
         return """aat.l10n_bg_applicability = 'sale' AND aat.tag_name = ANY(ARRAY[15,25,17]) AND aml.balance != 0"""

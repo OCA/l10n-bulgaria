@@ -197,6 +197,28 @@ const config = [{
         ecmaVersion: 2024,
         sourceType: "module",
     },
+}, {
+    files: ["**/static/src/**/*.js"],
+
+    languageOptions: {
+        ecmaVersion: 2024,
+        sourceType: "module",
+        globals: {
+            console: "readonly",
+            document: "readonly",
+            fetch: "readonly",
+            URLSearchParams: "readonly",
+            window: "readonly",
+            setInterval: "readonly",
+            clearInterval: "readonly",
+            setTimeout: "readonly",
+            clearTimeout: "readonly",
+            AbortController: "readonly",
+            alert: "readonly",
+            marked: "readonly",
+            hljs: "readonly",
+        },
+    },
 }];
 
 module.exports = config

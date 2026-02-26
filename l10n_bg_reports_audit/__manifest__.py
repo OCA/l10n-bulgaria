@@ -10,7 +10,7 @@
     """,
     "license": "LGPL-3",
     "author": "Rosen Vladimirov,Odoo Community Association (OCA)",
-    "website": "https://github.com/rosenvladimirov/l10n-bulgaria",
+    "website": "https://github.com/OCA/l10n-bulgaria",
     "depends": [
         "base",
         "account",

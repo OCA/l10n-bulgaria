@@ -5,7 +5,6 @@ import random
 import secrets
 from difflib import Differ
 
-
 from lxml import etree
 
 from odoo import api, fields, models
@@ -15,9 +14,8 @@ _logger = logging.getLogger(__name__)
 
 def generate_key2(length, template=None):
     if template is None:
-        template = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    return ''.join(
-        random.choice(template) for _ in range(length))
+        template = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    return "".join(random.choice(template) for _ in range(length))
 
 
 def generate_encryption_keys(key1, key2):
@@ -25,14 +23,14 @@ def generate_encryption_keys(key1, key2):
         key1 = str(random.randint(1, 99999999999))
     if not key2:
         key2 = generate_key2(11)
-    encrypted_key = bytes([ord(a) ^ ord(b) for a, b in zip(key1, key2)])
+    encrypted_key = bytes([ord(a) ^ ord(b) for a, b in zip(key1, key2, strict=False)])
     return encrypted_key
 
 
 def compare_strings_to_clean(s1, s2):
     differ = Differ()
     diff = list(differ.compare(s1, s2))
-    clean_diff = ''.join(line[2:] for line in diff if line[0] != ' ')
+    clean_diff = "".join(line[2:] for line in diff if line[0] != " ")
     return clean_diff
 
 
@@ -43,7 +41,10 @@ def decrypt_key(encrypted_key, key1, key2):
     if encrypted_key and key2:
         # key2 = binascii.unhexlify(key2)
         key2 = base64.b64decode(key2)
-        password = ''.join(chr(ord(a) ^ ord(b)) for a, b in zip(encrypted_key, str(key2, 'ascii')))
+        password = "".join(
+            chr(ord(a) ^ ord(b))
+            for a, b in zip(encrypted_key, str(key2, "ascii"), strict=False)
+        )
     password = compare_strings_to_clean(password, key1)
     if password:
         password = generate_key2(len(password), template=password)
@@ -76,9 +77,9 @@ def prepare_zip_payload(files_report, company):
     password = None
     if not is_valid_api_key(uic, api_key, crypt_key):
         password = secrets.token_urlsafe(18).encode()
-    result = {'files_report': files_report}
+    result = {"files_report": files_report}
     if password:
-        result['password'] = password
+        result["password"] = password
     return result
 
 
@@ -129,7 +130,9 @@ class L10nBGConfigMixin(models.AbstractModel):
                     continue
                 field.set("invisible", "True")
 
-            for field in doc.xpath('//group[contains(@id,"l10n_bg") or contains(@name,"l10n_bg")]'):
+            for field in doc.xpath(
+                '//group[contains(@id,"l10n_bg") or contains(@name,"l10n_bg")]'
+            ):
                 field.set("invisible", "True")
 
             result["arch"] = etree.tostring(doc)

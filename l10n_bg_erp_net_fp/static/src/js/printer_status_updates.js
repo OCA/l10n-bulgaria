@@ -1,10 +1,10 @@
 /** @odoo-module **/
 
-import { ListController } from "@web/views/list/list_controller";
-import { listView } from "@web/views/list/list_view";
-import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
-import { onMounted, onWillUnmount } from "@odoo/owl";
+import {ListController} from "@web/views/list/list_controller";
+import {listView} from "@web/views/list/list_view";
+import {registry} from "@web/core/registry";
+import {useService} from "@web/core/utils/hooks";
+import {onMounted, onWillUnmount} from "@odoo/owl";
 
 /**
  * List controller за fiscal.printer.device
@@ -58,11 +58,9 @@ export class FiscalPrinterListController extends ListController {
 
             // Изпращаме заявка за проверка (глобалният сервис ще я обработи)
             try {
-                await this.orm.call(
-                    'fiscal.printer.device',
-                    'action_request_status',
-                    [[printerId]]
-                );
+                await this.orm.call("fiscal.printer.device", "action_request_status", [
+                    [printerId],
+                ]);
             } catch (error) {
                 console.error(`Error requesting status for ${printerName}:`, error);
             }

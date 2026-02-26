@@ -1,14 +1,14 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
-# from lxml import etree
 
-from odoo import api, fields, models
+# from lxml import etree
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 
 
 class Company(models.Model):
-    _inherit = ['res.company', 'res.transliterate.mixin']
+    _inherit = ["res.company", "res.transliterate.mixin"]
     _name = "res.company"
 
     name = fields.Char(translate=True)
@@ -25,7 +25,7 @@ class Company(models.Model):
     transliterate_names = fields.Boolean(
         string="Transliterate names",
         default=False,
-        help="Enable automatic transliteration of partner and company names."
+        help="Enable automatic transliteration of partner and company names.",
     )
 
     def init(self):

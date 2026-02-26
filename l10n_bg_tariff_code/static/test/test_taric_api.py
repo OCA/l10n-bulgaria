@@ -4,10 +4,10 @@ UK Trade Tariff API Test Script (UPDATED)
 Тестване на UK Trade Tariff REST API за TARIC данни
 """
 
-import requests
-import json
 import time
 from datetime import datetime
+
+import requests
 
 # Тестови CN кодове (8-цифрени, по-надеждни)
 TEST_CODES_8_DIGIT = [
@@ -35,12 +35,12 @@ def test_uk_api_xi(cn_code):
     print(f"{'=' * 70}")
 
     # XI endpoint (Northern Ireland - EU tariffs)
-    formatted_code = cn_code.ljust(10, '0') if len(cn_code) < 10 else cn_code[:10]
+    formatted_code = cn_code.ljust(10, "0") if len(cn_code) < 10 else cn_code[:10]
     url = f"https://www.trade-tariff.service.gov.uk/xi/api/v2/commodities/{formatted_code}"
-    params = {'as_of': datetime.now().strftime('%Y-%m-%d')}
+    params = {"as_of": datetime.now().strftime("%Y-%m-%d")}
     headers = {
-        'User-Agent': 'Odoo-BG-Tariff-Test/2.0',
-        'Accept': 'application/vnd.uktt.v2+json'
+        "User-Agent": "Odoo-BG-Tariff-Test/2.0",
+        "Accept": "application/vnd.uktt.v2+json",
     }
 
     try:
@@ -54,26 +54,26 @@ def test_uk_api_xi(cn_code):
 
         if response.status_code == 200:
             data = response.json()
-            print(f"✅ Success!")
+            print("✅ Success!")
 
             # Извличане на description
-            if 'data' in data and 'attributes' in data['data']:
-                desc = data['data']['attributes'].get('description', 'N/A')
+            if "data" in data and "attributes" in data["data"]:
+                desc = data["data"]["attributes"].get("description", "N/A")
                 print(f"📝 Description: {desc[:100]}...")
 
             # Извличане на duty rates
-            if 'included' in data:
+            if "included" in data:
                 measures_found = 0
-                for item in data['included']:
-                    if item.get('type') == 'measure':
-                        attrs = item.get('attributes', {})
-                        measure_type = attrs.get('measure_type_id', '')
+                for item in data["included"]:
+                    if item.get("type") == "measure":
+                        attrs = item.get("attributes", {})
+                        measure_type = attrs.get("measure_type_id", "")
 
-                        if measure_type in ['103', '142', '105', '106']:
+                        if measure_type in ["103", "142", "105", "106"]:
                             measures_found += 1
-                            duty_expr = attrs.get('duty_expression', {})
-                            base = duty_expr.get('base', 'N/A')
-                            formatted = duty_expr.get('formatted_base', 'N/A')
+                            duty_expr = attrs.get("duty_expression", {})
+                            base = duty_expr.get("base", "N/A")
+                            formatted = duty_expr.get("formatted_base", "N/A")
                             print(f"\n💰 Measure Type {measure_type}:")
                             print(f"   Base: {base}")
                             print(f"   Formatted: {formatted}")
@@ -85,7 +85,7 @@ def test_uk_api_xi(cn_code):
 
             return True
         elif response.status_code == 404:
-            print(f"❌ Not Found (404) - Code may not exist or is invalid")
+            print("❌ Not Found (404) - Code may not exist or is invalid")
             return False
         else:
             print(f"❌ Failed with status: {response.status_code}")
@@ -109,12 +109,12 @@ def test_uk_api_uk(cn_code):
     print(f"{'=' * 70}")
 
     # UK endpoint (Great Britain tariffs)
-    formatted_code = cn_code.ljust(10, '0') if len(cn_code) < 10 else cn_code[:10]
+    formatted_code = cn_code.ljust(10, "0") if len(cn_code) < 10 else cn_code[:10]
     url = f"https://www.trade-tariff.service.gov.uk/uk/api/v2/commodities/{formatted_code}"
-    params = {'as_of': datetime.now().strftime('%Y-%m-%d')}
+    params = {"as_of": datetime.now().strftime("%Y-%m-%d")}
     headers = {
-        'User-Agent': 'Odoo-BG-Tariff-Test/2.0',
-        'Accept': 'application/vnd.uktt.v2+json'
+        "User-Agent": "Odoo-BG-Tariff-Test/2.0",
+        "Accept": "application/vnd.uktt.v2+json",
     }
 
     try:
@@ -128,26 +128,26 @@ def test_uk_api_uk(cn_code):
 
         if response.status_code == 200:
             data = response.json()
-            print(f"✅ Success!")
+            print("✅ Success!")
 
             # Извличане на description
-            if 'data' in data and 'attributes' in data['data']:
-                desc = data['data']['attributes'].get('description', 'N/A')
+            if "data" in data and "attributes" in data["data"]:
+                desc = data["data"]["attributes"].get("description", "N/A")
                 print(f"📝 Description: {desc[:100]}...")
 
             # Извличане на duty rates
-            if 'included' in data:
+            if "included" in data:
                 measures_found = 0
-                for item in data['included']:
-                    if item.get('type') == 'measure':
-                        attrs = item.get('attributes', {})
-                        measure_type = attrs.get('measure_type_id', '')
+                for item in data["included"]:
+                    if item.get("type") == "measure":
+                        attrs = item.get("attributes", {})
+                        measure_type = attrs.get("measure_type_id", "")
 
-                        if measure_type in ['103', '142', '105', '106']:
+                        if measure_type in ["103", "142", "105", "106"]:
                             measures_found += 1
-                            duty_expr = attrs.get('duty_expression', {})
-                            base = duty_expr.get('base', 'N/A')
-                            formatted = duty_expr.get('formatted_base', 'N/A')
+                            duty_expr = attrs.get("duty_expression", {})
+                            base = duty_expr.get("base", "N/A")
+                            formatted = duty_expr.get("formatted_base", "N/A")
                             print(f"\n💰 Measure Type {measure_type}:")
                             print(f"   Base: {base}")
                             print(f"   Formatted: {formatted}")
@@ -159,7 +159,7 @@ def test_uk_api_uk(cn_code):
 
             return True
         elif response.status_code == 404:
-            print(f"❌ Not Found (404) - Code may not exist or is invalid")
+            print("❌ Not Found (404) - Code may not exist or is invalid")
             return False
         else:
             print(f"❌ Failed with status: {response.status_code}")
@@ -183,10 +183,7 @@ def test_all_codes():
     print("=" * 70)
     print(f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    results = {
-        'xi': {'success': 0, 'failed': 0},
-        'uk': {'success': 0, 'failed': 0}
-    }
+    results = {"xi": {"success": 0, "failed": 0}, "uk": {"success": 0, "failed": 0}}
 
     print(f"\n{'=' * 70}")
     print("📋 Test Set 1: 8-digit CN codes (more reliable)")
@@ -195,17 +192,17 @@ def test_all_codes():
     for cn_code in TEST_CODES_8_DIGIT:
         # Test XI (Northern Ireland/EU)
         if test_uk_api_xi(cn_code):
-            results['xi']['success'] += 1
+            results["xi"]["success"] += 1
         else:
-            results['xi']['failed'] += 1
+            results["xi"]["failed"] += 1
 
         time.sleep(0.5)  # Rate limiting
 
         # Test UK (Great Britain)
         if test_uk_api_uk(cn_code):
-            results['uk']['success'] += 1
+            results["uk"]["success"] += 1
         else:
-            results['uk']['failed'] += 1
+            results["uk"]["failed"] += 1
 
         time.sleep(0.5)  # Rate limiting
 
@@ -216,9 +213,9 @@ def test_all_codes():
     for cn_code in TEST_CODES_10_DIGIT[:2]:  # Test first 2 only
         # Test XI only
         if test_uk_api_xi(cn_code):
-            results['xi']['success'] += 1
+            results["xi"]["success"] += 1
         else:
-            results['xi']['failed'] += 1
+            results["xi"]["failed"] += 1
 
         time.sleep(0.5)
 
@@ -227,8 +224,8 @@ def test_all_codes():
     print("📊 TEST SUMMARY")
     print("=" * 70)
 
-    total_xi = results['xi']['success'] + results['xi']['failed']
-    total_uk = results['uk']['success'] + results['uk']['failed']
+    total_xi = results["xi"]["success"] + results["xi"]["failed"]
+    total_uk = results["uk"]["success"] + results["uk"]["failed"]
 
     print("\n🇪🇺 UK XI (Northern Ireland/EU aligned) Results:")
     print(f"   ✅ Success: {results['xi']['success']}/{total_xi}")
@@ -241,13 +238,15 @@ def test_all_codes():
     # Recommendations
     print("\n💡 RECOMMENDATIONS:")
 
-    if results['xi']['success'] > 0:
-        print("   ✅ UK XI (NI/EU) API работи! Използвайте този endpoint за EU-aligned данни")
+    if results["xi"]["success"] > 0:
+        print(
+            "   ✅ UK XI (NI/EU) API работи! Използвайте този endpoint за EU-aligned данни"
+        )
 
-    if results['uk']['success'] > 0:
+    if results["uk"]["success"] > 0:
         print("   ✅ UK (GB) API работи! Подходящ за UK tariff данни")
 
-    if results['xi']['success'] == 0 and results['uk']['success'] == 0:
+    if results["xi"]["success"] == 0 and results["uk"]["success"] == 0:
         print("   ⚠️  Нито един API endpoint не връща данни")
         print("   📝 Възможни причини:")
         print("       - CN кодовете са невалидни или остарели")

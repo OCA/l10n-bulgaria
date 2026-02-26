@@ -6,12 +6,18 @@
         <field name="arch" type="xml">
             <form string="Bulk Edit Account Tags">
                 <group>
-                    <field name="tag_ids" widget="many2many_tags"/>
-                    <field name="l10n_bg_applicability"/>
+                    <field name="tag_ids" widget="many2many_tags" />
+                    <field name="l10n_bg_applicability" />
                 </group>
                 <footer>
-                    <button string="Apply by choice" type="object" name="action_apply" class="btn-primary" invisible="not l10n_bg_applicability"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button
+                        string="Apply by choice"
+                        type="object"
+                        name="action_apply"
+                        class="btn-primary"
+                        invisible="not l10n_bg_applicability"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
                 </footer>
             </form>
         </field>
@@ -21,6 +27,6 @@
         <field name="res_model">account.account.tag.bulk.edit.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="view_id" ref="view_account_account_tag_bulk_edit_wizard_form"/>
+        <field name="view_id" ref="view_account_account_tag_bulk_edit_wizard_form" />
     </record>
 </odoo>

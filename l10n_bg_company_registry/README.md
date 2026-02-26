@@ -4,7 +4,8 @@
 [![License](https://img.shields.io/badge/License-LGPL--3-green)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-18.0.1.1.0-blue)](CHANGELOG.md)
 
-Module for automatically populating partner data from the **Bulgarian Trade Registry** via the official portal.registryagency.bg API.
+Module for automatically populating partner data from the **Bulgarian Trade Registry**
+via the official portal.registryagency.bg API.
 
 ---
 
@@ -21,6 +22,7 @@ Module for automatically populating partner data from the **Bulgarian Trade Regi
 ## 📋 Features
 
 ### Core Functionality
+
 - ✅ Real-time company search by EIK (Bulgarian company ID)
 - ✅ Automatic population of all company data
 - ✅ Structured address (city, street, postal code, district)
@@ -31,6 +33,7 @@ Module for automatically populating partner data from the **Bulgarian Trade Regi
 - ✅ Email and phone (if present in address)
 
 ### Supported Address Formats
+
 ```
 ✅ ул. NAME № 53, бл. 3, вх. Б, ет. 5, ап. 36  (street with number)
 ✅ бул. NAME № 281  (boulevard)
@@ -54,16 +57,19 @@ pip install requests --break-system-packages
 ```
 
 **Required Module:**
+
 - `l10n_bg_partner` - Bulgarian partner localization (provides EIK/UIC fields)
 
 ### Steps
 
 1. **Copy** the module to your Odoo addons directory:
+
    ```bash
    cp -r l10n_bg_partner /path/to/odoo/addons/
    ```
 
 2. **Restart** Odoo:
+
    ```bash
    sudo systemctl restart odoo
    ```
@@ -125,15 +131,15 @@ bg123456789        ✅
 
 ### Populated Fields
 
-| Registry Data | Odoo Field |
-|---------------|------------|
-| EIK | `l10n_bg_uic` |
-| Company Name | `name` |
-| Address | `street`, `city`, `zip`, `state_id` |
-| Legal Form | `l10n_bg_legal_form` |
-| NACE Code | `l10n_bg_activity_code` |
-| Registration Date | `l10n_bg_registration_date` |
-| Email/Phone | `email`, `phone` |
+| Registry Data     | Odoo Field                          |
+| ----------------- | ----------------------------------- |
+| EIK               | `l10n_bg_uic`                       |
+| Company Name      | `name`                              |
+| Address           | `street`, `city`, `zip`, `state_id` |
+| Legal Form        | `l10n_bg_legal_form`                |
+| NACE Code         | `l10n_bg_activity_code`             |
+| Registration Date | `l10n_bg_registration_date`         |
+| Email/Phone       | `email`, `phone`                    |
 
 ### Module Structure
 
@@ -181,11 +187,13 @@ Details: [CHANGELOG.md](CHANGELOG.md)
 ### No data found for EIK
 
 **Possible causes:**
+
 - EIK number is incorrect
 - Company not in Trade Register
 - API temporarily unavailable
 
 **Solution:**
+
 1. Verify EIK number
 2. Check portal.registryagency.bg manually
 3. Try again later
@@ -199,6 +207,7 @@ Details: [CHANGELOG.md](CHANGELOG.md)
 **Cause:** EIK field not filled or type not 'bg_uic'
 
 **Solution:**
+
 1. Fill in EIK number
 2. Check partner has EIK type (not BULSTAT)
 
@@ -213,6 +222,7 @@ tail -f /var/log/odoo/odoo.log
 ```
 
 Look for errors related to:
+
 - `bg.company.search.wizard`
 - `res.partner`
 - API timeout/connection errors
@@ -235,6 +245,7 @@ Details: [UPGRADE_GUIDE.md](UPGRADE_GUIDE.md)
 ## 🤝 Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
+
 - Code style guidelines
 - Testing checklist
 - Pull request process
@@ -244,11 +255,13 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
 ## 📝 Changelog
 
 ### [18.0.1.1.0] - 2025-12-07
+
 - ✅ Fixed 4 critical bugs in address parsing
 - ✅ 100% success rate achieved
 - ✅ Support for all address types
 
 ### [18.0.1.0.0] - 2025-11-XX
+
 - 🚀 Initial public release
 
 See: [CHANGELOG.md](CHANGELOG.md)
@@ -258,11 +271,13 @@ See: [CHANGELOG.md](CHANGELOG.md)
 ## 🗺️ Roadmap
 
 **Planned for 18.0.1.2.0:**
+
 - [ ] Batch import of multiple companies
 - [ ] Advanced search (by city, legal form)
 - [ ] Export to Excel
 
 **Planned for 18.0.2.0.0:**
+
 - [ ] NRA (tax authority) integration for VAT validation
 - [ ] Historical data tracking
 - [ ] Automatic updates
@@ -277,8 +292,7 @@ LGPL-3 - see [LICENSE](LICENSE) file
 
 ## 👤 Author
 
-**Rosen Vladimirov**
-Odoo ERP Developer & Bulgarian Localization Specialist
+**Rosen Vladimirov** Odoo ERP Developer & Bulgarian Localization Specialist
 
 ---
 
@@ -292,13 +306,13 @@ Odoo ERP Developer & Bulgarian Localization Specialist
 
 ## ⚠️ Disclaimer
 
-This module provides data from the official registry "as is". Always verify critical information directly on portal.registryagency.bg.
+This module provides data from the official registry "as is". Always verify critical
+information directly on portal.registryagency.bg.
 
 ---
 
-**Last Updated:** December 7, 2025
-**Version:** 18.0.2.0.1
-**Tested on:** Odoo 16, 17, 18, 19
+**Last Updated:** December 7, 2025 **Version:** 18.0.2.0.1 **Tested on:** Odoo 16, 17,
+18, 19
 
 ---
 

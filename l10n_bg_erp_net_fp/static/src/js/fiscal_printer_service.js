@@ -1,7 +1,8 @@
+/* eslint-disable no-use-before-define */
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
-import { rpc } from "@web/core/network/rpc";
+import {registry} from "@web/core/registry";
+import {rpc} from "@web/core/network/rpc";
 
 /**
  * Глобален сервис за комуникация с фискални принтери
@@ -12,31 +13,49 @@ import { rpc } from "@web/core/network/rpc";
 export const fiscalPrinterService = {
     dependencies: ["bus_service", "notification"],
 
-    start(env, { bus_service, notification }) {
+    start(env, {bus_service, notification}) {
         let requestCounter = 0;
 
-        console.log("%c[FiscalPrinter] 🚀 SERVICE STARTING (Odoo 18)", "color: #4CAF50; font-weight: bold; font-size: 14px");
+        console.log(
+            "%c[FiscalPrinter] 🚀 SERVICE STARTING (Odoo 18)",
+            "color: #4CAF50; font-weight: bold; font-size: 14px"
+        );
         console.log("[FiscalPrinter] Environment:", env);
-        console.log("[FiscalPrinter] Bus service available:", !!bus_service);
-        console.log("[FiscalPrinter] Notification service available:", !!notification);
+        console.log("[FiscalPrinter] Bus service available:", Boolean(bus_service));
+        console.log(
+            "[FiscalPrinter] Notification service available:",
+            Boolean(notification)
+        );
 
         // ========================================
         // DEBUG: Проверяваме методите на bus_service
         // ========================================
-        console.log("%c[FiscalPrinter] 🔍 DEBUG - Bus service analysis", "color: #FF00FF; font-weight: bold");
-        console.log("[FiscalPrinter] Bus service methods:", Object.getOwnPropertyNames(Object.getPrototypeOf(bus_service)));
+        console.log(
+            "%c[FiscalPrinter] 🔍 DEBUG - Bus service analysis",
+            "color: #FF00FF; font-weight: bold"
+        );
+        console.log(
+            "[FiscalPrinter] Bus service methods:",
+            Object.getOwnPropertyNames(Object.getPrototypeOf(bus_service))
+        );
         console.log("[FiscalPrinter] Bus service object:", bus_service);
 
         // Проверяваме за съществуващи канали
         if (bus_service._channels || bus_service.channels) {
-            console.log("[FiscalPrinter] Existing channels:", bus_service._channels || bus_service.channels);
+            console.log(
+                "[FiscalPrinter] Existing channels:",
+                bus_service._channels || bus_service.channels
+            );
         }
 
         /**
          * Обработва bus notifications - ПОДОБРЕНА ВЕРСИЯ
          */
         const onBusNotification = (event) => {
-            console.log("%c[FiscalPrinter] 📬 RAW BUS EVENT RECEIVED", "color: #FF9800; font-weight: bold; font-size: 14px");
+            console.log(
+                "%c[FiscalPrinter] 📬 RAW BUS EVENT RECEIVED",
+                "color: #FF9800; font-weight: bold; font-size: 14px"
+            );
             console.log("[FiscalPrinter] Event structure:", event);
             console.log("[FiscalPrinter] Event type:", typeof event);
             console.log("[FiscalPrinter] Event keys:", Object.keys(event));
@@ -52,7 +71,9 @@ export const fiscalPrinterService = {
             // Вариант 2: event.notifications
             else if (event.notifications) {
                 notifications = event.notifications;
-                console.log("[FiscalPrinter] Found notifications in event.notifications");
+                console.log(
+                    "[FiscalPrinter] Found notifications in event.notifications"
+                );
             }
             // Вариант 3: директно в event
             else if (Array.isArray(event)) {
@@ -70,12 +91,19 @@ export const fiscalPrinterService = {
                 notifications = [notifications];
             }
 
-            console.log("[FiscalPrinter] Processing", notifications.length, "notifications");
+            console.log(
+                "[FiscalPrinter] Processing",
+                notifications.length,
+                "notifications"
+            );
             console.log("[FiscalPrinter] Full notifications array:", notifications);
 
             for (let i = 0; i < notifications.length; i++) {
                 const notif = notifications[i];
-                console.log(`%c[FiscalPrinter] Processing notification #${i}`, "color: #9C27B0; font-weight: bold");
+                console.log(
+                    `%c[FiscalPrinter] Processing notification #${i}`,
+                    "color: #9C27B0; font-weight: bold"
+                );
                 console.log("[FiscalPrinter] Raw notification:", notif);
 
                 // Опитваме различни структури за извличане на type и payload
@@ -83,7 +111,7 @@ export const fiscalPrinterService = {
                 let payload = null;
 
                 // Структура 1: { type: "...", payload: {...} }
-                if (notif && typeof notif === 'object' && notif.type) {
+                if (notif && typeof notif === "object" && notif.type) {
                     type = notif.type;
                     payload = notif.payload || notif;
                     console.log("[FiscalPrinter] Structure 1 - type/payload object");
@@ -114,31 +142,47 @@ export const fiscalPrinterService = {
                 const possibleRequestTypes = [
                     "fiscal.printer.request",
                     "fiscal_printer_request",
-                    "fiscal/printer/request"
+                    "fiscal/printer/request",
                 ];
 
                 const possibleStatusTypes = [
                     "fiscal.printer.status",
                     "fiscal_printer_status",
-                    "fiscal/printer/status"
+                    "fiscal/printer/status",
                 ];
 
                 // Генерична заявка към принтера
                 if (possibleRequestTypes.includes(type)) {
-                    console.log("%c[FiscalPrinter] 🎯 PRINTER REQUEST DETECTED!", "color: #00BCD4; font-weight: bold; font-size: 14px");
+                    console.log(
+                        "%c[FiscalPrinter] 🎯 PRINTER REQUEST DETECTED!",
+                        "color: #00BCD4; font-weight: bold; font-size: 14px"
+                    );
                     handlePrinterRequest(payload);
                 }
                 // Заявка за проверка на статус
-                else if (possibleStatusTypes.includes(type) && payload && payload.action === "check_status") {
-                    console.log("%c[FiscalPrinter] 🔍 STATUS CHECK REQUEST DETECTED!", "color: #00BCD4; font-weight: bold; font-size: 14px");
+                else if (
+                    possibleStatusTypes.includes(type) &&
+                    payload &&
+                    payload.action === "check_status"
+                ) {
+                    console.log(
+                        "%c[FiscalPrinter] 🔍 STATUS CHECK REQUEST DETECTED!",
+                        "color: #00BCD4; font-weight: bold; font-size: 14px"
+                    );
                     handleCheckStatusRequest(payload);
                 }
                 // Обновление на статус
-                else if (possibleStatusTypes.includes(type) && payload && payload.action === "status_update") {
-                    console.log("%c[FiscalPrinter] 🔄 STATUS UPDATE DETECTED!", "color: #00BCD4; font-weight: bold; font-size: 14px");
+                else if (
+                    possibleStatusTypes.includes(type) &&
+                    payload &&
+                    payload.action === "status_update"
+                ) {
+                    console.log(
+                        "%c[FiscalPrinter] 🔄 STATUS UPDATE DETECTED!",
+                        "color: #00BCD4; font-weight: bold; font-size: 14px"
+                    );
                     handleStatusUpdate(payload, notification);
-                }
-                else {
+                } else {
                     console.log("[FiscalPrinter] ⚠️ Unknown notification type:", type);
                 }
             }
@@ -147,15 +191,28 @@ export const fiscalPrinterService = {
         /**
          * Обработва генерична заявка към принтера
          */
-        const handlePrinterRequest = async (data) => {
+        async function handlePrinterRequest(data) {
             requestCounter++;
             const localRequestId = requestCounter;
 
-            console.log("%c[FiscalPrinter] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "color: #F44336; font-weight: bold");
-            console.log(`%c[FiscalPrinter] 🔴 REQUEST #${localRequestId} START`, "color: #F44336; font-weight: bold; font-size: 13px");
+            console.log(
+                "%c[FiscalPrinter] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+                "color: #F44336; font-weight: bold"
+            );
+            console.log(
+                `%c[FiscalPrinter] 🔴 REQUEST #${localRequestId} START`,
+                "color: #F44336; font-weight: bold; font-size: 13px"
+            );
             console.log("[FiscalPrinter] Full request data:", data);
 
-            const { request_id, printer_id, method, endpoint, data: requestData, params } = data;
+            const {
+                request_id,
+                printer_id,
+                method,
+                endpoint,
+                data: requestData,
+                params,
+            } = data;
 
             console.log("[FiscalPrinter] Request ID:", request_id);
             console.log("[FiscalPrinter] Printer ID:", printer_id);
@@ -166,9 +223,11 @@ export const fiscalPrinterService = {
 
             try {
                 // Взимаме конфигурация
-                console.log(`[FiscalPrinter] #${localRequestId} 📡 Fetching printer config...`);
-                const config = await rpc('/fiscal_printer/get_printer_config', {
-                    printer_id: printer_id
+                console.log(
+                    `[FiscalPrinter] #${localRequestId} 📡 Fetching printer config...`
+                );
+                const config = await rpc("/fiscal_printer/get_printer_config", {
+                    printer_id: printer_id,
                 });
 
                 if (config.error) {
@@ -176,120 +235,157 @@ export const fiscalPrinterService = {
                 }
 
                 // Изграждаме URL
-                const baseUrl = config.host.replace(/\/$/, '');
+                const baseUrl = config.host.replace(/\/$/, "");
                 const url = `${baseUrl}/${endpoint}`;
 
-                console.log(`%c[FiscalPrinter] #${localRequestId} 🌐 MAKING HTTP REQUEST`, "color: #3F51B5; font-weight: bold");
+                console.log(
+                    `%c[FiscalPrinter] #${localRequestId} 🌐 MAKING HTTP REQUEST`,
+                    "color: #3F51B5; font-weight: bold"
+                );
                 console.log(`[FiscalPrinter] #${localRequestId}    URL: ${url}`);
 
                 // Правим заявка
-                const response = await makePrinterRequest(url, method, requestData, params, localRequestId);
+                const response = await makePrinterRequest(
+                    url,
+                    method,
+                    requestData,
+                    params,
+                    localRequestId
+                );
 
                 // Изпращаме отговор към сървъра
-                await rpc('/fiscal_printer/send_response', {
+                await rpc("/fiscal_printer/send_response", {
                     request_id: request_id,
                     printer_id: printer_id,
                     success: true,
-                    response_data: response
+                    response_data: response,
                 });
 
-                console.log(`%c[FiscalPrinter] #${localRequestId} ✅ REQUEST COMPLETED`, "color: #4CAF50; font-weight: bold");
-
+                console.log(
+                    `%c[FiscalPrinter] #${localRequestId} ✅ REQUEST COMPLETED`,
+                    "color: #4CAF50; font-weight: bold"
+                );
             } catch (error) {
-                console.error(`[FiscalPrinter] #${localRequestId} ❌ REQUEST FAILED:`, error);
+                console.error(
+                    `[FiscalPrinter] #${localRequestId} ❌ REQUEST FAILED:`,
+                    error
+                );
 
                 // Изпращаме грешката към сървъра
                 try {
-                    await rpc('/fiscal_printer/send_response', {
+                    await rpc("/fiscal_printer/send_response", {
                         request_id: request_id,
                         printer_id: printer_id,
                         success: false,
-                        error_message: error.message || 'Unknown error'
+                        error_message: error.message || "Unknown error",
                     });
                 } catch (rpcError) {
-                    console.error(`[FiscalPrinter] #${localRequestId} ❌ Failed to send error:`, rpcError);
+                    console.error(
+                        `[FiscalPrinter] #${localRequestId} ❌ Failed to send error:`,
+                        rpcError
+                    );
                 }
             }
-        };
+        }
 
         /**
          * Обработва заявка за проверка на статус
          */
-        const handleCheckStatusRequest = async (data) => {
+        async function handleCheckStatusRequest(data) {
             requestCounter++;
             const localRequestId = requestCounter;
 
-            console.log(`%c[FiscalPrinter] 🟠 STATUS CHECK #${localRequestId}`, "color: #FF9800; font-weight: bold");
+            console.log(
+                `%c[FiscalPrinter] 🟠 STATUS CHECK #${localRequestId}`,
+                "color: #FF9800; font-weight: bold"
+            );
 
             try {
-                const config = await rpc('/fiscal_printer/get_printer_config', {
-                    printer_id: data.printer_id
+                const config = await rpc("/fiscal_printer/get_printer_config", {
+                    printer_id: data.printer_id,
                 });
 
                 if (config.error) {
                     throw new Error(config.error);
                 }
 
-                const baseUrl = config.host.replace(/\/$/, '');
+                const baseUrl = config.host.replace(/\/$/, "");
                 const url = `${baseUrl}/printers/${config.printer_id}/status`;
 
-                const statusData = await makePrinterRequest(url, 'GET', null, null, localRequestId);
+                const statusData = await makePrinterRequest(
+                    url,
+                    "GET",
+                    null,
+                    null,
+                    localRequestId
+                );
 
-                await rpc('/fiscal_printer/update_status', {
+                await rpc("/fiscal_printer/update_status", {
                     printer_id: data.printer_id,
-                    status_data: statusData
+                    status_data: statusData,
                 });
 
-                console.log(`%c[FiscalPrinter] #${localRequestId} ✅ STATUS CHECK COMPLETE`, "color: #4CAF50; font-weight: bold");
-
+                console.log(
+                    `%c[FiscalPrinter] #${localRequestId} ✅ STATUS CHECK COMPLETE`,
+                    "color: #4CAF50; font-weight: bold"
+                );
             } catch (error) {
-                console.error(`[FiscalPrinter] #${localRequestId} ❌ STATUS CHECK FAILED:`, error);
+                console.error(
+                    `[FiscalPrinter] #${localRequestId} ❌ STATUS CHECK FAILED:`,
+                    error
+                );
 
-                await rpc('/fiscal_printer/update_status', {
+                await rpc("/fiscal_printer/update_status", {
                     printer_id: data.printer_id,
                     status_data: {
-                        status: 'error',
-                        errorMessage: error.message || 'Connection error',
-                        ok: false
-                    }
+                        status: "error",
+                        errorMessage: error.message || "Connection error",
+                        ok: false,
+                    },
                 });
             }
-        };
+        }
 
         /**
          * Обработва обновление на статус
          */
-        const handleStatusUpdate = (data, notificationService) => {
-            console.log("%c[FiscalPrinter] 🔔 STATUS UPDATE NOTIFICATION", "color: #9C27B0; font-weight: bold");
+        function handleStatusUpdate(data, notificationService) {
+            console.log(
+                "%c[FiscalPrinter] 🔔 STATUS UPDATE NOTIFICATION",
+                "color: #9C27B0; font-weight: bold"
+            );
             console.log("[FiscalPrinter] Printer:", data.name);
             console.log("[FiscalPrinter] Status:", data.status);
 
-            notificationService.add(
-                `Принтер ${data.name}: ${data.status}`,
-                {
-                    type: data.is_ready ? "success" : "warning",
-                }
-            );
-        };
+            notificationService.add(`Принтер ${data.name}: ${data.status}`, {
+                type: data.is_ready ? "success" : "warning",
+            });
+        }
 
         /**
          * Прави HTTP заявка към принтера
          */
-        const makePrinterRequest = async (url, method, data = null, params = null, requestId = 0) => {
+        async function makePrinterRequest(
+            url,
+            method,
+            data = null,
+            params = null,
+            requestId = 0
+        ) {
             const options = {
                 method: method,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
                 },
-                mode: 'cors',
+                mode: "cors",
             };
 
-            if (method === 'POST' && data) {
+            if (method === "POST" && data) {
                 options.body = JSON.stringify(data);
             }
 
-            if (method === 'GET' && params) {
+            if (method === "GET" && params) {
                 const queryString = new URLSearchParams(params).toString();
                 url = `${url}?${queryString}`;
             }
@@ -298,7 +394,9 @@ export const fiscalPrinterService = {
 
             const response = await fetch(url, options);
 
-            console.log(`[FiscalPrinter] #${requestId} 📥 Response status: ${response.status}`);
+            console.log(
+                `[FiscalPrinter] #${requestId} 📥 Response status: ${response.status}`
+            );
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -307,16 +405,19 @@ export const fiscalPrinterService = {
 
             const result = await response.json();
             return result;
-        };
+        }
 
         // ========================================
         // ИНИЦИАЛИЗАЦИЯ И ПОДПИСВАНЕ
         // ========================================
 
-        console.log("%c[FiscalPrinter] 📡 INITIALIZING BUS CONNECTION", "color: #2196F3; font-weight: bold");
+        console.log(
+            "%c[FiscalPrinter] 📡 INITIALIZING BUS CONNECTION",
+            "color: #2196F3; font-weight: bold"
+        );
 
         // 1. ПЪРВО: Стартираме bus service ако има такава функция
-        if (typeof bus_service.start === 'function') {
+        if (typeof bus_service.start === "function") {
             bus_service.start();
             console.log("[FiscalPrinter] ✅ Bus service started");
         }
@@ -325,7 +426,7 @@ export const fiscalPrinterService = {
         const channelVariants = [
             ["fiscal.printer.request", "fiscal.printer.status"],
             ["fiscal_printer_request", "fiscal_printer_status"],
-            ["fiscal/printer/request", "fiscal/printer/status"]
+            ["fiscal/printer/request", "fiscal/printer/status"],
         ];
 
         let channelsAdded = false;
@@ -333,12 +434,22 @@ export const fiscalPrinterService = {
             try {
                 bus_service.addChannel(reqChannel);
                 bus_service.addChannel(statusChannel);
-                console.log(`[FiscalPrinter] ✅ Channels added: ${reqChannel}, ${statusChannel}`);
+                console.log(
+                    `[FiscalPrinter] ✅ Channels added: ${reqChannel}, ${statusChannel}`
+                );
                 channelsAdded = true;
                 break;
             } catch (e) {
-                console.log(`[FiscalPrinter] ⚠️ Could not add channels ${reqChannel}, ${statusChannel}:`, e.message);
+                console.log(
+                    `[FiscalPrinter] ⚠️ Could not add channels ${reqChannel}, ${statusChannel}:`,
+                    e.message
+                );
             }
+        }
+        if (!channelsAdded) {
+            console.warn(
+                "[FiscalPrinter] ⚠️ Could not add any channel variants. Bus may not receive notifications."
+            );
         }
 
         // 3. ТРЕТО: Опитваме различни начини за подписване
@@ -359,12 +470,18 @@ export const fiscalPrinterService = {
         if (bus_service.subscribe) {
             try {
                 bus_service.subscribe("fiscal.printer.request", (payload) => {
-                    console.log("%c[FiscalPrinter] 🎯 DIRECT CHANNEL SUBSCRIPTION - REQUEST", "color: #00BCD4; font-weight: bold");
+                    console.log(
+                        "%c[FiscalPrinter] 🎯 DIRECT CHANNEL SUBSCRIPTION - REQUEST",
+                        "color: #00BCD4; font-weight: bold"
+                    );
                     handlePrinterRequest(payload);
                 });
 
                 bus_service.subscribe("fiscal.printer.status", (payload) => {
-                    console.log("%c[FiscalPrinter] 🔍 DIRECT CHANNEL SUBSCRIPTION - STATUS", "color: #00BCD4; font-weight: bold");
+                    console.log(
+                        "%c[FiscalPrinter] 🔍 DIRECT CHANNEL SUBSCRIPTION - STATUS",
+                        "color: #00BCD4; font-weight: bold"
+                    );
                     if (payload.action === "check_status") {
                         handleCheckStatusRequest(payload);
                     } else if (payload.action === "status_update") {
@@ -374,7 +491,10 @@ export const fiscalPrinterService = {
 
                 console.log("[FiscalPrinter] ✅ Direct channel subscriptions added");
             } catch (e) {
-                console.log("[FiscalPrinter] ⚠️ Could not use subscribe method:", e.message);
+                console.log(
+                    "[FiscalPrinter] ⚠️ Could not use subscribe method:",
+                    e.message
+                );
             }
         }
 
@@ -391,8 +511,11 @@ export const fiscalPrinterService = {
         // DEBUG: Презаписваме някои методи за да видим какво се случва
         if (bus_service._onWebsocketMessage) {
             const original = bus_service._onWebsocketMessage.bind(bus_service);
-            bus_service._onWebsocketMessage = function(...args) {
-                console.log("%c[FiscalPrinter] 🔴 INTERCEPTED WebSocket Message", "color: red; font-weight: bold; font-size: 14px");
+            bus_service._onWebsocketMessage = function (...args) {
+                console.log(
+                    "%c[FiscalPrinter] 🔴 INTERCEPTED WebSocket Message",
+                    "color: red; font-weight: bold; font-size: 14px"
+                );
                 console.log("[FiscalPrinter] WebSocket args:", args);
 
                 // Извикваме onBusNotification директно с данните
@@ -405,16 +528,27 @@ export const fiscalPrinterService = {
             console.log("[FiscalPrinter] ✅ WebSocket interceptor installed");
         }
 
-        console.log("%c[FiscalPrinter] ✅ BUS INITIALIZATION COMPLETE", "color: #4CAF50; font-weight: bold");
+        console.log(
+            "%c[FiscalPrinter] ✅ BUS INITIALIZATION COMPLETE",
+            "color: #4CAF50; font-weight: bold"
+        );
 
         // Уведомяваме сървъра че браузърът е готов
-        rpc('/fiscal_printer/browser_ready', {}).then(() => {
-            console.log("[FiscalPrinter] ✅ Server notified that browser is ready");
-        }).catch(err => {
-            console.warn("[FiscalPrinter] ⚠️ Could not notify server:", err.message);
-        });
+        rpc("/fiscal_printer/browser_ready", {})
+            .then(() => {
+                console.log("[FiscalPrinter] ✅ Server notified that browser is ready");
+            })
+            .catch((err) => {
+                console.warn(
+                    "[FiscalPrinter] ⚠️ Could not notify server:",
+                    err.message
+                );
+            });
 
-        console.log("%c[FiscalPrinter] ✅ SERVICE STARTED SUCCESSFULLY", "color: #4CAF50; font-weight: bold; font-size: 14px");
+        console.log(
+            "%c[FiscalPrinter] ✅ SERVICE STARTED SUCCESSFULLY",
+            "color: #4CAF50; font-weight: bold; font-size: 14px"
+        );
 
         // Публичен API с destroy метод
         return {
@@ -433,7 +567,7 @@ export const fiscalPrinterService = {
                 }
 
                 console.log("[FiscalPrinter] Service destroyed");
-            }
+            },
         };
     },
 };

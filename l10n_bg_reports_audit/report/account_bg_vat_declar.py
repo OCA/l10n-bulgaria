@@ -6,11 +6,11 @@ from psycopg2 import sql
 from odoo import api, fields, models, tools
 
 from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
+    account_tag_33_43,
     l10n_bg_extend_address,
     l10n_bg_lang,
     l10n_bg_odoo_compatible,
     l10n_bg_where,
-    account_tag_33_43
 )
 
 _logger = logging.getLogger(__name__)
@@ -96,7 +96,7 @@ class AccountBgVatInfoDeclar(models.Model):
 
     @api.model
     def _from(self):
-        calc_declaration = self.env['account.bg.vat.calc.declar']._table_query
+        calc_declaration = self.env["account.bg.vat.calc.declar"]._table_query
         return f"""(
     SELECT
         company_id,
@@ -146,13 +146,15 @@ LEFT JOIN res_company AS company
 LEFT JOIN res_partner AS company_partner
     ON company.partner_id = company_partner.id
 LEFT JOIN res_partner AS represent_partner
-    ON company.l10n_bg_tax_contact_id = represent_partner.id""" + l10n_bg_extend_address(self.env)
+    ON company.l10n_bg_tax_contact_id = represent_partner.id""" + l10n_bg_extend_address(
+            self.env
+        )
 
     @api.model
     def _where(self):
         if self._context.get("report_options"):
-            date_from, date_to, tax_period, tax_periods, company_id, state = l10n_bg_where(
-                self.env, self._context.get("report_options")
+            date_from, date_to, tax_period, tax_periods, company_id, state = (
+                l10n_bg_where(self.env, self._context.get("report_options"))
             )
             if len(tax_periods) == 0:
                 return f"""acc.company_id = {self.env.company.id} AND acc.info_tag_3 = '{tax_period}'"""
@@ -375,7 +377,9 @@ FROM {self._from(where_clause=where_clause)}
     def _select(self):
         account_tag_33, account_tag_43 = 0.0, 0.0
         if self._context.get("report_options"):
-            account_tag_33, account_tag_43 = account_tag_33_43(self.env, self._context.get("report_options"))
+            account_tag_33, account_tag_43 = account_tag_33_43(
+                self.env, self._context.get("report_options")
+            )
             if not account_tag_33:
                 account_tag_33 = 0.0
             if not account_tag_43:
@@ -445,8 +449,8 @@ LEFT JOIN (SELECT move_id, date, account_tag_50, account_tag_60, account_tag_70,
     @api.model
     def _where(self):
         if self._context.get("report_options"):
-            date_from, date_to, tax_period, tax_periods, company_id, state = l10n_bg_where(
-                self.env, self._context.get("report_options")
+            date_from, date_to, tax_period, tax_periods, company_id, state = (
+                l10n_bg_where(self.env, self._context.get("report_options"))
             )
             return f"""am.company_id = {company_id} AND am.state = ANY(ARRAY{state}) AND am.date >= '{date_from}' AND am.date <= '{date_to}'"""
         return ""

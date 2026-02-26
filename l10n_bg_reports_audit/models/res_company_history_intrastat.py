@@ -1,7 +1,8 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-from odoo import api, fields, models, _
+
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -13,7 +14,7 @@ class L10nBgIntrastatThreshold(models.Model):
     _order = "company_id, year desc, month desc"
     _rec_name = "display_name"
     _check_company_auto = True
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ["mail.thread", "mail.activity.mixin"]
 
     company_id = fields.Many2one(
         "res.company",
@@ -136,7 +137,9 @@ class L10nBgIntrastatThreshold(models.Model):
     @api.depends("company_id")
     def _compute_currency_id(self):
         for record in self:
-            record.currency_id = record.company_id.currency_id or self.env.ref("base.BGN", raise_if_not_found=False)
+            record.currency_id = record.company_id.currency_id or self.env.ref(
+                "base.BGN", raise_if_not_found=False
+            )
 
     @api.depends("year", "month", "company_id")
     def _compute_display_name(self):
@@ -169,7 +172,9 @@ class L10nBgIntrastatThreshold(models.Model):
                     )
             if record.date_from.year != record.year:
                 raise ValidationError(
-                    _("The 'Valid From' date must be in the same year as the selected year.")
+                    _(
+                        "The 'Valid From' date must be in the same year as the selected year."
+                    )
                 )
 
     @api.constrains("company_id", "date_from", "date_to", "year", "month")
@@ -190,7 +195,8 @@ class L10nBgIntrastatThreshold(models.Model):
             overlapping = self.search(domain, limit=1)
             if overlapping:
                 raise ValidationError(
-                    _("Period overlaps with existing threshold: %s") % overlapping.display_name
+                    _("Period overlaps with existing threshold: %s")
+                    % overlapping.display_name
                 )
 
     @api.model

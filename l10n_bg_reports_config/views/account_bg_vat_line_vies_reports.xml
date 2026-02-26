@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_account_bg_calc_vies_line_search" model="ir.ui.view">
-         <field name="name">account.bg.calc.vies.line.search</field>
-         <field name="model">account.bg.calc.vies.line</field>
-         <field name="arch" type="xml">
+        <field name="name">account.bg.calc.vies.line.search</field>
+        <field name="model">account.bg.calc.vies.line</field>
+        <field name="arch" type="xml">
             <search>
                 <field name="info_tag_vir_7" />
                 <field name="partner_id" string="Customer" />
-<!--                <field name="company_id" groups="base.group_multi_company" />-->
+                <!--                <field name="company_id" groups="base.group_multi_company" />-->
                 <separator />
                 <filter
                     name="posted"
@@ -15,12 +15,12 @@
                     domain="[('state','=','posted')]"
                     help="Posted Journal Items"
                 />
-<!--                <filter-->
-<!--                    name="company"-->
-<!--                    string="Current company"-->
-<!--                    domain="[('company_id','=',env.company_id.id)]"-->
-<!--                    help="Use record only for current company"-->
-<!--                />-->
+                <!--                <filter-->
+                <!--                    name="company"-->
+                <!--                    string="Current company"-->
+                <!--                    domain="[('company_id','=',env.company_id.id)]"-->
+                <!--                    help="Use record only for current company"-->
+                <!--                />-->
                 <separator />
                 <group expand="0" string="Group By...">
                     <filter
@@ -33,21 +33,21 @@
                         string="Partner"
                         context="{'group_by': 'partner_id'}"
                     />
-<!--                    <filter-->
-<!--                        name="groupby_company_id"-->
-<!--                        string="Company"-->
-<!--                        context="{'group_by': 'company_id'}"-->
-<!--                        groups="base.group_multi_company"-->
-<!--                    />-->
-               </group>
+                    <!--                    <filter-->
+                    <!--                        name="groupby_company_id"-->
+                    <!--                        string="Company"-->
+                    <!--                        context="{'group_by': 'company_id'}"-->
+                    <!--                        groups="base.group_multi_company"-->
+                    <!--                    />-->
+                </group>
             </search>
-         </field>
+        </field>
     </record>
 
     <record id="view_account_bg_calc_vies_line_tree" model="ir.ui.view">
-         <field name="name">account.bg.calc.vies.line.tree</field>
-         <field name="model">account.bg.calc.vies.line</field>
-         <field name="arch" type="xml">
+        <field name="name">account.bg.calc.vies.line.tree</field>
+        <field name="model">account.bg.calc.vies.line</field>
+        <field name="arch" type="xml">
             <list>
                 <field name="partner_id" />
                 <field name="info_tag_vir_7" />
@@ -59,15 +59,15 @@
                 />
                 <field name="state" />
             </list>
-         </field>
+        </field>
     </record>
 
     <record id="view_account_bg_calc_vies_line_pivot" model="ir.ui.view">
-         <field name="name">account.bg.calc.vies.line.pivot</field>
-         <field name="model">account.bg.calc.vies.line</field>
-         <field name="arch" type="xml">
+        <field name="name">account.bg.calc.vies.line.pivot</field>
+        <field name="model">account.bg.calc.vies.line</field>
+        <field name="arch" type="xml">
             <pivot>
-               <field name="partner_id" />
+                <field name="partner_id" />
                 <field name="info_tag_vir_7" />
                 <field name="account_tag_vir_4" sum="Base ICD of goods 0% 02-15" />
                 <field name="account_tag_vir_5" sum="TO-trilateral operations 02-25" />
@@ -76,7 +76,7 @@
                     sum="Base under Art. 21 on the territory of the EU 02-17"
                 />
             </pivot>
-         </field>
+        </field>
     </record>
 
     <record id="action_account_bg_calc_vies_line_line" model="ir.actions.act_window">
@@ -85,5 +85,4 @@
         <field name="view_mode">pivot,list</field>
         <field name="context">{'search_default_posted': 1}</field>
     </record>
-
 </odoo>

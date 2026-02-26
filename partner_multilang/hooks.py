@@ -2,8 +2,10 @@
 import logging
 import re
 
-from odoo.addons.partner_multilang.models.res_transliterate import partner_name_translate
-from odoo.addons.partner_multilang.models.res_transliterate import LANGUAGE_MAPPING
+from odoo.addons.partner_multilang.models.res_transliterate import (
+    LANGUAGE_MAPPING,
+    partner_name_translate,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -102,7 +104,7 @@ def _ensure_complete_name_multilanguage_column(env):
     _logger.info("Creating res_partner.complete_name_multilanguage column (jsonb)")
     env.cr.execute(
         'ALTER TABLE "res_partner" '
-        'ADD COLUMN IF NOT EXISTS complete_name_multilanguage jsonb'
+        "ADD COLUMN IF NOT EXISTS complete_name_multilanguage jsonb"
     )
 
 
@@ -140,9 +142,13 @@ def pre_init_hook(env):
     _ensure_project_task_translated_columns_are_jsonb(env)
 
     # 3. Активираме българския език, ако е архивиран
-    lang = env["res.lang"].with_context(active_test=False).search(
-        [("code", "=", "bg_BG"), ("active", "=", False)],
-        limit=1,
+    lang = (
+        env["res.lang"]
+        .with_context(active_test=False)
+        .search(
+            [("code", "=", "bg_BG"), ("active", "=", False)],
+            limit=1,
+        )
     )
     if lang:
         lang.action_unarchive()
@@ -211,7 +217,7 @@ def uninstall_hook(env):
                    """)
     res = env.cr.fetchone()
 
-    if res and res[0] == 'jsonb':
+    if res and res[0] == "jsonb":
         # Извличаме bg_BG стойността. Ако я няма, взимаме каквото има.
         # Тъй като Odoo ще конвертира към varchar, ние правим JSON-а да съдържа само текст.
         env.cr.execute("""
@@ -225,4 +231,6 @@ def uninstall_hook(env):
                                   )
                        WHERE name IS NOT NULL;
                        """)
-        _logger.info("Names successfully reverted to Bulgarian text before field conversion.")
+        _logger.info(
+            "Names successfully reverted to Bulgarian text before field conversion."
+        )

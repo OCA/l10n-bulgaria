@@ -10,10 +10,10 @@ from odoo.addons.l10n_bg_reports_audit.models.account_move import (
     get_doc_type,
 )
 from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
+    l10n_bg_audit_tax_percentage,
+    l10n_bg_get_tag_negate_sql,
     l10n_bg_lang,
     l10n_bg_where,
-    l10n_bg_get_tag_negate_sql,
-    l10n_bg_audit_tax_percentage,
 )
 
 _logger = logging.getLogger(__name__)
@@ -29,8 +29,7 @@ class AccountBGInfoPurchasesLine(models.Model):
 
     company_id = fields.Many2one("res.company", "Company", readonly=True)
     company_currency_id = fields.Many2one(
-        related="company_id.currency_id",
-        readonly=True
+        related="company_id.currency_id", readonly=True
     )
     move_id = fields.Many2one(
         "account.move", string="Account Move", readonly=True, auto_join=True
@@ -187,9 +186,12 @@ UNION
     @api.model
     def _where(self):
         if self._context.get("report_options"):
-            date_from, date_to, tax_period, tax_periods, company_id, state = l10n_bg_where(
-                self.env, self._context.get("report_options"),
-                model_report='purchase',
+            date_from, date_to, tax_period, tax_periods, company_id, state = (
+                l10n_bg_where(
+                    self.env,
+                    self._context.get("report_options"),
+                    model_report="purchase",
+                )
             )
             return f"""am.company_id = {company_id} AND am.state = ANY(ARRAY{state}) AND am.date >= '{date_from}' AND am.date <= '{date_to}'"""
         return False
@@ -347,7 +349,7 @@ class AccountBGCalcPurchasesLine(models.Model):
 
     @api.model
     def _from(self):
-        tax_negate = l10n_bg_get_tag_negate_sql(table_alias='account_account_tag')
+        tax_negate = l10n_bg_get_tag_negate_sql(table_alias="account_account_tag")
         return f"""account_move_line AS aml
     LEFT JOIN account_move AS am
         ON aml.move_id = am.id
@@ -368,8 +370,8 @@ class AccountBGCalcPurchasesLine(models.Model):
     @api.model
     def _where(self):
         if self._context.get("report_options"):
-            date_from, date_to, tax_period, tax_periods, company_id, state = l10n_bg_where(
-                self.env, self._context.get("report_options")
+            date_from, date_to, tax_period, tax_periods, company_id, state = (
+                l10n_bg_where(self.env, self._context.get("report_options"))
             )
             return f"""am.company_id = {company_id} AND am.state = ANY(ARRAY{state}) AND aat.l10n_bg_applicability = 'purchase' AND am.date >= '{date_from}' AND am.date <= '{date_to}'"""
         return """aat.l10n_bg_applicability = 'purchase'"""

@@ -181,11 +181,6 @@ msgid "Included in layout"
 msgstr ""
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_invoice_document
-msgid "Invoice"
-msgstr ""
-
-#. module: l10n_bg_report_theme
 #: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
 msgid "Invoicing address:"
 msgstr ""

@@ -14,6 +14,7 @@ sudo systemctl restart odoo
 ```
 
 В Odoo:
+
 1. Apps → Update Apps List
 2. Търсете "AI TARIC"
 3. Install
@@ -28,12 +29,14 @@ sudo systemctl restart odoo
 ### Стъпка 3: Първа класификация! (2 мин)
 
 **За 1 продукт:**
+
 1. Product → Create
 2. Name: "Samsung Galaxy S24 Mobile Phone"
 3. TARIC & INTRASTAT таб → 🤖 Classify with AI
 4. Select best suggestion → Apply!
 
 **За 100 продукта:**
+
 1. Products → Select All
 2. Action → Batch Classify Products
 3. ✅ Only Unclassified + ✅ Auto-apply High Confidence
@@ -43,6 +46,7 @@ sudo systemctl restart odoo
 ## 📊 Какво получавате?
 
 ### За всеки продукт:
+
 - ✅ 10-digit TARIC код
 - ✅ 8-digit CN8/INTRASTAT код
 - ✅ Описание на BG и EN
@@ -51,10 +55,11 @@ sudo systemctl restart odoo
 - ✅ AI обяснение защо този код
 
 ### Пример резултат:
+
 ```
 Product: "Samsung Galaxy S24"
 ├─ TARIC Code: 8517120000
-├─ CN8 Code: 85171200  
+├─ CN8 Code: 85171200
 ├─ Description BG: "Телефони за клетъчни мрежи"
 ├─ Supplementary Unit: p/st (pieces)
 ├─ Confidence: 98%
@@ -63,18 +68,19 @@ Product: "Samsung Galaxy S24"
 
 ## 💰 Колко струва?
 
-| Продукти | Цена (USD) | Време |
-|----------|-----------|-------|
-| 1 | $0.006 | 3 сек |
-| 100 | $0.60 | 5 мин |
-| 1,000 | $6.00 | 50 мин |
-| 10,000 | $60.00 | 8 часа |
+| Продукти | Цена (USD) | Време  |
+| -------- | ---------- | ------ |
+| 1        | $0.006     | 3 сек  |
+| 100      | $0.60      | 5 мин  |
+| 1,000    | $6.00      | 50 мин |
+| 10,000   | $60.00     | 8 часа |
 
 💡 **Free tier:** $5 credits = ~800 безплатни класификации!
 
 ## 🎯 Use Cases
 
 ### Електронна търговия
+
 ```python
 # Import 5000 products from CSV
 → Batch Classify (30 min, $30)
@@ -84,6 +90,7 @@ Product: "Samsung Galaxy S24"
 ```
 
 ### Производствена компания
+
 ```python
 # 200 raw materials + 150 finished goods
 → Batch Classify (15 min, $2.10)
@@ -92,6 +99,7 @@ Product: "Samsung Galaxy S24"
 ```
 
 ### Счетоводна къща
+
 ```python
 # Client has 50 products, needs INTRASTAT
 → Classify all (2 min, $0.30)
@@ -102,12 +110,14 @@ Product: "Samsung Galaxy S24"
 ## 🔥 Pro Tips
 
 ### Tip #1: Добро описание = по-добър резултат
+
 ```
 ❌ Bad: "Phone"
 ✅ Good: "Samsung Galaxy S24 5G smartphone, 256GB"
 ```
 
 ### Tip #2: Batch класификация през нощта
+
 ```python
 # Schedule for 2 AM
 → Set Auto-apply High Confidence = True
@@ -116,6 +126,7 @@ Product: "Samsung Galaxy S24"
 ```
 
 ### Tip #3: Създайте си шаблони
+
 ```python
 # За често продавани категории
 Electronics → 8517...
@@ -126,20 +137,15 @@ Furniture → 94...
 
 ## ❓ FAQ
 
-**Q: Трябва ли да плащам за API?**
-A: Първите $5 са безплатни = 800+ класификации
+**Q: Трябва ли да плащам за API?** A: Първите $5 са безплатни = 800+ класификации
 
-**Q: Колко точен е AI-то?**
-A: 95%+ accuracy за стандартни продукти, 85%+ за специфични
+**Q: Колко точен е AI-то?** A: 95%+ accuracy за стандартни продукти, 85%+ за специфични
 
-**Q: Мога ли да редактирам предложенията?**
-A: Да! Всеки код може да се промени ръчно
+**Q: Мога ли да редактирам предложенията?** A: Да! Всеки код може да се промени ръчно
 
-**Q: Работи ли offline?**
-A: Не, нужна е интернет връзка за AI API
+**Q: Работи ли offline?** A: Не, нужна е интернет връзка за AI API
 
-**Q: Поддържа ли multi-company?**
-A: Да, всяка компания има свои настройки
+**Q: Поддържа ли multi-company?** A: Да, всяка компания има свои настройки
 
 ## 🆘 Помощ
 
@@ -153,6 +159,7 @@ A: Да, всяка компания има свои настройки
 ## 📚 Next Steps
 
 След успешна първа класификация:
+
 1. 📖 Прочетете пълния [README.md](README.md)
 2. 🇧🇬 Научете за [INTRASTAT декларации](INTRASTAT_BG_GUIDE.md)
 3. 🔧 Настройте автоматизация

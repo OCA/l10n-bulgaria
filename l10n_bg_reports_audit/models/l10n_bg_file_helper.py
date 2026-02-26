@@ -2,20 +2,15 @@
 import json
 import logging
 
-from odoo import fields, models, _
-from odoo import release
 from dateutil.relativedelta import relativedelta
 
+from odoo import fields, models, release
 
 _logger = logging.getLogger(__name__)
 
-L10N_BG_ADDRESS_EXTEND = [
-    'l10n_bg_city'
-]
+L10N_BG_ADDRESS_EXTEND = ["l10n_bg_city"]
 
-L10N_BG_MULTILANGUAGE = [
-    "l10n_bg_multilang", "partner_multilang"
-]
+L10N_BG_MULTILANGUAGE = ["l10n_bg_multilang", "partner_multilang"]
 
 
 def _get_odoo_version():
@@ -24,10 +19,10 @@ def _get_odoo_version():
 
     :return: Мажорна версия като integer (например 18, 19)
     """
-    return int(release.version.split('.')[0])
+    return int(release.version.split(".")[0])
 
 
-def l10n_bg_get_tag_negate_sql(table_alias='aat_base'):
+def l10n_bg_get_tag_negate_sql(table_alias="aat_base"):
     """
     Връща SQL за извличане на negate флага в зависимост от версията на Odoo.
 
@@ -45,7 +40,7 @@ def l10n_bg_get_tag_negate_sql(table_alias='aat_base'):
         return f"STARTS_WITH({table_alias}.name#>>'{{en_US}}', '-') AS negate"
 
 
-def l10n_bg_get_account_deprecated_sql(table_alias='acc'):
+def l10n_bg_get_account_deprecated_sql(table_alias="acc"):
     """
     Връща SQL условие за филтриране на deprecated сметки в зависимост от версията на Odoo.
 
@@ -102,15 +97,27 @@ LEFT JOIN res_city AS {model}_city
 
 
 def l10n_bg_lang(env, lang_modules="partner", field_name=""):
-    is_l10n_bg_multilanguage = isinstance(env.company.is_l10n_bg_multilanguage, dict) and env.company.is_l10n_bg_multilanguage.get("l10n_bg_multilang", '') == 'installed'
+    is_l10n_bg_multilanguage = (
+        isinstance(env.company.is_l10n_bg_multilanguage, dict)
+        and env.company.is_l10n_bg_multilanguage.get("l10n_bg_multilang", "")
+        == "installed"
+    )
 
-    if l10n_bg_extend_address(env) and lang_modules == "partner" and field_name == "company_partner.city":
+    if (
+        l10n_bg_extend_address(env)
+        and lang_modules == "partner"
+        and field_name == "company_partner.city"
+    ):
         return f"""(CASE
         WHEN company_partner_city.name ? 'bg_BG' THEN company_partner_city.name#>>'{{{'bg_BG'}}}'
         WHEN company_partner_city.name ? 'en_US' THEN company_partner_city.name#>>'{{{'en_US'}}}'
         ELSE company_partner_city.name::text
         END)"""
-    if l10n_bg_extend_address(env) and lang_modules == "partner" and field_name == "represent_partner.city":
+    if (
+        l10n_bg_extend_address(env)
+        and lang_modules == "partner"
+        and field_name == "represent_partner.city"
+    ):
         return f"""(CASE
         WHEN represent_partner_city.name ? 'bg_BG' THEN represent_partner_city.name#>>'{{{'bg_BG'}}}'
         WHEN represent_partner_city.name ? 'en_US' THEN represent_partner_city.name#>>'{{{'en_US'}}}'
@@ -118,7 +125,9 @@ def l10n_bg_lang(env, lang_modules="partner", field_name=""):
         END)"""
 
     if lang_modules == "partner":
-        _logger.debug(f"l10n_bg_lang: lang_modules == partner: {field_name} - {lang_modules}")
+        _logger.debug(
+            f"l10n_bg_lang: lang_modules == partner: {field_name} - {lang_modules}"
+        )
         return (
             f"""(CASE
            WHEN {field_name} ? 'bg_BG' THEN {field_name}#>>'{{{'bg_BG'}}}'
@@ -129,13 +138,11 @@ def l10n_bg_lang(env, lang_modules="partner", field_name=""):
             else f"""{field_name}"""
         )
     elif lang_modules == "narration":
-        return (
-            """(CASE
+        return """(CASE
            WHEN am.l10n_bg_narration ? 'bg_BG' THEN am.l10n_bg_narration#>>'{bg_BG}'
            WHEN am.l10n_bg_narration ? 'en_US' THEN am.l10n_bg_narration#>>'{en_US}'
            ELSE am.l10n_bg_narration::text
            END)"""
-        )
     else:
         return (
             f"""(CASE
@@ -146,6 +153,7 @@ def l10n_bg_lang(env, lang_modules="partner", field_name=""):
             if field_name and is_l10n_bg_multilanguage
             else f"""{field_name}"""
         )
+
 
 def l10n_bg_odoo_compatible_line(env, mode):
     l10n_bg_compatible_odoo = env.user.company_id.l10n_bg_odoo_compatible
@@ -160,7 +168,9 @@ def l10n_bg_odoo_compatible(env, mode, report_options=None):
     l10n_bg_compatible_odoo = env.user.company_id.l10n_bg_odoo_compatible
     _logger.debug(f"l10n_bg_compatible_odoo: {l10n_bg_compatible_odoo} - {mode}")
 
-    account_tag_33, account_tag_43 = account_tag_33_43(env, report_options=report_options or {})
+    account_tag_33, account_tag_43 = account_tag_33_43(
+        env, report_options=report_options or {}
+    )
     if not account_tag_33:
         account_tag_33 = 0.00
     if not account_tag_43:
@@ -174,16 +184,14 @@ def l10n_bg_odoo_compatible(env, mode, report_options=None):
     # Mapping на режимите към SQL заявките
     sql_mapping = {
         # Tag 20 логика
-        ("tag_20", True): f"""(
+        ("tag_20", True): """(
     CASE
         WHEN SUM(accs.account_tag_22) <= 0 THEN
             ABS(SUM(accs.account_tag_22)) + SUM(accs.account_tag_23 + accs.account_tag_24 + accs.account_tag_21)
         ELSE
             SUM(-accs.account_tag_22) + SUM(accs.account_tag_23 + accs.account_tag_24 + accs.account_tag_21)
     END)""",
-
         ("tag_20", False): f"{sales_vat_sum}",
-
         # Tag 22 логика
         ("tag_22", True): """(
     CASE
@@ -192,9 +200,7 @@ def l10n_bg_odoo_compatible(env, mode, report_options=None):
         ELSE
             SUM(-accs.account_tag_22)
     END)""",
-
         ("tag_22", False): "SUM(accs.account_tag_22)",
-
         # Tag 50 логика (дължим ДДС)
         ("tag_50", True): f"""(
     CASE
@@ -202,9 +208,7 @@ def l10n_bg_odoo_compatible(env, mode, report_options=None):
             ABS({vat_difference})
         ELSE 0.00
     END)""",
-
         ("tag_50", False): "SUM(accr.account_tag_50)",
-
         # Tag 60 логика (възстановяване на ДДС)
         ("tag_60", True): f"""(
     CASE
@@ -212,7 +216,6 @@ def l10n_bg_odoo_compatible(env, mode, report_options=None):
             ABS({vat_difference})
         ELSE 0.00
     END)""",
-
         ("tag_60", False): "SUM(accr.account_tag_60)",
     }
 
@@ -259,7 +262,7 @@ def _set_options(options, report_date_from, report_date_to):
     return options
 
 
-def l10n_bg_where(env, report_options, model_report='sale'):
+def l10n_bg_where(env, report_options, model_report="sale"):
     date_now = fields.Date.to_string(fields.Date.today())
     date_from = report_options["date"].get("date_from") or date_now
     date_to = report_options["date"].get("date_to") or date_now
@@ -269,7 +272,7 @@ def l10n_bg_where(env, report_options, model_report='sale'):
     unposted_in_period = report_options.get("unposted_in_period", False)
     all_entries = report_options["all_entries"]
     state = ["posted", "cancel"]
-    if model_report == 'purchase':
+    if model_report == "purchase":
         state = ["posted"]
 
     tax_periods = [tax_period] if tax_period else []
@@ -410,8 +413,8 @@ L10N_BG_DECLARATION_FIELDS = {
     "info_tag_2": lambda value: parce_str_50(value),
     "info_tag_3": lambda value: parce_str_6(value),
     "info_tag_4": lambda value: parce_str_50(value),
-    "info_tag_5": lambda value: parce_integer_15(value, arrangement='R'),
-    "info_tag_6": lambda value: parce_integer_15(value, arrangement='R'),
+    "info_tag_5": lambda value: parce_integer_15(value, arrangement="R"),
+    "info_tag_6": lambda value: parce_integer_15(value, arrangement="R"),
     "account_tag_10": lambda value: parce_fload_15_2(value),
     "account_tag_20": lambda value: parce_fload_15_2(value),
     "account_tag_11": lambda value: parce_fload_15_2(value),
@@ -448,7 +451,7 @@ L10N_BG_PURCHASES_FIELDS = {
     "info_tag_2": lambda value: parce_str_15(value),
     "info_tag_1": lambda value: parce_str_6(value),
     "info_tag_3": lambda value: parce_integer_4(value, arrangement="R"),
-    "info_tag_4": lambda value: parce_integer_15(value,  arrangement="R"),
+    "info_tag_4": lambda value: parce_integer_15(value, arrangement="R"),
     "info_tag_5": lambda value: parce_str_2(value),
     "info_tag_6": lambda value: parce_str_20(value),
     "info_tag_7": lambda value: parce_date_10(value),
@@ -466,34 +469,90 @@ L10N_BG_PURCHASES_FIELDS = {
 }
 
 L10N_BG_SALES_FIELDS = {
-    "info_tag_0": lambda value: parce_str_15(value), # 02-00 Идентификационен номер по ДДС на лицето: символен (15)
-    "info_tag_1": lambda value: parce_str_6(value), # 02-01 Данъчен период: символен (6) ггггмм
-    "info_tag_2": lambda value: parce_integer_4(value, arrangement="R"), # 02-02 Клон/обособено звено: цифров (4)
-    "info_tag_3": lambda value: parce_integer_15(value, arrangement="R"), #  02-03 Пореден номер на документа в дневника: цифров (15)
-    "info_tag_4": lambda value: parce_str_2(value), # 02-04 Вид на документа: символен (2)
-    "info_tag_5": lambda value: parce_str_20(value), # 02-05 Номер на документа символен (20)
-    "info_tag_6": lambda value: parce_date_10(value), # 02-06 Дата на документа: Дата (dd/mm/yyyy)
-    "info_tag_7": lambda value: parce_str_15(value), # 02-07 Идентификационен номер на контрагента (получател): символен (15)
-    "info_tag_8": lambda value: parce_str_50(value), # 02-08 Име на контрагента (получател): символен (50)
-    "info_tag_9": lambda value: parce_str_30(value), # 02-09 Вид на стоката или обхват и вид на услугата - точно описание съгласно документа: символен (30)
-    "account_tag_9": lambda value: parce_fload_15_2(value), # 02-10* Общ размер на данъчните основи за облагане с ДДС: цифров (15)
-    "account_tag_20": lambda value: parce_fload_15_2(value), # 02-20* Всичко начислен ДДС: цифров (15)
-    "account_tag_11": lambda value: parce_fload_15_2(value), # 02-11 Данъчна основа на облагаемите доставки със ставка 20 %, вкл. доставките при условията на дистанционни продажби, с място на изпълнение на територията на страната: цифров (15)
-    "account_tag_21": lambda value: parce_fload_15_2(value), # 02-21 Начислен ДДС 20 %: цифров (15)
-    "account_tag_12": lambda value: parce_fload_15_2(value), # 02-12 ДО на ВОП: цифров (15)
-    "account_tag_26": lambda value: parce_fload_15_2(value), # 02-26 ДО по получените доставки по чл. 82, ал. 2 - 5 ЗДДС: цифров (15)
-    "account_tag_22": lambda value: parce_fload_15_2(value), # 02-22 Начислен ДДС за ВОП и за получени доставки по чл. 82, ал. 2 - 5 ЗДДС: цифров (15)
-    "account_tag_23": lambda value: parce_fload_15_2(value), # 02-23 Начислен данък за доставки на стоки и услуги за лични нужди: цифров (15)
-    "account_tag_13": lambda value: parce_fload_15_2(value), # 02-13 ДО на облагаемите доставки със ставка 9 %: цифров (15)
-    "account_tag_24": lambda value: parce_fload_15_2(value), # 02-24 Начислен ДДС 9 %: цифров (15)
-    "account_tag_14": lambda value: parce_fload_15_2(value), # 02-14 ДО на доставките със ставка 0 % по глава трета от ЗДДС: цифров (15)
-    "account_tag_15": lambda value: parce_fload_15_2(value), # 02-15 ДО на доставките със ставка 0 % на ВОД на стоки: цифров (15)
-    "account_tag_16": lambda value: parce_fload_15_2(value), # 02-16 ДО на доставките със ставка 0 % по чл. 140, чл. 146, ал. 1 и чл. 173 ЗДДС: цифров (15)
-    "account_tag_17": lambda value: parce_fload_15_2(value), # 02-17 Данъчна основа на доставки на услуги по чл. 21, ал. 2 ЗДДС, с място на изпълнение на територията на друга държава членка: цифров (15)
-    "account_tag_18": lambda value: parce_fload_15_2(value), # 02-18 Данъчна основа на доставки по чл. 69, ал. 2 ЗДДС, вкл. данъчна основа на доставките при условията на дистанционни продажби, с място на изпълнение на територията на друга държава членка: цифров (15)
-    "account_tag_19": lambda value: parce_fload_15_2(value), # 02-19 ДО на освободени доставки и освободените ВОП: цифров (15)
-    "account_tag_25": lambda value: parce_fload_15_2(value), # 02-25 ДО на доставки като посредник в тристранни операции: цифров (15)
-    "info_tag_27": lambda value: parce_str_2(value), # 02-27 Доставка по чл. 163а или внос по чл. 167а от ЗДДС: символен (2)
+    "info_tag_0": lambda value: parce_str_15(
+        value
+    ),  # 02-00 Идентификационен номер по ДДС на лицето: символен (15)
+    "info_tag_1": lambda value: parce_str_6(
+        value
+    ),  # 02-01 Данъчен период: символен (6) ггггмм
+    "info_tag_2": lambda value: parce_integer_4(
+        value, arrangement="R"
+    ),  # 02-02 Клон/обособено звено: цифров (4)
+    "info_tag_3": lambda value: parce_integer_15(
+        value, arrangement="R"
+    ),  #  02-03 Пореден номер на документа в дневника: цифров (15)
+    "info_tag_4": lambda value: parce_str_2(
+        value
+    ),  # 02-04 Вид на документа: символен (2)
+    "info_tag_5": lambda value: parce_str_20(
+        value
+    ),  # 02-05 Номер на документа символен (20)
+    "info_tag_6": lambda value: parce_date_10(
+        value
+    ),  # 02-06 Дата на документа: Дата (dd/mm/yyyy)
+    "info_tag_7": lambda value: parce_str_15(
+        value
+    ),  # 02-07 Идентификационен номер на контрагента (получател): символен (15)
+    "info_tag_8": lambda value: parce_str_50(
+        value
+    ),  # 02-08 Име на контрагента (получател): символен (50)
+    "info_tag_9": lambda value: parce_str_30(
+        value
+    ),  # 02-09 Вид на стоката или обхват и вид на услугата - точно описание съгласно документа: символен (30)
+    "account_tag_9": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-10* Общ размер на данъчните основи за облагане с ДДС: цифров (15)
+    "account_tag_20": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-20* Всичко начислен ДДС: цифров (15)
+    "account_tag_11": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-11 Данъчна основа на облагаемите доставки със ставка 20 %, вкл. доставките при условията на дистанционни продажби, с място на изпълнение на територията на страната: цифров (15)
+    "account_tag_21": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-21 Начислен ДДС 20 %: цифров (15)
+    "account_tag_12": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-12 ДО на ВОП: цифров (15)
+    "account_tag_26": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-26 ДО по получените доставки по чл. 82, ал. 2 - 5 ЗДДС: цифров (15)
+    "account_tag_22": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-22 Начислен ДДС за ВОП и за получени доставки по чл. 82, ал. 2 - 5 ЗДДС: цифров (15)
+    "account_tag_23": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-23 Начислен данък за доставки на стоки и услуги за лични нужди: цифров (15)
+    "account_tag_13": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-13 ДО на облагаемите доставки със ставка 9 %: цифров (15)
+    "account_tag_24": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-24 Начислен ДДС 9 %: цифров (15)
+    "account_tag_14": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-14 ДО на доставките със ставка 0 % по глава трета от ЗДДС: цифров (15)
+    "account_tag_15": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-15 ДО на доставките със ставка 0 % на ВОД на стоки: цифров (15)
+    "account_tag_16": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-16 ДО на доставките със ставка 0 % по чл. 140, чл. 146, ал. 1 и чл. 173 ЗДДС: цифров (15)
+    "account_tag_17": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-17 Данъчна основа на доставки на услуги по чл. 21, ал. 2 ЗДДС, с място на изпълнение на територията на друга държава членка: цифров (15)
+    "account_tag_18": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-18 Данъчна основа на доставки по чл. 69, ал. 2 ЗДДС, вкл. данъчна основа на доставките при условията на дистанционни продажби, с място на изпълнение на територията на друга държава членка: цифров (15)
+    "account_tag_19": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-19 ДО на освободени доставки и освободените ВОП: цифров (15)
+    "account_tag_25": lambda value: parce_fload_15_2(
+        value
+    ),  # 02-25 ДО на доставки като посредник в тристранни операции: цифров (15)
+    "info_tag_27": lambda value: parce_str_2(
+        value
+    ),  # 02-27 Доставка по чл. 163а или внос по чл. 167а от ЗДДС: символен (2)
 }
 
 L10N_BG_VIES_FIELDS = {
@@ -558,7 +617,7 @@ L10N_BG_REPORTS = {
         "file_name": "Vies.txt",
         "fields": L10N_BG_VIES_LINES_FIELDS,
         "sql": "account.bg.calc.vies.line",
-    }
+    },
 }
 
 
@@ -623,12 +682,27 @@ def get_doc_type():
 def get_type_vat():
     return [
         ("standard", "Accounting document"),
-        ("117_protocol_82_2", "(SER) Art. 117, para. 1, item 1 in connection with Art. 82, para. 2, item 3 of the VAT Act"),
-        ("117_protocol_84", "(ICD) Art. 117, para. 1, item 1 in connection with Art. 84 of the VAT Act"),
-        ("117_protocol_6_4", "(DON) Art. 117 of the VAT Act in connection with Art. 6, para. 4"),
-        ("117_protocol_6_3", "(PRIV) Art. 117 of the VAT Act in connection with Art. 6, para. 3"),
+        (
+            "117_protocol_82_2",
+            "(SER) Art. 117, para. 1, item 1 in connection with Art. 82, para. 2, item 3 of the VAT Act",
+        ),
+        (
+            "117_protocol_84",
+            "(ICD) Art. 117, para. 1, item 1 in connection with Art. 84 of the VAT Act",
+        ),
+        (
+            "117_protocol_6_4",
+            "(DON) Art. 117 of the VAT Act in connection with Art. 6, para. 4",
+        ),
+        (
+            "117_protocol_6_3",
+            "(PRIV) Art. 117 of the VAT Act in connection with Art. 6, para. 3",
+        ),
         ("117_protocol_15", "(TRI) Art. 117 of the VAT Act in connection with Art. 15"),
-        ("117_protocol_82_2_2", "(TER) Art. 117 of the VAT Act in connection with Art. 82, para. 2, item 2"),
+        (
+            "117_protocol_82_2_2",
+            "(TER) Art. 117 of the VAT Act in connection with Art. 82, para. 2, item 2",
+        ),
         ("119_report", "Art. 119 - Report for sales"),
         # ('120_sales_report', 'Art. 119 - Report for sales-special rules'),
         # ('120_purchase_report', 'Art. 119 - Report for purchase-special rules'),
@@ -647,13 +721,13 @@ def get_delivery_type():
         ("08", "Supply, import or IC acquisition of flour"),
         (
             "51",
-                "Arrival of goods on the territory of the country under "
-                "the regime of storage of goods until demand under Art. 15a of VAT",
+            "Arrival of goods on the territory of the country under "
+            "the regime of storage of goods until demand under Art. 15a of VAT",
         ),
         (
             "53",
-                "Replacement of the person for whom the goods were intended without "
-                "termination of the contract under Art. 15a, para. 4 of VAT",
+            "Replacement of the person for whom the goods were intended without "
+            "termination of the contract under Art. 15a, para. 4 of VAT",
         ),
         (
             "54",
@@ -661,7 +735,7 @@ def get_delivery_type():
         ),
         (
             "58",
-                "Termination of the contract under the mode of storage of goods until requested under Art. 15a of VAT",
+            "Termination of the contract under the mode of storage of goods until requested under Art. 15a of VAT",
         ),
     ]
 
@@ -687,20 +761,20 @@ class AuditExportFileHelper(models.AbstractModel):
                 if isinstance(val, dict):
                     val = list(val.values())[-1]
 
-                elif isinstance(val, str) and val.find('{') != -1:
+                elif isinstance(val, str) and val.find("{") != -1:
                     try:
-                        if val.count('{') > 1:
-                            wrapped_json = '{"value": [' + val + ']}'
+                        if val.count("{") > 1:
+                            wrapped_json = '{"value": [' + val + "]}"
                             parsed_data = json.loads(wrapped_json)
                             # Обединяваме всички стойности със запетая
-                            if parsed_data.get('value'):
+                            if parsed_data.get("value"):
                                 values = []
-                                for obj in parsed_data['value']:
+                                for obj in parsed_data["value"]:
                                     if isinstance(obj, dict):
                                         values.append(list(obj.values())[0])
                                     else:
                                         values.append(str(obj))
-                                val = ', '.join(values)
+                                val = ", ".join(values)
                         else:
                             val = json.loads(val)
 
@@ -738,12 +812,10 @@ class AuditExportFileHelper(models.AbstractModel):
                 continue
             if report == "vies":
                 fname, report_csv_lines = self._get_csvs("vies_lines", options=options)
-                report_csv = [
-                    report_csv + report_csv_lines
-                ]
+                report_csv = [report_csv + report_csv_lines]
             files_report[report] = {
                 "file_name": fname,
-                "file_content": [{'line': x} for x in report_csv],
+                "file_content": [{"line": x} for x in report_csv],
             }
         return files_report
 
@@ -757,9 +829,7 @@ class AuditExportFileHelper(models.AbstractModel):
                 continue
             if report == "vies":
                 fname, report_csv_lines = self.get_csvs("vies_lines", options=options)
-                report_csv = [
-                    report_csv[0] + report_csv_lines[0]
-                ]
+                report_csv = [report_csv[0] + report_csv_lines[0]]
             files_report[report] = {
                 "file_name": fname,
                 "file_content": report_csv,
