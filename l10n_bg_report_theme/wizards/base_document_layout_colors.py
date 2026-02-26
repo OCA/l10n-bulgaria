@@ -8,7 +8,7 @@ from pathlib import Path
 
 from webcolors import hex_to_rgb
 
-from odoo import Command, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -97,8 +97,8 @@ class DocumentLayoutColorManager(models.TransientModel):
     _name = "base.document.layout.colors"
     _description = "Document Layout Colors Configuration"
 
-    name = fields.Char(string="Name")
-    color = fields.Char(string="Color", inverse="_inverse_color")
+    name = fields.Char()
+    color = fields.Char(inverse="_inverse_color")
     color_rgb = fields.Char(string="Color RGB", compute="_compute_color_rgb")
     base_document_layout_id = fields.Many2one(
         "base.document.layout", string="Layout", ondelete="cascade"
@@ -163,11 +163,11 @@ class DocumentLayoutColorManager(models.TransientModel):
         try:
             name = name or self.name
             if not name:
-                raise UserError("Color name is required")
+                raise UserError(_("Color name is required"))
 
             color_rgb = color_rgb or (color and _convert_hex_to_rgb(color))
             if not color_rgb:
-                raise UserError("Color value is required")
+                raise UserError(_("Color value is required"))
 
             company = self.base_document_layout_id.company_id or self.env.company
             scss_file_path = get_scss_file_path(use_custom=True, company_id=company.id)

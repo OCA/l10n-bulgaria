@@ -10,16 +10,15 @@ class L10nBgVatRatioHistory(models.Model):
         """Prepare a notification message based on a computation result."""
         if result["is_computed"]:
             message = _(
-                "VAT ratio computed from declarations: %.2f%%\n"
-                "Numerator: %.2f %s\n"
-                "Denominator: %.2f %s"
-            ) % (
-                result["vat_ratio"],
-                result["numerator_total"],
-                self.currency_id.symbol,
-                result["denominator_total"],
-                self.currency_id.symbol,
-            )
+                "VAT ratio computed from declarations: %(ratio).2f%%\n"
+                "Numerator: %(numerator).2f %(currency)s\n"
+                "Denominator: %(denominator).2f %(currency)s"
+            ) % {
+                "ratio": result["vat_ratio"],
+                "numerator": result["numerator_total"],
+                "denominator": result["denominator_total"],
+                "currency": self.currency_id.symbol,
+            }
             if result["is_provisional"]:
                 message += "\n" + _("(Provisional - will be adjusted at year end)")
 
