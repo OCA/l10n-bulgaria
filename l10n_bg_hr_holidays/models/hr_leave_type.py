@@ -14,7 +14,10 @@ class HRLeaveType(models.Model):
         string="Allow Paid Days",
         compute="_compute_l10n_bg_allow_paid_days",
         store=True,
-        help="Technical field to determine if paid days can be specified for this leave type",
+        help=(
+            "Technical field to determine if paid days can be specified for this "
+            "leave type"
+        ),
     )
     l10n_bg_paid_days_unpaid_leave = fields.Float(
         string="Paid Days",

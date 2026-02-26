@@ -171,7 +171,7 @@ class PosSession(models.Model):
             raise UserError(error_msg + help_text)
 
         try:
-            result = self.l10n_bg_fiscal_printer_id.print_z_report()
+            self.l10n_bg_fiscal_printer_id.print_z_report()
 
             self.write(
                 {

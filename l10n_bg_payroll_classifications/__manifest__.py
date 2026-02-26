@@ -3,7 +3,10 @@
     "name": "Bulgarian HR Payroll Classifications",
     "version": "18.0.5.0.1",
     "category": "Human Resources/Localization",
-    "summary": "Bulgarian localization for HR payroll with NKPD and Economic Activity classifications",
+    "summary": (
+        "Bulgarian localization for HR payroll with NKPD and Economic Activity "
+        "classifications"
+    ),
     "description": "\n"
     "    Bulgarian HR Payroll Classifications\n"
     "    ====================================\n"

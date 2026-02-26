@@ -51,4 +51,6 @@ class FiscalCashOperationWizard(models.TransientModel):
                 },
             }
         except Exception as e:
-            raise UserError(_("Грешка при изпълнение на операцията: %s") % str(e))
+            raise UserError(
+                _("Грешка при изпълнение на операцията: %s") % str(e)
+            ) from e

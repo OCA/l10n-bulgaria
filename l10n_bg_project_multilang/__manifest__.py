@@ -2,7 +2,9 @@
 
 {
     "name": "Project Task Multilang",
-    "summary": """Add multilingual support for project task fields in Bulgarian localization""",
+    "summary": (
+        "Add multilingual support for project task fields in Bulgarian localization"
+    ),
     "description": """
 Bulgarian Project Multilingual Support
 =====================================

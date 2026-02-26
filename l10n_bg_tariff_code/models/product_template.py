@@ -193,8 +193,7 @@ class ProductTemplate(models.Model):
             {
                 "type": "success",
                 "message": (
-                    f"Обновени тарифни ставки за {len(self)} продукта "
-                    "от EU TARIC"
+                    f"Обновени тарифни ставки за {len(self)} продукта " "от EU TARIC"
                 ),
                 "sticky": False,
             },
