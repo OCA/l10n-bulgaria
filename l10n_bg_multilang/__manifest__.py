@@ -6,7 +6,6 @@
     "author": "Rosen Vladimirov,Odoo Community Association (OCA)",
     "category": "Localization",
     "license": "AGPL-3",
-    "description": "Multi language support for Partner, Company, Employee.",
     "website": "https://github.com/OCA/l10n-bulgaria",
     "depends": ["base", "hr", "stock", "partner_multilang"],
     "data": [],

@@ -6,8 +6,8 @@ class NssiLeaveReason(models.Model):
     _description = "NSSI – Leave Reasons (Appendix №9)"
     _order = "code"
 
-    code = fields.Char(string="Code", size=2, required=True, index=True)
-    name = fields.Char(string="Reason", required=True, translate=True)
+    code = fields.Char(size=2, required=True, index=True)
+    name = fields.Char(required=True, translate=True)
 
     _sql_constraints = [
         ("code_unique", "unique(code)", "The code must be unique."),

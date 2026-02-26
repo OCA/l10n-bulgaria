@@ -101,13 +101,13 @@ class HRLeave(models.Model):
                 "warning": {
                     "title": _("Warning"),
                     "message": _(
-                        "Paid days (%.1f) exceed definned leave days (%.1f). "
-                        "Please adjust the values."
+                        "Paid days (%(paid).1f) exceed definned leave days "
+                        "(%(defined).1f). Please adjust the values."
                     )
-                    % (
-                        self.l10n_bg_paid_days_unpaid_leave,
-                        self.holiday_status_id.l10n_bg_paid_days_unpaid_leave,
-                    ),
+                    % {
+                        "paid": self.l10n_bg_paid_days_unpaid_leave,
+                        "defined": self.holiday_status_id.l10n_bg_paid_days_unpaid_leave,
+                    },
                 }
             }
 
