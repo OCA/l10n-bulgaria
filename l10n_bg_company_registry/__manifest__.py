@@ -7,23 +7,7 @@
         "(portal.registryagency.bg)"
     ),
     "author": "Odoo Community Association (OCA), Rosen Vladimirov",
-    "* Extends res.partner with Bulgarian-specific fields\n"
-    "* Provides wizard for interactive company search\n"
-    "\n"
-    "Usage:\n"
-    "------\n"
-    "1. Open a partner record\n"
-    "2. Enter EIK number\n"
-    '3. Click "Fetch from Registry" button\n'
-    "4. All data is automatically populated\n"
-    "\n"
-    'Or use the "Search Registry" wizard for more control.\n'
-    "\n"
-    "Author: Rosen Vladimirov\n"
-    "License: LGPL-3\n"
-    "Version: 18.0.2.0.1 (December 2025)\n"
-    "    ",
-        "website": "https://github.com/OCA/l10n-bulgaria",
+    "website": "https://github.com/OCA/l10n-bulgaria",
     "license": "LGPL-3",
     "depends": ["base", "contacts", "l10n_bg_config", "l10n_bg_city"],
     "data": [
