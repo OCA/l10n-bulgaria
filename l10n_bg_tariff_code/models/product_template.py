@@ -130,10 +130,10 @@ class ProductTemplate(models.Model):
                     product.l10n_bg_tariff_rate = rate
                     product.l10n_bg_tariff_last_update = fields.Datetime.now()
                 else:
-                _logger.warning(
-                    "No rate found for product %s, using 0.0",
-                    product.id,
-                )
+                    _logger.warning(
+                        "No rate found for product %s, using 0.0",
+                        product.id,
+                    )
                     product.l10n_bg_tariff_rate = 0.0
 
             except Exception as e:

@@ -39,15 +39,11 @@ class L10nBgTaricCache(models.Model):
         string="Duty Rate (%)", required=True, help="Customs duty rate in percentage"
     )
 
-    measure_type = fields.Char(
-        help="Type of measure (e.g., 103 = Third country duty)"
-    )
+    measure_type = fields.Char(help="Type of measure (e.g., 103 = Third country duty)")
 
     description = fields.Text(help="Goods nomenclature description")
 
-    valid_from = fields.Date(
-        required=True, index=True, default=fields.Date.today
-    )
+    valid_from = fields.Date(required=True, index=True, default=fields.Date.today)
 
     valid_to = fields.Date(
         required=True,
