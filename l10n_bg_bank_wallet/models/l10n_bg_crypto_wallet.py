@@ -982,8 +982,7 @@ class CryptoWallet(models.Model):
             keys_text = []
             for key_info in keys_info:
                 keys_text.append(
-                    "• %s (%s) - създаден %s"
-                    % (
+                    "• {} ({}) - създаден {}".format(
                         key_info["name"],
                         key_info["type"],
                         key_info["created"],

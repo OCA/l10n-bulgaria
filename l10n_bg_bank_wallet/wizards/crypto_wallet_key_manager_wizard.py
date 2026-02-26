@@ -53,8 +53,7 @@ class CryptoWalletKeyManager(models.TransientModel):
                         key_lines = []
                         for i, key_info in enumerate(keys_info, 1):
                             key_lines.append(
-                                "%s. %s (%s) - %s"
-                                % (
+                                "{}. {} ({}) - {}".format(
                                     i,
                                     key_info["name"],
                                     key_info["type"],
