@@ -13,7 +13,6 @@ class L10nBgTaricImportWizard(models.TransientModel):
             ("file", "Upload File"),
             ("url", "Download from URL"),
         ],
-        string="Import Method",
         default="file",
         required=True,
     )
@@ -22,7 +21,7 @@ class L10nBgTaricImportWizard(models.TransientModel):
         string="TARIC File", help="Upload Excel (.xlsx) or CSV file with TARIC data"
     )
 
-    filename = fields.Char(string="Filename")
+    filename = fields.Char()
 
     circabc_url = fields.Char(
         string="CIRCABC URL", help="Direct link to TARIC Excel/CSV file on CIRCABC"
@@ -62,4 +61,4 @@ class L10nBgTaricImportWizard(models.TransientModel):
             }
 
         except Exception as e:
-            raise UserError(_("Import failed: %s") % str(e))
+            raise UserError(_("Import failed: %s") % str(e)) from e

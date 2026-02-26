@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import csv
 import io
 import logging
 import re
@@ -29,7 +30,6 @@ class L10nBgTaricCache(models.Model):
     )
 
     country_code = fields.Char(
-        string="Country Code",
         required=True,
         index=True,
         help="ISO country code (e.g., CN, US, etc.)",
@@ -40,19 +40,16 @@ class L10nBgTaricCache(models.Model):
     )
 
     measure_type = fields.Char(
-        string="Measure Type", help="Type of measure (e.g., 103 = Third country duty)"
+        help="Type of measure (e.g., 103 = Third country duty)"
     )
 
-    description = fields.Text(
-        string="Description", help="Goods nomenclature description"
-    )
+    description = fields.Text(help="Goods nomenclature description")
 
     valid_from = fields.Date(
-        string="Valid From", required=True, index=True, default=fields.Date.today
+        required=True, index=True, default=fields.Date.today
     )
 
     valid_to = fields.Date(
-        string="Valid To",
         required=True,
         index=True,
         default=lambda self: fields.Date.today() + timedelta(days=365),
@@ -69,9 +66,7 @@ class L10nBgTaricCache(models.Model):
         required=True,
     )
 
-    last_update = fields.Datetime(
-        string="Last Update", default=fields.Datetime.now, required=True
-    )
+    last_update = fields.Datetime(default=fields.Datetime.now, required=True)
 
     _sql_constraints = [
         (
@@ -114,7 +109,8 @@ class L10nBgTaricCache(models.Model):
             else:
                 raise UserError(
                     _(
-                        "Unsupported file format. Only Excel (.xlsx) and CSV files are supported."
+                        "Unsupported file format. Only Excel (.xlsx) and CSV files are "
+                        "supported."
                     )
                 )
 
@@ -122,7 +118,7 @@ class L10nBgTaricCache(models.Model):
             _logger.error(f"Error downloading CIRCABC file: {e}")
             raise UserError(
                 _("Failed to download TARIC data from CIRCABC: %s") % str(e)
-            )
+            ) from e
 
     @api.model
     def import_from_file(self, file_data, filename):
@@ -144,13 +140,14 @@ class L10nBgTaricCache(models.Model):
             else:
                 raise UserError(
                     _(
-                        "Unsupported file format. Only Excel (.xlsx) and CSV files are supported."
+                        "Unsupported file format. Only Excel (.xlsx) and CSV files are "
+                        "supported."
                     )
                 )
 
         except Exception as e:
             _logger.error(f"Error importing TARIC file: {e}")
-            raise UserError(_("Failed to import TARIC data: %s") % str(e))
+            raise UserError(_("Failed to import TARIC data: %s") % str(e)) from e
 
     def _import_from_excel(self, file_stream):
         """Импортира данни от Excel файл"""
@@ -175,7 +172,8 @@ class L10nBgTaricCache(models.Model):
                 except ImportError:
                     raise UserError(
                         _(
-                            "Please install 'openpyxl' or 'xlrd' package: pip install openpyxl"
+                            "Please install 'openpyxl' or 'xlrd' package: pip install "
+                            "openpyxl"
                         )
                     )
 
@@ -183,7 +181,7 @@ class L10nBgTaricCache(models.Model):
 
         except Exception as e:
             _logger.error(f"Error reading Excel file: {e}")
-            raise UserError(_("Failed to read Excel file: %s") % str(e))
+            raise UserError(_("Failed to read Excel file: %s") % str(e)) from e
 
     def _import_from_csv(self, file_stream):
         """Импортира данни от CSV файл"""
@@ -194,7 +192,7 @@ class L10nBgTaricCache(models.Model):
 
         except Exception as e:
             _logger.error(f"Error reading CSV file: {e}")
-            raise UserError(_("Failed to read CSV file: %s") % str(e))
+            raise UserError(_("Failed to read CSV file: %s") % str(e)) from e
 
     def _process_taric_rows(self, rows):
         """
@@ -218,7 +216,8 @@ class L10nBgTaricCache(models.Model):
         if not header_mapping:
             raise UserError(
                 _(
-                    "Could not identify required columns. Expected: CN Code, Country, Duty Rate"
+                    "Could not identify required columns. Expected: CN Code, Country, "
+                    "Duty Rate"
                 )
             )
 
@@ -276,8 +275,13 @@ class L10nBgTaricCache(models.Model):
                 continue
 
         message = _(
-            "Import completed:\n- New records: %d\n- Updated records: %d\n- Errors: %d"
-        ) % (imported_count, updated_count, error_count)
+            "Import completed:\n- New records: %(imported)d\n- Updated records: "
+            "%(updated)d\n- Errors: %(errors)d"
+        ) % {
+            "imported": imported_count,
+            "updated": updated_count,
+            "errors": error_count,
+        }
 
         _logger.info(message)
         return {
@@ -456,7 +460,11 @@ class L10nBgTaricCache(models.Model):
                     continue
 
         except Exception:
-            pass
+            _logger.debug(
+                "Failed to parse date value: %r",
+                date_value,
+                exc_info=True,
+            )
 
         return None
 

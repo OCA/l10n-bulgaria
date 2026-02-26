@@ -207,9 +207,7 @@ def parse_mt940_file(file_path):
             print(
                 f"Statement Number: {mt940_transactions_data.get('statement_number')}"
             )
-            transaction_reference = mt940_transactions_data.get(
-                "transaction_reference"
-            )
+            transaction_reference = mt940_transactions_data.get("transaction_reference")
             print(f"Transaction Reference: {transaction_reference}")
             print(
                 f"\nOpening Balance: {mt940_transactions_data['final_opening_balance']}"
@@ -267,9 +265,7 @@ def parse_mt940_file(file_path):
                                 if part[:2].isdigit():
                                     field_num = part[:2]
                                     field_data = part[2:].strip()
-                                    print(
-                                        f"  Field {field_num}: {field_data[:70]}"
-                                    )
+                                    print(f"  Field {field_num}: {field_data[:70]}")
 
                                     # If field 22, try to parse with BankTransactionParser
                                     if field_num == "22":

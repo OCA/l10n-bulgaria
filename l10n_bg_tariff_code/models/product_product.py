@@ -10,12 +10,17 @@ class ProductProduct(models.Model):
 
     def action_update_tariff_rate(self):
         """Обновява тарифната ставка за избраните продукт варианти"""
-        _logger.info(f"Manual update requested for {len(self)} product variants")
+        _logger.info(
+            "Manual update requested for %s product variants",
+            len(self),
+        )
 
         # Изчистваме кеша за да форсираме обновяване от API
         for product in self:
             _logger.info(
-                f"Clearing cache and manual rate for product variant {product.id}: {product.name}"
+                "Clearing cache and manual rate for product variant %s: %s",
+                product.id,
+                product.name,
             )
 
             product.product_tmpl_id.write(
@@ -33,14 +38,20 @@ class ProductProduct(models.Model):
             "simple_notification",
             {
                 "type": "success",
-                "message": f"Обновени тарифни ставки за {len(self)} продукта от EU TARIC",
+                "message": (
+                    f"Обновени тарифни ставки за {len(self)} продукта "
+                    "от EU TARIC"
+                ),
                 "sticky": False,
             },
         )
 
     def action_clear_manual_tariff_rate(self):
         """Изчиства ръчно въведените тарифни ставки и обновява автоматично"""
-        _logger.info(f"Clearing manual rates for {len(self)} product variants")
+        _logger.info(
+            "Clearing manual rates for %s product variants",
+            len(self),
+        )
 
         for product in self:
             product.product_tmpl_id.write(
@@ -57,7 +68,10 @@ class ProductProduct(models.Model):
             "simple_notification",
             {
                 "type": "success",
-                "message": f"Изчистени ръчни ставки за {len(self)} продукта и обновени автоматично",
+                "message": (
+                    f"Изчистени ръчни ставки за {len(self)} продукта "
+                    "и обновени автоматично"
+                ),
                 "sticky": False,
             },
         )

@@ -42,7 +42,10 @@ class AccountMoveLine(models.Model):
     l10n_bg_tariff_rate_is_manual = fields.Boolean(
         string="Manual Rate Override",
         default=False,
-        help="Indicates whether the rate is manually entered and should not be recalculated automatically",
+        help=(
+            "Indicates whether the rate is manually entered and should not be "
+            "recalculated automatically"
+        ),
     )
 
     l10n_bg_tariff_description = fields.Text(
@@ -130,7 +133,9 @@ class AccountMoveLine(models.Model):
                     try:
                         line.product_id.sudo().write({"hs_code": normalized})
                         _logger.info(
-                            f"Updated HS code of a product {line.product_id.name}: {normalized}"
+                            "Updated HS code of a product %s: %s",
+                            line.product_id.name,
+                            normalized,
                         )
                     except Exception as e:
                         _logger.warning(f"Unable to update product HS code: {e}")
@@ -213,7 +218,7 @@ class AccountMoveLine(models.Model):
         "l10n_bg_tariff_rate_manual",
         "l10n_bg_tariff_rate_is_manual",
     )
-    def _compute_l10n_bg_tariff_rate(self):
+    def _compute_l10n_bg_tariff_rate(self):  # noqa: C901
         """Автоматично търси тарифната ставка в ЕС ТАРИК използвайки REST API"""
         for line in self:
             # Ако има ръчно въведена ставка, използваме нея
@@ -306,7 +311,9 @@ class AccountMoveLine(models.Model):
                     line.l10n_bg_tariff_rate = tariff_rate
                     line.l10n_bg_tariff_last_update = fields.Datetime.now()
                     _logger.info(
-                        f"Updated tariff rate for code {line.l10n_bg_tariff_code}: {tariff_rate * 100}%"
+                        "Updated tariff rate for code %s: %s%%",
+                        line.l10n_bg_tariff_code,
+                        tariff_rate * 100,
                     )
                 else:
                     if not line.l10n_bg_tariff_rate:
@@ -317,7 +324,9 @@ class AccountMoveLine(models.Model):
 
             except Exception as e:
                 _logger.warning(
-                    f"Error looking up tariff rate for code {line.l10n_bg_tariff_code}: {e}"
+                    "Error looking up tariff rate for code %s: %s",
+                    line.l10n_bg_tariff_code,
+                    e,
                 )
                 if not line.l10n_bg_tariff_rate:
                     default_rate = company.l10n_bg_default_tariff_rate
@@ -385,15 +394,18 @@ class AccountMoveLine(models.Model):
         _logger.info(f"UK Tariff (XI): No duty rate found for {cn_code}, using default")
         return None
 
-    def _try_fetch_uk_tariff_xi(self, cn_code, country_code="CN", max_retries=3):
+    def _try_fetch_uk_tariff_xi(  # noqa: C901
+        self, cn_code, country_code="CN", max_retries=3
+    ):
         """Вътрешен метод за опит с конкретен код"""
         for attempt in range(max_retries):
             try:
                 # XI (Northern Ireland) следва EU TARIC правилата
-                urls_to_try = [
-                    f"https://www.trade-tariff.service.gov.uk/xi/api/v2/commodities/{cn_code}",
-                    f"https://api.trade-tariff.service.gov.uk/xi/api/v2/commodities/{cn_code}",
-                ]
+                base_urls = (
+                    "https://www.trade-tariff.service.gov.uk/xi/api/v2/commodities/",
+                    "https://api.trade-tariff.service.gov.uk/xi/api/v2/commodities/",
+                )
+                urls_to_try = [f"{base}{cn_code}" for base in base_urls]
 
                 params = {"as_of": fields.Date.today().isoformat()}
                 headers = {
@@ -549,8 +561,12 @@ class AccountMoveLine(models.Model):
                                     )
 
                                     _logger.info(
-                                        f"UK Tariff (XI): Found {rate}% = {rate_decimal} decimal "
-                                        f"(type {measure_type}, priority {priority})"
+                                        "UK Tariff (XI): Found %s%% = %s decimal "
+                                        "(type %s, priority %s)",
+                                        rate,
+                                        rate_decimal,
+                                        measure_type,
+                                        priority,
                                     )
 
                 # Избираме ставката с най-висок приоритет
@@ -559,8 +575,11 @@ class AccountMoveLine(models.Model):
                     best_rate = applicable_rates[0]
 
                     _logger.info(
-                        f"✓ UK Tariff (XI): Selected rate {best_rate['rate'] * 100}% "
-                        f"(type {best_rate['type']}, country_specific: {best_rate['country_specific']})"
+                        "✓ UK Tariff (XI): Selected rate %s%% "
+                        "(type %s, country_specific: %s)",
+                        best_rate["rate"] * 100,
+                        best_rate["type"],
+                        best_rate["country_specific"],
                     )
 
                     return best_rate["rate"]
@@ -627,7 +646,7 @@ class AccountMoveLine(models.Model):
 
         return None
 
-    def _parse_api_store_response(self, data, cn_code):
+    def _parse_api_store_response(self, data, cn_code):  # noqa: C901
         """Парсва отговора от API Store"""
         try:
             if not data or not isinstance(data, dict):

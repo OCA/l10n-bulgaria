@@ -30,7 +30,8 @@ class ProductTemplate(models.Model):
     )
 
     l10n_bg_tariff_last_update = fields.Datetime(
-        string="Tariff Rate Last Update", help="When was the tariff rate last updated"
+        string="Tariff Rate Last Update",
+        help="When was the tariff rate last updated",
     )
 
     l10n_bg_tariff_description = fields.Text(
@@ -58,13 +59,17 @@ class ProductTemplate(models.Model):
         MoveLine = self.env["account.move.line"]
         for product in self:
             _logger.info(
-                f"Computing tariff rate for product {product.id} ({product.name})"
+                "Computing tariff rate for product %s (%s)",
+                product.id,
+                product.name,
             )
 
             # Ако има ръчно въведена ставка, използваме нея
             if product.l10n_bg_tariff_rate_manual:
                 _logger.info(
-                    f"Using manual rate {product.l10n_bg_tariff_rate_manual} for product {product.id}"
+                    "Using manual rate %s for product %s",
+                    product.l10n_bg_tariff_rate_manual,
+                    product.id,
                 )
                 product.l10n_bg_tariff_rate = product.l10n_bg_tariff_rate_manual
                 continue
@@ -72,7 +77,7 @@ class ProductTemplate(models.Model):
             # Използваме taric_code или hs_code (приоритет на taric_code)
             code = product.taric_code or product.hs_code
             if not code:
-                _logger.info(f"No TARIC/HS code for product {product.id}")
+                _logger.info("No TARIC/HS code for product %s", product.id)
                 product.l10n_bg_tariff_rate = 0.0
                 continue
 
@@ -80,7 +85,11 @@ class ProductTemplate(models.Model):
             country_code = (
                 product.country_of_origin.code if product.country_of_origin else "CN"
             )
-            _logger.info(f"Fetching tariff for code {code}, country {country_code}")
+            _logger.info(
+                "Fetching tariff for code %s, country %s",
+                code,
+                country_code,
+            )
 
             # Кеширане - проверяваме дали има актуална стойност
             # САМО ако не е принудително обновяване
@@ -95,7 +104,9 @@ class ProductTemplate(models.Model):
                 < cache_duration
             ):
                 _logger.info(
-                    f"Using cached rate {product.l10n_bg_tariff_rate} for product {product.id}"
+                    "Using cached rate %s for product %s",
+                    product.l10n_bg_tariff_rate,
+                    product.id,
                 )
                 continue
 
@@ -111,19 +122,25 @@ class ProductTemplate(models.Model):
                 if rate is not None:
                     # rate вече е в decimal формат (0.50 за 50%)
                     _logger.info(
-                        f"Fetched rate {rate} ({rate * 100}%) for product {product.id}"
+                        "Fetched rate %s (%s%%) for product %s",
+                        rate,
+                        rate * 100,
+                        product.id,
                     )
                     product.l10n_bg_tariff_rate = rate
                     product.l10n_bg_tariff_last_update = fields.Datetime.now()
                 else:
-                    _logger.warning(
-                        f"No rate found for product {product.id}, using 0.0"
-                    )
+                _logger.warning(
+                    "No rate found for product %s, using 0.0",
+                    product.id,
+                )
                     product.l10n_bg_tariff_rate = 0.0
 
             except Exception as e:
                 _logger.error(
-                    f"Error fetching tariff rate for product {product.id}: {e}",
+                    "Error fetching tariff rate for product %s: %s",
+                    product.id,
+                    e,
                     exc_info=True,
                 )
                 product.l10n_bg_tariff_rate = 0.0
@@ -133,7 +150,9 @@ class ProductTemplate(models.Model):
         for product in self:
             if product.l10n_bg_tariff_rate is not False:
                 _logger.info(
-                    f"Setting manual rate {product.l10n_bg_tariff_rate} for product {product.id}"
+                    "Setting manual rate %s for product %s",
+                    product.l10n_bg_tariff_rate,
+                    product.id,
                 )
                 # Запазваме ръчно въведената стойност
                 # Ако потребителят въведе през UI с percentage widget,
@@ -143,15 +162,20 @@ class ProductTemplate(models.Model):
 
     def action_update_tariff_rate(self):
         """Обновява тарифната ставка за избраните продукти"""
-        _logger.info(f"Manual update requested for {len(self)} products")
+        _logger.info("Manual update requested for %s products", len(self))
 
         # ВАЖНО: Изчистваме и ръчната ставка И кеша за да форсираме обновяване от API
         for product in self:
             _logger.info(
-                f"Clearing cache and manual rate for product {product.id}: {product.name}"
+                "Clearing cache and manual rate for product %s: %s",
+                product.id,
+                product.name,
             )
-            _logger.info(f"  Current manual rate: {product.l10n_bg_tariff_rate_manual}")
-            _logger.info(f"  Current rate: {product.l10n_bg_tariff_rate}")
+            _logger.info(
+                "  Current manual rate: %s",
+                product.l10n_bg_tariff_rate_manual,
+            )
+            _logger.info("  Current rate: %s", product.l10n_bg_tariff_rate)
 
             product.write(
                 {
@@ -168,14 +192,17 @@ class ProductTemplate(models.Model):
             "simple_notification",
             {
                 "type": "success",
-                "message": f"Обновени тарифни ставки за {len(self)} продукта от EU TARIC",
+                "message": (
+                    f"Обновени тарифни ставки за {len(self)} продукта "
+                    "от EU TARIC"
+                ),
                 "sticky": False,
             },
         )
 
     def action_clear_manual_tariff_rate(self):
         """Изчиства ръчно въведените тарифни ставки и обновява автоматично"""
-        _logger.info(f"Clearing manual rates for {len(self)} products")
+        _logger.info("Clearing manual rates for %s products", len(self))
 
         for product in self:
             product.write(
@@ -192,7 +219,10 @@ class ProductTemplate(models.Model):
             "simple_notification",
             {
                 "type": "success",
-                "message": f"Изчистени ръчни ставки за {len(self)} продукта и обновени автоматично",
+                "message": (
+                    f"Изчистени ръчни ставки за {len(self)} продукта "
+                    "и обновени автоматично"
+                ),
                 "sticky": False,
             },
         )
