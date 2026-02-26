@@ -1,6 +1,6 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -124,9 +124,7 @@ class BGNCOPClassification(models.Model):
                 self.search_count([("code", "=", record.code), ("id", "!=", record.id)])
                 > 0
             ):
-                raise ValidationError(
-                    _("NCOP code '%s' already exists!") % record.code
-                )
+                raise ValidationError(_("NCOP code '%s' already exists!") % record.code)
 
     @api.constrains("code")
     def _check_code_format(self):

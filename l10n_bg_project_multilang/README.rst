@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ======================
 Project Task Multilang
 ======================
@@ -17,7 +13,7 @@ Project Task Multilang
 .. |badge1| image:: https://img.shields.io/badge/maturity-Production%2FStable-green.png
     :target: https://odoo-community.org/page/development-status
     :alt: Production/Stable
-.. |badge2| image:: https://img.shields.io/badge/license-LGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fl10n--bulgaria-lightgray.png?logo=github
@@ -32,18 +28,40 @@ Project Task Multilang
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module extends the project management functionality in Odoo to
-provide multilingual support for project task fields in the Bulgarian
-localization.
+Bulgarian Project Multilingual Support
+======================================
 
-The module allows Bulgarian companies to manage their project tasks in
-Bulgarian language while maintaining the ability to translate to other
-languages. This is especially useful for international companies based
-in Bulgaria that work with multinational teams.
+This module extends the project management functionality to provide
+multilingual support for project task fields in Bulgarian localization.
 
-The functionality includes multilingual support for task names,
-descriptions, and other key fields, integrated with the partner
-multilingual system for consistent translation management.
+Features:
+---------
+
+- Multilingual support for project task names and descriptions
+- Integration with partner multilingual capabilities
+- Bulgarian localization compliance
+- OCA community standards compliance
+
+Technical Details:
+------------------
+
+- Extends project.task model with multilingual field support
+- Integrates with partner_multilang module for consistent translation
+  handling
+- Follows Bulgarian localization standards (l10n_bg)
+
+Installation:
+-------------
+
+This module requires the ``project`` and ``partner_multilang`` modules
+to be installed.
+
+Usage:
+------
+
+After installation, project task fields will support multiple languages,
+allowing Bulgarian companies to manage projects in both Bulgarian and
+other languages.
 
 **Table of contents**
 
