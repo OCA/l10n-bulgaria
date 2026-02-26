@@ -1,6 +1,6 @@
 [project]
 name = "odoo-addons-oca-l10n-bulgaria"
-version = "18.0.20260226.0"
+version = "18.0.20260226.1"
 dependencies = [
     "odoo-addon-l10n_bg_account_reconcile_patch==18.0.*",
     "odoo-addon-l10n_bg_account_statement_import_mt940==18.0.*",
@@ -24,6 +24,7 @@ dependencies = [
     "odoo-addon-l10n_bg_stock_sale_line_description==18.0.*",
     "odoo-addon-l10n_bg_tariff_code==18.0.*",
     "odoo-addon-l10n_bg_tax_offices==18.0.*",
+    "odoo-addon-markdown_viewer_locale==18.0.*",
     "odoo-addon-partner_multilang==18.0.*",
     "odoo-addon-taric_ai_classifier==18.0.*",
 ]
