@@ -836,7 +836,7 @@ class BgCompanySearchWizard(models.TransientModel):
         try:
             company_data = json.loads(self.company_data_json)
         except (json.JSONDecodeError, TypeError) as e:
-            raise UserError(_("Error reading data from registry: %s") % str(e))
+            raise UserError(_("Error reading data from registry: %s") % str(e)) from e
 
         # Reparse address to get city_id and state_id
         if company_data.get("address_full_bg"):
