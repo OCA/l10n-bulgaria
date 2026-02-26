@@ -116,7 +116,8 @@ class CryptoWalletAddKeyWizard(models.TransientModel):
             existing_keys = wallet.list_keys_with_user_password() or {}
             if self.key_name in existing_keys:
                 raise UserError(
-                    _('Ключ с име "%s" вече съществува в портфела') % self.key_name
+                    _('Ключ с име "%(name)s" вече съществува в портфела')
+                    % {"name": self.key_name}
                 )
 
             # Подготвя данните за съхранение
@@ -164,7 +165,9 @@ class CryptoWalletAddKeyWizard(models.TransientModel):
             raise
         except Exception as e:
             _logger.error(f"Error adding key to wallet: {e}")
-            raise UserError(_("Грешка при добавяне на ключ: %s") % str(e)) from e
+            raise UserError(
+                _("Грешка при добавяне на ключ: %(error)s") % {"error": e}
+            ) from e
 
     def add_key_and_add_another(self):
         """Добавя ключа и отваря нов wizard за следващ ключ"""

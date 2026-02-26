@@ -35,7 +35,7 @@ class BgCompanySearchWizard(models.TransientModel):
     display_vat = fields.Char(string="VAT Number", readonly=True)
     display_address_bg = fields.Text(string="Address (BG)", readonly=True)
     # Address structured fields
-    display_country_id = fields.Many2one("res.country", string="Country", readonly=True)
+    display_country_id = fields.Many2one("res.country", readonly=True)
     display_state_id = fields.Many2one(
         "res.country.state", string="State", readonly=True
     )

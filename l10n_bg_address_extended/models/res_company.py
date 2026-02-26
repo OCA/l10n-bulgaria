@@ -36,7 +36,7 @@ class Company(models.Model):
         compute="_compute_address",
         inverse="_inverse_street_sector_number",
     )
-    city_id = fields.Many2one(comodel_name="res.city", string="City ID")
+    city_id = fields.Many2one(comodel_name="res.city")
     country_enforce_cities = fields.Boolean(
         related="partner_id.country_id.enforce_cities"
     )

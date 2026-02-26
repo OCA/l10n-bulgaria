@@ -141,7 +141,8 @@ class CryptoWalletExportWizard(models.TransientModel):
                 "tag": "display_notification",
                 "params": {
                     "title": _("Неочаквана грешка"),
-                    "message": _("Възникна грешка при експорта: %s") % str(e),
+                    "message": _("Възникна грешка при експорта: %(error)s")
+                    % {"error": e},
                     "type": "danger",
                     "sticky": True,
                 },

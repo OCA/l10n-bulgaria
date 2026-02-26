@@ -11,7 +11,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from odoo import api, fields, models, tools
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
@@ -161,7 +161,7 @@ class CryptoWallet(models.Model):
     _description = "Virtual encrypted wallet for keys"
     _rec_name = "name"
 
-    name = fields.Char("Stored key name", required=True)
+    name = fields.Char(required=True)
     user_id = fields.Many2one(
         "res.users", "User", required=True, default=lambda self: self.env.user
     )
@@ -224,6 +224,7 @@ class CryptoWallet(models.Model):
         for record in self:
             if not record._validate_record_access(operation):
                 raise AccessError(f'Нямате достъп до портфел "{record.name}"')
+        return True
 
     # === CORE WALLET OPERATIONS ===
     def _initialize_empty_wallet(self, master_password):
@@ -289,7 +290,7 @@ class CryptoWallet(models.Model):
         except Exception as e:
             _logger.error(f"Failed to unlock wallet '{self.name}': {str(e)}")
             raise UserError(
-                "Грешна главна парола или повредени данни в портфела"
+                _("Грешна главна парола или повредени данни в портфела")
             ) from e
 
     def _update_session_state(self, encryption_key, wallet_data):
@@ -613,7 +614,7 @@ class CryptoWallet(models.Model):
 
         if not wallet:
             if not self.env.user.has_group(PERMISSION_LEVELS["write"]):
-                raise AccessError("Нямате права за създаване на портфейл")
+                raise AccessError(_("Нямате права за създаване на портфейл"))
 
             wallet = self.create(
                 {

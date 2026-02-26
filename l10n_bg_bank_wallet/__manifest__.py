@@ -8,45 +8,7 @@
     "summary": (
         "Secure storage of cryptographic keys and passwords for banking integrations"
     ),
-    "description": "\n"
-    "Crypto Wallet for Sensitive Data Storage\n"
-    "=========================================\n"
-    "\n"
-    "This module provides a secure way to store:\n"
-    "* RSA keys for digital signing\n"
-    "* API keys for banking integrations\n"
-    "* Passwords and certificates\n"
-    "* Other sensitive cryptographic data\n"
-    "\n"
-    "Uses PBKDF2 with 100,000 iterations and Fernet symmetric encryption.\n"
-    "\n"
-    "Features:\n"
-    "---------\n"
-    "* **Secure Storage**: All data is encrypted using industry-standard cryptography\n"
-    "* **User Isolation**: Each user has their own wallet accessible only to them\n"
-    "* **Key Management**: Add, retrieve, and manage different types of keys\n"
-    "* **Banking Ready**: Designed specifically for banking API integrations\n"
-    "* **Audit Trail**: Track when keys are accessed and modified\n"
-    "\n"
-    "Security:\n"
-    "---------\n"
-    "* Uses user password hash as master password\n"
-    "* PBKDF2 key derivation with 100,000 iterations\n"
-    "* Fernet symmetric encryption for data protection\n"
-    "* Per-user salt for additional security\n"
-    "\n"
-    "Supported Key Types:\n"
-    "-------------------\n"
-    "* RSA Private/Public Keys\n"
-    "* API Keys (for banking APIs)\n"
-    "* SSH Keys\n"
-    "* PGP Keys\n"
-    "* Passwords\n"
-    "* Certificates\n"
-    "* Tokens\n"
-    "* Custom data types\n"
-    "    ",
-    "author": "Rosen Vladimirov",
+    "author": "Odoo Community Association (OCA), Rosen Vladimirov",
     "website": "https://github.com/OCA/l10n-bulgaria",
     "license": "LGPL-3",
     "depends": ["base", "web"],

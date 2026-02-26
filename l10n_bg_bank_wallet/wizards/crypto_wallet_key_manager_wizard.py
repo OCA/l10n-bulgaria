@@ -64,9 +64,9 @@ class CryptoWalletKeyManager(models.TransientModel):
                     else:
                         record.key_list = _("Няма съхранени ключове в този портфел.")
                 except Exception as e:
-                    record.key_list = _("Грешка при зареждане на ключовете: %s") % str(
-                        e
-                    )
+                    record.key_list = _(
+                        "Грешка при зареждане на ключовете: %(error)s"
+                    ) % {"error": e}
             else:
                 record.key_list = ""
 
@@ -133,7 +133,8 @@ class CryptoWalletKeyManager(models.TransientModel):
                 "tag": "display_notification",
                 "params": {
                     "title": _("Грешка"),
-                    "message": _("Не може да се зареди ключът: %s") % str(e),
+                    "message": _("Не може да се зареди ключът: %(error)s")
+                    % {"error": e},
                     "type": "danger",
                     "sticky": True,
                 },
@@ -185,7 +186,8 @@ class CryptoWalletKeyManager(models.TransientModel):
                 "tag": "display_notification",
                 "params": {
                     "title": _("Грешка"),
-                    "message": _("Не може да се премахне ключът: %s") % str(e),
+                    "message": _("Не може да се премахне ключът: %(error)s")
+                    % {"error": e},
                     "type": "danger",
                     "sticky": True,
                 },

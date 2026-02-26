@@ -129,7 +129,8 @@ class CryptoWalletGenerateKeypairWizard(models.TransientModel):
                 "tag": "display_notification",
                 "params": {
                     "title": _("Неочаквана грешка"),
-                    "message": _("Възникна грешка при генерирането: %s") % str(e),
+                    "message": _("Възникна грешка при генерирането: %(error)s")
+                    % {"error": e},
                     "type": "danger",
                     "sticky": True,
                 },
