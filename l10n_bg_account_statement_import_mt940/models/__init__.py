@@ -3,7 +3,7 @@ import mt940.tags
 
 from . import account_journal  # noqa: E402
 
-mt940.tags.StatementNumber.pattern = """
+mt940.tags.StatementNumber.pattern = r"""
     (?P<statement_number>\d+)
     (?:/?(?P<sequence_number>\d{1,6})|
     -(?P<alt_sequence_number>\d{1,6}))?

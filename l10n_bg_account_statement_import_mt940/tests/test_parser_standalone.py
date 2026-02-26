@@ -4,8 +4,11 @@ Standalone test script for MT940 parser - no Odoo installation needed.
 Usage: python3 test_parser_standalone.py <path_to_mt940_file>
 """
 
+import logging
 import os
 import sys
+
+_logger = logging.getLogger(__name__)
 
 # Add parent directory to path to import modules
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -16,7 +19,9 @@ try:
     import mt940
     import mt940.tags
 except ImportError:
-    print("ERROR: mt-940 library not installed. Install with: pip install mt-940")
+    _logger.info(
+        "ERROR: mt-940 library not installed. Install with: pip install mt-940"
+    )
     sys.exit(1)
 
 # Apply ProCredit PRCB Statement Number fix (from models/__init__.py)
@@ -176,22 +181,22 @@ def detect_bank_format(account_identification):
 
 def parse_mt940_file(file_path):
     """Parse MT940 file and return structured data."""
-    print(f"\n{'='*80}")
-    print(f"Parsing MT940 file: {file_path}")
-    print(f"{'='*80}\n")
+    _logger.info(f"\n{'='*80}")
+    _logger.info(f"Parsing MT940 file: {file_path}")
+    _logger.info(f"{'='*80}\n")
 
     # Try different encodings
     encodings = ["utf-8", "windows-1251", "iso-8859-5", "cp1251"]
 
     for encoding in encodings:
         try:
-            print(f"Trying encoding: {encoding}")
+            _logger.info(f"Trying encoding: {encoding}")
             with open(file_path, "rb") as f:
                 data = f.read().decode(encoding)
 
             # Parse with mt940 library
             transactions = mt940.parse(data)
-            print(f"✓ Successfully parsed with {encoding}\n")
+            _logger.info(f"✓ Successfully parsed with {encoding}\n")
 
             # Get transaction data
             mt940_transactions_data = transactions.data
@@ -202,43 +207,43 @@ def parse_mt940_file(file_path):
             )
             bank_format = detect_bank_format(account_identification)
 
-            print(f"Bank Format: {bank_format}")
-            print(f"Account: {account_identification}")
-            print(
+            _logger.info(f"Bank Format: {bank_format}")
+            _logger.info(f"Account: {account_identification}")
+            _logger.info(
                 f"Statement Number: {mt940_transactions_data.get('statement_number')}"
             )
             transaction_reference = mt940_transactions_data.get("transaction_reference")
-            print(f"Transaction Reference: {transaction_reference}")
-            print(
+            _logger.info(f"Transaction Reference: {transaction_reference}")
+            _logger.info(
                 f"\nOpening Balance: {mt940_transactions_data['final_opening_balance']}"
             )
-            print(
+            _logger.info(
                 f"Closing Balance: {mt940_transactions_data['final_closing_balance']}"
             )
 
             # Parse transactions
-            print(f"\n{'='*80}")
-            print(f"TRANSACTIONS ({len(list(transactions))} total)")
-            print(f"{'='*80}\n")
+            _logger.info(f"\n{'='*80}")
+            _logger.info(f"TRANSACTIONS ({len(list(transactions))} total)")
+            _logger.info(f"{'='*80}\n")
 
             for idx, transaction in enumerate(transactions, 1):
                 if not transaction:
                     continue
 
                 trans_data = transaction.data
-                print(f"\n--- Transaction #{idx} ---")
-                print(f"Date: {trans_data['date']}")
-                print(f"Amount: {trans_data['amount']}")
-                print(
+                _logger.info(f"\n--- Transaction #{idx} ---")
+                _logger.info(f"Date: {trans_data['date']}")
+                _logger.info(f"Amount: {trans_data['amount']}")
+                _logger.info(
                     f"Customer Reference: {trans_data.get('customer_reference', 'N/A')}"
                 )
-                print(f"Transaction ID: {trans_data.get('id', 'N/A')}")
+                _logger.info(f"Transaction ID: {trans_data.get('id', 'N/A')}")
 
                 # Parse transaction details
                 transaction_details = trans_data.get("transaction_details", "")
                 if transaction_details:
-                    print("\nRaw Transaction Details:")
-                    print(
+                    _logger.info("\nRaw Transaction Details:")
+                    _logger.info(
                         f"{transaction_details[:200]}..."
                         if len(transaction_details) > 200
                         else transaction_details
@@ -246,14 +251,14 @@ def parse_mt940_file(file_path):
 
                     # Parse details based on bank format
                     if bank_format == "ubb":
-                        print("\n[UBB Format - // separator]")
+                        _logger.info("\n[UBB Format - // separator]")
                         parts = transaction_details.split("//")
                         for i, part in enumerate(parts[:5]):  # Show first 5 parts
-                            print(f"  Part {i}: {part[:80]}")
+                            _logger.info(f"  Part {i}: {part[:80]}")
                     else:
                         # ProCredit/UniCredit format
                         separator = "^" if "^" in transaction_details else "+"
-                        print(
+                        _logger.info(
                             f"\n[ProCredit/UniCredit Format - '{separator}' separator]"
                         )
                         parts = transaction_details.split(separator)
@@ -265,7 +270,9 @@ def parse_mt940_file(file_path):
                                 if part[:2].isdigit():
                                     field_num = part[:2]
                                     field_data = part[2:].strip()
-                                    print(f"  Field {field_num}: {field_data[:70]}")
+                                    _logger.info(
+                                        f"  Field {field_num}: {field_data[:70]}"
+                                    )
 
                                     # If field 22, parse with BankTransactionParser.
                                     if field_num == "22":
@@ -275,47 +282,49 @@ def parse_mt940_file(file_path):
                                         )
                                         parsed = parser.get_data()
                                         if parsed:
-                                            print("    Parsed data from field 22:")
+                                            _logger.info(
+                                                "    Parsed data from field 22:"
+                                            )
                                             for key, value in parsed.items():
-                                                print(f"      {key} {value}")
+                                                _logger.info(f"      {key} {value}")
                                 else:
-                                    print(f"  Text: {part[:70]}")
+                                    _logger.info(f"  Text: {part[:70]}")
 
-                print(f"\n{'-'*80}")
+                _logger.info(f"\n{'-'*80}")
 
             return True
 
         except UnicodeDecodeError:
-            print(f"✗ Failed with {encoding}")
+            _logger.info(f"✗ Failed with {encoding}")
             continue
         except Exception as e:
-            print(f"✗ Error with {encoding}: {str(e)}")
+            _logger.info(f"✗ Error with {encoding}: {str(e)}")
             continue
 
-    print("\n✗ Failed to parse file with any encoding")
+    _logger.info("\n✗ Failed to parse file with any encoding")
     return False
 
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python3 test_parser_standalone.py <path_to_mt940_file>")
-        print("\nExample:")
-        print("  python3 test_parser_standalone.py ~/Downloads/statement.txt")
+        _logger.info("Usage: python3 test_parser_standalone.py <path_to_mt940_file>")
+        _logger.info("\nExample:")
+        _logger.info("  python3 test_parser_standalone.py ~/Downloads/statement.txt")
         sys.exit(1)
 
     file_path = sys.argv[1]
 
     if not os.path.exists(file_path):
-        print(f"ERROR: File not found: {file_path}")
+        _logger.info(f"ERROR: File not found: {file_path}")
         sys.exit(1)
 
     success = parse_mt940_file(file_path)
 
     if success:
-        print("\n✓ Parsing completed successfully!")
+        _logger.info("\n✓ Parsing completed successfully!")
         sys.exit(0)
     else:
-        print("\n✗ Parsing failed!")
+        _logger.info("\n✗ Parsing failed!")
         sys.exit(1)
 
 
