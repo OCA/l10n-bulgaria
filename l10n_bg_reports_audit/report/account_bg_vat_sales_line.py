@@ -194,7 +194,10 @@ class AccountBGInfoSaleLine(models.Model):
         readonly=True,
     )
     account_tag_25 = fields.Monetary(
-        string="[02-25] Tax base of supplies as an intermediary in triangular transactions",
+        string=(
+            "[02-25] Tax base of supplies as an intermediary"
+            " in triangular transactions"
+        ),
         currency_field="company_currency_id",
         readonly=True,
     )
@@ -275,12 +278,16 @@ class AccountBGInfoSaleLine(models.Model):
 
 
 class AccountBGCalcSalesLine(models.Model):
-    """Base model for new Bulgarian VAT reports. The idea is that these lines have all the necessary data and which any
-    changes in odoo, these will be taken for this cube and then no changes will be needed in the reports that use
-     these lines. A line is created for each accountring entry affected by VAT tax.
+    """Base model for new Bulgarian VAT reports.
 
-    Basically which it does is covert the accounting entries into columns depending on the information of the taxes and
-    add some other fields"""
+    The idea is that these lines have all the necessary data and which any
+    changes in odoo, these will be taken for this cube, and then no changes
+    will be needed in the reports that use these lines. A line is created
+    for each accounting entry affected by VAT tax.
+
+    Basically what it does is convert the accounting entries into columns
+    depending on the information of the taxes and add some other fields.
+    """
 
     _name = "account.bg.calc.sales.line"
     _description = "VAT line for Analysis in Bulgarian Localization"
@@ -318,7 +325,10 @@ class AccountBGCalcSalesLine(models.Model):
         readonly=True,
     )
     account_tag_11 = fields.Monetary(
-        string="[02-11] Tax base of taxable supplies at 20%, including distance sales with place of supply in the country",
+        string=(
+            "[02-11] Tax base of taxable supplies at 20%,"
+            " including distance sales with place of supply in the country"
+        ),
         currency_field="company_currency_id",
         readonly=True,
     )
