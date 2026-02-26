@@ -1,6 +1,6 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -119,10 +119,12 @@ class BGModEconomicActivity(models.Model):
                 self.search_count([("code", "=", record.code), ("id", "!=", record.id)])
                 > 0
             ):
-                raise ValidationError(f"KID code '{record.code}' already exists!")
+                raise ValidationError(_("KID code '%s' already exists!") % record.code)
 
     @api.constrains("date_from", "date_to")
     def _check_dates(self):
         for record in self:
             if record.date_to and record.date_from > record.date_to:
-                raise ValidationError("Valid From date cannot be after Valid To date!")
+                raise ValidationError(
+                    _("Valid From date cannot be after Valid To date!")
+                )

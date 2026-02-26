@@ -1,6 +1,6 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
@@ -124,21 +124,27 @@ class BGNCOPClassification(models.Model):
                 self.search_count([("code", "=", record.code), ("id", "!=", record.id)])
                 > 0
             ):
-                raise ValidationError(f"NCOP code '{record.code}' already exists!")
+                raise ValidationError(
+                    _("NCOP code '%s' already exists!") % record.code
+                )
 
     @api.constrains("code")
     def _check_code_format(self):
         for record in self:
             if not record.code.isdigit():
-                raise ValidationError("NCOP code must contain only digits!")
+                raise ValidationError(_("NCOP code must contain only digits!"))
             if len(record.code) < 1 or len(record.code) > 8:
-                raise ValidationError("NCOP code must be between 1 and 8 digits long!")
+                raise ValidationError(
+                    _("NCOP code must be between 1 and 8 digits long!")
+                )
 
     @api.constrains("date_from", "date_to")
     def _check_dates(self):
         for record in self:
             if record.date_to and record.date_from > record.date_to:
-                raise ValidationError("Valid From date cannot be after Valid To date!")
+                raise ValidationError(
+                    _("Valid From date cannot be after Valid To date!")
+                )
 
     def get_qualification_mapping(self):
         """Get qualification group for MOD calculation"""
