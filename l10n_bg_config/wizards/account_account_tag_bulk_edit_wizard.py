@@ -2,7 +2,7 @@
 import base64
 import logging
 
-from odoo import fields, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class AccountAccountSettingWizard(models.TransientModel):
     def action_process_config_file(self):
         """Process the uploaded XML config file from the binary field."""
         if not self.l10n_bg_config_file:
-            raise UserError("No configuration file uploaded.")
+            raise UserError(_("No configuration file uploaded."))
 
         # Decode the base64 binary content
         file_content = base64.b64decode(self.l10n_bg_config_file)

@@ -5,7 +5,7 @@ import logging
 from odoo import Command, _, fields, models
 from odoo.exceptions import UserError
 
-from odoo.addons.l10n_bg_config.models.l10n_bg_config_mixin import (
+from .l10n_bg_config_mixin import (
     generate_encryption_keys,
     generate_key2,
 )
@@ -18,7 +18,6 @@ try:
         InvalidChecksum,
         InvalidComponent,
         InvalidFormat,
-        InvalidLength,
         ValidationError,
     )
 except ImportError:
@@ -67,13 +66,83 @@ class ResPartner(models.Model):
     )
     l10n_bg_key = fields.Char(
         "Api Key",
-        help="Enter the key to encrypt the data. If not entered, a random key will be generated.",
+        help="Enter the key to encrypt the data. "
+        "If not entered, a random key will be generated.",
     )
     l10n_bg_crypt_key = fields.Binary(
         "Crypt Key",
         attachment=False,
-        help="Enter the key to decrypt the data. If not entered, a random key will be generated.",
+        help="Enter the key to decrypt the data. "
+        "If not entered, a random key will be generated.",
     )
+
+    def _uic_get_prefix(self, id_number):
+        return "".join(filter(str.istitle, id_number))
+
+    def _uic_get_digits(self, id_number):
+        return "".join(filter(str.isdigit, id_number))
+
+    def _uic_set(self, record, uic_type, id_number, country_code, kind):
+        record.l10n_bg_uic_type = uic_type
+        record.l10n_bg_uic = stdnum.get_cc_module(country_code, kind).compact(id_number)
+
+    def _uic_try_bg_vat(self, record, id_number):
+        try:
+            if stdnum.get_cc_module("bg", "vat").validate(id_number):
+                self._uic_set(record, "bg_uic", id_number, "bg", "vat")
+                return True, None
+        except InvalidFormat:
+            return (
+                False,
+                _("Invalid format for Bulgarian VAT number: %s") % id_number,
+            )
+        except InvalidChecksum:
+            _logger.info(f"Invalid check sum of {id_number}")
+            return (
+                False,
+                _("Invalid checksum for Bulgarian VAT number: %s") % id_number,
+            )
+        except ValidationError as e:
+            _logger.info(f"Invalid {id_number} with error {e}")
+            return (
+                False,
+                _("Validation error for Bulgarian VAT: %(vat)s - %(error)s")
+                % {"vat": id_number, "error": str(e)},
+            )
+        return False, None
+
+    def _uic_try_eu_vat(self, record, id_number):
+        try:
+            if stdnum.get_cc_module("eu", "vat").validate(id_number):
+                self._uic_set(record, "eu_vat", id_number, "eu", "vat")
+                return True
+        except (InvalidComponent, InvalidFormat) as e:
+            _logger.debug("Invalid EU VAT %s: %s", id_number, e)
+        except ValidationError as e:
+            _logger.info(f"Invalid {id_number} with error {e}")
+        return False
+
+    def _uic_try_egn(self, record, id_number):
+        try:
+            if stdnum.get_cc_module("bg", "egn").validate(id_number):
+                self._uic_set(record, "bg_egn", id_number, "bg", "egn")
+                return True
+        except (InvalidFormat, ValidationError) as e:
+            _logger.info(f"Invalid EGN {id_number} with error {e}")
+        return False
+
+    def _uic_try_pnf(self, record, id_number):
+        try:
+            if stdnum.get_cc_module("bg", "pnf").validate(id_number):
+                self._uic_set(record, "bg_pnf", id_number, "bg", "pnf")
+                return True
+        except (InvalidFormat, ValidationError) as e:
+            _logger.info(f"Invalid PNF {id_number} with error {e}")
+        return False
+
+    def _uic_set_non_eu(self, record):
+        record.l10n_bg_uic_type = "bg_non_eu"
+        record.l10n_bg_uic = "99999999999"
 
     def _validate_l10n_bg_uic(self, raise_on_error=False):
         """
@@ -95,83 +164,32 @@ class ResPartner(models.Model):
 
             validate = False
             error_message = None
+            prefix = self._uic_get_prefix(id_number)
 
             # First, check id numbers with a prefix
-            if "".join(filter(str.istitle, id_number)):
+            if prefix:
                 # BG VAT number convert to uic
-                if "".join(filter(str.istitle, id_number)) == "BG":
-                    try:
-                        if stdnum.get_cc_module("bg", "vat").validate(id_number):
-                            record.l10n_bg_uic_type = "bg_uic"
-                            record.l10n_bg_uic = stdnum.get_cc_module(
-                                "bg", "vat"
-                            ).compact(id_number)
-                            validate = True
-                    except InvalidFormat:
-                        error_message = (
-                            _("Invalid format for Bulgarian VAT number: %s") % id_number
-                        )
-                    except InvalidChecksum:
-                        error_message = (
-                            _("Invalid checksum for Bulgarian VAT number: %s")
-                            % id_number
-                        )
-                        _logger.info(f"Invalid check sum of {id_number}")
-                    except ValidationError as e:
-                        error_message = _(
-                            "Validation error for Bulgarian VAT: %s - %s"
-                        ) % (id_number, str(e))
-                        _logger.info(f"Invalid {id_number} with error {e}")
+                if prefix == "BG":
+                    validate, error_message = self._uic_try_bg_vat(record, id_number)
 
                 #  Try for EU VAT Number
                 if not validate and not error_message:
-                    try:
-                        if stdnum.get_cc_module("eu", "vat").validate(id_number):
-                            record.l10n_bg_uic_type = "eu_vat"
-                            record.l10n_bg_uic = stdnum.get_cc_module(
-                                "eu", "vat"
-                            ).compact(id_number)
-                            validate = True
-                    except (InvalidComponent, InvalidFormat):
-                        pass  # Continue to next validation
-                    except ValidationError as e:
-                        _logger.info(f"Invalid {id_number} with error {e}")
+                    validate = self._uic_try_eu_vat(record, id_number)
 
             # After check for EGN and PNF
-            if (
-                not validate
-                and not "".join(filter(str.istitle, id_number))
-                and "".join(filter(str.isdigit, id_number))
-            ):
+            if not validate and not prefix and self._uic_get_digits(id_number):
                 #  Check for EGN
-                try:
-                    if stdnum.get_cc_module("bg", "egn").validate(id_number):
-                        record.l10n_bg_uic_type = "bg_egn"
-                        record.l10n_bg_uic = stdnum.get_cc_module("bg", "egn").compact(
-                            id_number
-                        )
-                        validate = True
-                except (InvalidFormat, ValidationError) as e:
-                    _logger.info(f"Invalid EGN {id_number} with error {e}")
+                validate = self._uic_try_egn(record, id_number)
 
                 # Check for PNF
                 if not validate:
-                    try:
-                        if stdnum.get_cc_module("bg", "pnf").validate(id_number):
-                            record.l10n_bg_uic_type = "bg_pnf"
-                            record.l10n_bg_uic = stdnum.get_cc_module(
-                                "bg", "pnf"
-                            ).compact(id_number)
-                            validate = True
-                    except (InvalidFormat, ValidationError) as e:
-                        _logger.info(f"Invalid PNF {id_number} with error {e}")
+                    validate = self._uic_try_pnf(record, id_number)
 
             # Finally, mark like outside EU if isn't validated
             if not validate:
                 if raise_on_error and error_message:
                     raise UserError(error_message)
-                record.l10n_bg_uic_type = "bg_non_eu"
-                record.l10n_bg_uic = "99999999999"
+                self._uic_set_non_eu(record)
                 # Не изтриваме VAT, само маркираме като non-EU
 
         return True
@@ -195,7 +213,10 @@ class ResPartner(models.Model):
                 ]
             else:
                 record.l10n_bg_represent_contact_id = False
-                record.child_ids.filtered(lambda r: r.id == record.id).type = "contact"
+                current_id = record.id
+                record.child_ids.filtered(
+                    lambda r, _id=current_id: r.id == _id
+                ).type = "contact"
 
     def get_api_key(self):
         l10n_bg_uic = self.l10n_bg_uic or "99999999999"
@@ -234,12 +255,18 @@ class ResPartner(models.Model):
                     if new_parent_vat and old_vat and new_parent_vat != old_vat:
                         raise UserError(
                             _(
-                                "You cannot change the parent company for partner '%s' "
-                                "because the parent has a different Tax ID. "
-                                "Partner Tax ID: %s, Parent Tax ID: %s. "
-                                "This is not allowed when there are posted accounting entries."
+                                "You cannot change the parent company for partner "
+                                "'%(partner)s' because the parent has a different Tax "
+                                "ID. Partner Tax ID: %(partner_tax)s, Parent Tax ID: "
+                                "%(parent_tax)s. "
+                                "This is not allowed when there are posted accounting "
+                                "entries."
                             )
-                            % (record.name, old_vat, new_parent_vat)
+                            % {
+                                "partner": record.name,
+                                "partner_tax": old_vat,
+                                "parent_tax": new_parent_vat,
+                            }
                         )
 
         # Проверка за промяна на VAT преди записване
@@ -262,11 +289,16 @@ class ResPartner(models.Model):
                     if posted_moves:
                         raise UserError(
                             _(
-                                "You cannot change the Tax ID for partner '%s' "
-                                "because there are already posted accounting entries. "
-                                "Old Tax ID: %s, New Tax ID: %s"
+                                "You cannot change the Tax ID for partner "
+                                "'%(partner)s' because there are already posted "
+                                "accounting entries. Old Tax ID: %(old_tax)s, "
+                                "New Tax ID: %(new_tax)s"
                             )
-                            % (record.name, old_vat, new_vat)
+                            % {
+                                "partner": record.name,
+                                "old_tax": old_vat,
+                                "new_tax": new_vat,
+                            }
                         )
 
         # Актуализиране на криптиращия ключ

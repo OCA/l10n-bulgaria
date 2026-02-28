@@ -54,7 +54,6 @@ class BgCompanySearchWizard(models.TransientModel):
     )
 
     data_fetched = fields.Boolean(
-        string="Data Fetched",
         default=False,
         help="Indicates if data was successfully fetched",
     )
@@ -155,7 +154,9 @@ class BgCompanySearchWizard(models.TransientModel):
 
         try:
             _logger.info(
-                f"Fetching company data from portal.registryagency.bg API for EIK: {eik}"
+                "Fetching company data from portal.registryagency.bg API for "
+                "EIK: %s",
+                eik,
             )
 
             api_url = f"https://portal.registryagency.bg/CR/api/Deeds/{eik}"
@@ -184,7 +185,9 @@ class BgCompanySearchWizard(models.TransientModel):
                 return cls._parse_registry_response_static(data)
             else:
                 _logger.warning(
-                    f"Registry API returned status {response.status_code} for EIK: {eik}"
+                    "Registry API returned status %s for EIK: %s",
+                    response.status_code,
+                    eik,
                 )
                 return False
 
@@ -235,7 +238,8 @@ class BgCompanySearchWizard(models.TransientModel):
                 limit=1,
             )
 
-            # Ако не е намерена, добавяме префикс "Област " и търсим отново
+            # Ако не е намерена, добавяме префикс
+            # "Област " и търсим отново
             if not state:
                 state_name_with_prefix = f"Област {result['state_name']}"
                 state = bg_env["res.country.state"].search(
@@ -258,14 +262,16 @@ class BgCompanySearchWizard(models.TransientModel):
                     [("country_id.code", "=", "BG"), ("zipcode", "=", result["zip"])]
                 )
 
-                # Ако има повече от един град с този пощенски код, филтрираме по име
+                # Ако има повече от един град с този
+                # пощенски код, филтрираме по име
                 if len(city) > 1:
                     # Case-insensitive exact match
                     city = city.filtered(
                         lambda c: c.name.lower() == result["city_name"].lower()
                     )
                     if not city:
-                        # Опитваме се с частично съвпадение (ilike за pattern matching)
+                        # Опитваме се с частично съвпадение
+                        # (ilike за pattern matching)
                         city = bg_env["res.city"].search(
                             [
                                 ("country_id.code", "=", "BG"),
@@ -275,7 +281,8 @@ class BgCompanySearchWizard(models.TransientModel):
                             limit=1,
                         )
 
-            # Ако не е намерен по пощенски код, опитваме се по име
+            # Ако не е намерен по пощенски код,
+            # опитваме се по име
             if not city:
                 # Using =ilike for exact case-insensitive match
                 city = bg_env["res.city"].search(
@@ -306,7 +313,30 @@ class BgCompanySearchWizard(models.TransientModel):
         if not address_text:
             return {}
 
-        result = {
+        result = BgCompanySearchWizard._init_address_result()
+
+        # Split the address by newlines to process each line
+        lines = [line.strip() for line in address_text.split("\n") if line.strip()]
+
+        for line in lines:
+            if BgCompanySearchWizard._parse_country_line(line, result):
+                continue
+            if BgCompanySearchWizard._parse_state_line(line, result):
+                continue
+            if BgCompanySearchWizard._parse_city_line(line, result):
+                continue
+            if BgCompanySearchWizard._parse_district_line(line, result):
+                continue
+            if BgCompanySearchWizard._parse_email_line(line, result):
+                continue
+            if BgCompanySearchWizard._parse_street_line(line, result):
+                continue
+
+        return result
+
+    @staticmethod
+    def _init_address_result():
+        return {
             "country_code": "BG",
             "country_name": "",
             "state_id": False,
@@ -325,217 +355,209 @@ class BgCompanySearchWizard(models.TransientModel):
             "email": "",
         }
 
-        # Split the address by newlines to process each line
-        lines = [line.strip() for line in address_text.split("\n") if line.strip()]
+    @staticmethod
+    def _parse_country_line(line, result):
+        if not line.startswith("Държава:"):
+            return False
+        country_match = re.search(r"Държава:\s*(.+)$", line)
+        if country_match:
+            result["country_name"] = country_match.group(1).strip()
+        return True
 
-        for line in lines:
-            # Extract country (Държава:)
-            if line.startswith("Държава:"):
-                country_match = re.search(r"Държава:\s*(.+)$", line)
-                if country_match:
-                    result["country_name"] = country_match.group(1).strip()
+    @staticmethod
+    def _parse_state_line(line, result):
+        if "Област:" not in line:
+            return False
+        # Format: "Област: Разград, Община: Разград"
+        state_match = re.search(r"Област:\s*([^,]+)", line)
+        if state_match:
+            result["state_name"] = state_match.group(1).strip()
+        return True
+
+    @staticmethod
+    def _parse_city_line(line, result):
+        if "Населено място:" not in line:
+            return False
+        city_match = re.search(
+            r"Населено място:\s*(?:гр\.|с\.)\s*([^,]+?)" r"(?:,\s*п\.к\.\s*(\d+))?$",
+            line,
+        )
+        if city_match:
+            result["city_name"] = city_match.group(1).strip()
+            if city_match.group(2):
+                result["zip"] = city_match.group(2).strip()
+        return True
+
+    @staticmethod
+    def _parse_district_line(line, result):
+        if not line.startswith("р-н"):
+            return False
+        district_match = re.search(r"р-н\s+(.+)$", line)
+        if district_match:
+            result["district"] = district_match.group(1).strip()
+        return True
+
+    @staticmethod
+    def _parse_email_line(line, result):
+        if "Адрес на електронна поща:" not in line:
+            return False
+        email_pattern = r"Адрес на електронна поща:\s*(.+)$"
+        email_match = re.search(email_pattern, line)
+        if email_match:
+            result["email"] = email_match.group(1).strip()
+        return True
+
+    @staticmethod
+    def _parse_street_line(line, result):
+        if "бул./ул." not in line:
+            return False
+        # Формат: "ж.к. Младост 4, бул./ул. Самара № 2,
+        # бл. Адванс Бизнес Център, сграда 2, ет. 8"
+        street_match = re.search(r"бул\./ул\.\s*(.+)$", line)
+        if not street_match:
+            return True
+
+        full_street_line = street_match.group(1).strip()
+        street_line = BgCompanySearchWizard._strip_contact_from_street_line(
+            full_street_line,
+            result,
+        )
+        street_line = re.sub(r"^(?:бул\.|ул\.)\.?\s*", "", street_line)
+        street_line = street_line.replace('"', "")
+
+        segments = [seg.strip() for seg in street_line.split(",")]
+        components = BgCompanySearchWizard._parse_street_segments(segments)
+
+        BgCompanySearchWizard._apply_street_components(result, components)
+        result["street"] = BgCompanySearchWizard._build_full_street(
+            result,
+            components,
+            line,
+        )
+        return True
+
+    @staticmethod
+    def _strip_contact_from_street_line(full_street_line, result):
+        contact_pattern = r"\s+(?:Телефон|Факс):\s*(.+)$"
+        contact_match = re.search(contact_pattern, full_street_line)
+        if not contact_match:
+            return full_street_line
+        contact_info = contact_match.group(1).strip()
+        if "@" in contact_info:
+            result["email"] = contact_info
+        else:
+            result["phone"] = contact_info
+        return re.sub(r"\s+(?:Телефон|Факс):.+$", "", full_street_line)
+
+    @staticmethod
+    def _parse_street_segments(segments):
+        components = {
+            "street_name": "",
+            "street_number": "",
+            "building_number": "",
+            "building_name": "",
+            "entrance": "",
+            "floor_number": "",
+            "apartment": "",
+        }
+        for segment in segments:
+            if "№" in segment and not components["street_number"]:
+                parts = segment.split("№")
+                if parts[0].strip() and not components["street_name"]:
+                    components["street_name"] = parts[0].strip()
+                if len(parts) > 1:
+                    num_match = re.search(r"(\d+[А-Яа-я]?)", parts[1])
+                    if num_match:
+                        components["street_number"] = num_match.group(1)
                 continue
 
-            # Extract state/region and municipality (Област: ... Община:)
-            if "Област:" in line:
-                # Format: "Област: Разград, Община: Разград"
-                state_match = re.search(r"Област:\s*([^,]+)", line)
-                if state_match:
-                    result["state_name"] = state_match.group(1).strip()
+            if segment.startswith("бл."):
+                building_text = segment[3:].strip()
+                if re.match(r"^\d+[А-Яа-я]?$", building_text):
+                    components["building_number"] = building_text
+                else:
+                    components["building_name"] = building_text
                 continue
 
-            # Extract city and postal code
-            # Формат: "Населено място: гр. Разград, п.к. 7200"
-            if "Населено място:" in line:
-                city_match = re.search(
-                    r"Населено място:\s*(?:гр\.|с\.)\s*([^,]+?)(?:,\s*п\.к\.\s*(\d+))?$",
-                    line,
-                )
-                if city_match:
-                    result["city_name"] = city_match.group(1).strip()
-                    if city_match.group(2):
-                        result["zip"] = city_match.group(2).strip()
+            if segment.startswith("вх."):
+                components["entrance"] = segment[3:].strip()
                 continue
 
-            # Extract district (район)
-            # Формат: "р-н Лозенец"
-            if line.startswith("р-н"):
-                district_match = re.search(r"р-н\s+(.+)$", line)
-                if district_match:
-                    result["district"] = district_match.group(1).strip()
+            if segment.startswith("ет."):
+                floor_match = re.search(r"(\d+)", segment)
+                if floor_match:
+                    components["floor_number"] = floor_match.group(1)
                 continue
 
-            # Extract email from dedicated field
-            # Формат: "Адрес на електронна поща: example@domain.com"
-            if "Адрес на електронна поща:" in line:
-                email_match = re.search(r"Адрес на електронна поща:\s*(.+)$", line)
-                if email_match:
-                    result["email"] = email_match.group(1).strip()
+            if segment.startswith("ап."):
+                apt_match = re.search(r"(\d+)", segment)
+                if apt_match:
+                    components["apartment"] = apt_match.group(1)
                 continue
 
-            # Extract street with бул./ул. as a key
-            # Формат: "ж.к. Младост 4, бул./ул. Самара № 2, бл. Адванс Бизнес Център, сграда 2, ет. 8"
-            if "бул./ул." in line:
-                # Extract everything after "бул./ул." using regex
-                street_match = re.search(r"бул\./ул\.\s*(.+)$", line)
-                if street_match:
-                    # Цялата част след "бул./ул."
-                    full_street_line = street_match.group(1).strip()
-
-                    # First check if phone/fax/email is in this line and extract it
-                    contact_match = re.search(
-                        r"\s+(?:Телефон|Факс):\s*(.+)$", full_street_line
-                    )
-                    if contact_match:
-                        contact_info = contact_match.group(1).strip()
-                        # Check if it's an email (contains @)
-                        if "@" in contact_info:
-                            result["email"] = contact_info
-                        else:
-                            # It's a phone number
-                            result["phone"] = contact_info
-                        # Remove contact info from street line before parsing
-                        street_line = re.sub(
-                            r"\s+(?:Телефон|Факс):.+$", "", full_street_line
-                        )
-                    else:
-                        street_line = full_street_line
-
-                    # Remove remaining "бул." or "ул." prefix (with optional space and dot)
-                    street_line = re.sub(r"^(?:бул\.|ул\.)\.?\s*", "", street_line)
-
-                    # Премахваме кавички около името на улицата
-                    street_line = (
-                        street_line.replace('"', "").replace('"', "").replace('"', "")
-                    )
-
-                    # Разделяме по запетая за да обработим всеки сегмент
-                    segments = [seg.strip() for seg in street_line.split(",")]
-
-                    street_name = ""
-                    street_number = ""
-                    building_number = ""
-                    building_name = ""
-                    entrance = ""
-                    floor_number = ""
-                    apartment = ""
-
-                    for segment in segments:
-                        # Проверяваме за различни ключови думи
-
-                        # Номер на улица: "№ 2" или "Самара № 2"
-                        if "№" in segment and not street_number:
-                            # Извличаме името на улицата и номера
-                            parts = segment.split("№")
-                            if parts[0].strip() and not street_name:
-                                street_name = parts[0].strip()
-                            if len(parts) > 1:
-                                # Извличаме само цифрите и евентуална буква
-                                num_match = re.search(r"(\d+[А-Яа-я]?)", parts[1])
-                                if num_match:
-                                    street_number = num_match.group(1)
-
-                        # Блок: "бл. 123" или "бл. Адванс Бизнес Център"
-                        elif segment.startswith("бл."):
-                            building_text = segment[3:].strip()
-                            # Проверяваме дали е число или име
-                            if re.match(r"^\d+[А-Яа-я]?$", building_text):
-                                building_number = building_text
-                            else:
-                                # Това е име на сграда
-                                building_name = building_text
-
-                        # Вход: "вх. Б"
-                        elif segment.startswith("вх."):
-                            entrance = segment[3:].strip()
-
-                        # Етаж: "ет. 8"
-                        elif segment.startswith("ет."):
-                            floor_match = re.search(r"(\d+)", segment)
-                            if floor_match:
-                                floor_number = floor_match.group(1)
-
-                        # Апартамент: "ап. 36"
-                        elif segment.startswith("ап."):
-                            apt_match = re.search(r"(\d+)", segment)
-                            if apt_match:
-                                apartment = apt_match.group(1)
-
-                        # Сграда: "сграда 2"
-                        elif segment.startswith("сграда"):
-                            # Добавяме към building_name
-                            if building_name:
-                                building_name += f", {segment}"
-                            else:
-                                building_name = segment
-
-                        # Ако няма ключова дума и няма име на улица, това е улицата
-                        elif not street_name and not any(
-                            keyword in segment
-                            for keyword in ["бл.", "вх.", "ет.", "ап.", "сграда"]
-                        ):
-                            street_name = segment
-
-                    # Записваме резултатите
-                    if street_name:
-                        result["street_name"] = street_name
-
-                    if street_number:
-                        result["street_number"] = street_number
-
-                    if apartment:
-                        result["street_number2"] = apartment
-
-                    # Комбинираме building_number и building_name
-                    if building_number or building_name:
-                        building_parts = []
-                        if building_number:
-                            building_parts.append(building_number)
-                        if building_name:
-                            building_parts.append(building_name)
-                        if entrance:
-                            building_parts.append(f"вх. {entrance}")
-                        result["street_building_number"] = ", ".join(building_parts)
-                    elif entrance:
-                        result["street_building_number"] = f"вх. {entrance}"
-
-                    if floor_number:
-                        result["street_floor_number"] = floor_number
-
-                    # Build full street with district and residential complex at the beginning
-                    street_parts = []
-
-                    # Добавяме район в началото ако има
-                    if result.get("district"):
-                        street_parts.append(f"р-н {result['district']}")
-
-                    # Проверяваме дали има ж.к. в оригиналния ред преди бул./ул.
-                    if "ж.к." in line:
-                        complex_match = re.search(r"ж\.к\.\s*([^,]+)", line)
-                        if complex_match:
-                            street_parts.append(
-                                f"ж.к. {complex_match.group(1).strip()}"
-                            )
-
-                    if street_name:
-                        street_parts.append(street_name)
-                    if street_number:
-                        street_parts.append(f"№ {street_number}")
-                    if building_number:
-                        street_parts.append(f"бл. {building_number}")
-                    if building_name:
-                        street_parts.append(building_name)
-                    if entrance:
-                        street_parts.append(f"вх. {entrance}")
-                    if floor_number:
-                        street_parts.append(f"ет. {floor_number}")
-                    if apartment:
-                        street_parts.append(f"ап. {apartment}")
-
-                    result["street"] = ", ".join(street_parts)
+            if segment.startswith("сграда"):
+                if components["building_name"]:
+                    components["building_name"] += f", {segment}"
+                else:
+                    components["building_name"] = segment
                 continue
 
-        return result
+            if not components["street_name"] and not any(
+                keyword in segment for keyword in ["бл.", "вх.", "ет.", "ап.", "сграда"]
+            ):
+                components["street_name"] = segment
+
+        return components
+
+    @staticmethod
+    def _apply_street_components(result, components):
+        if components["street_name"]:
+            result["street_name"] = components["street_name"]
+        if components["street_number"]:
+            result["street_number"] = components["street_number"]
+        if components["apartment"]:
+            result["street_number2"] = components["apartment"]
+
+        building_parts = []
+        if components["building_number"]:
+            building_parts.append(components["building_number"])
+        if components["building_name"]:
+            building_parts.append(components["building_name"])
+        if components["entrance"]:
+            building_parts.append(f"вх. {components['entrance']}")
+
+        if building_parts:
+            result["street_building_number"] = ", ".join(building_parts)
+        elif components["entrance"]:
+            result["street_building_number"] = f"вх. {components['entrance']}"
+
+        if components["floor_number"]:
+            result["street_floor_number"] = components["floor_number"]
+
+    @staticmethod
+    def _build_full_street(result, components, line):
+        street_parts = []
+        if result.get("district"):
+            street_parts.append(f"р-н {result['district']}")
+        if "ж.к." in line:
+            complex_match = re.search(r"ж\.к\.\s*([^,]+)", line)
+            if complex_match:
+                street_parts.append(f"ж.к. {complex_match.group(1).strip()}")
+        if components["street_name"]:
+            street_parts.append(components["street_name"])
+        if components["street_number"]:
+            street_parts.append(f"№ {components['street_number']}")
+        if components["building_number"]:
+            street_parts.append(f"бл. {components['building_number']}")
+        if components["building_name"]:
+            street_parts.append(components["building_name"])
+        if components["entrance"]:
+            street_parts.append(f"вх. {components['entrance']}")
+        if components["floor_number"]:
+            street_parts.append(f"ет. {components['floor_number']}")
+        if components["apartment"]:
+            street_parts.append(f"ап. {components['apartment']}")
+        return ", ".join(street_parts)
 
     @staticmethod
     def _format_company_name(name):
@@ -551,12 +573,14 @@ class BgCompanySearchWizard(models.TransientModel):
         if not name:
             return name
 
-        # Разделяме по интервали и форматираме всяка дума
+        # Разделяме по интервали и форматираме
+        # всяка дума
         words = name.split()
         formatted_words = []
 
         for word in words:
-            # Запазваме съкращенията с главни букви (2-3 букви)
+            # Запазваме съкращенията с главни букви
+            # (2-3 букви)
             if len(word) <= 3 and word.isupper():
                 formatted_words.append(word)
             else:
@@ -591,182 +615,206 @@ class BgCompanySearchWizard(models.TransientModel):
             # Две имена - първото Title Case, второто UPPERCASE
             return f"{name_parts[0].capitalize()} {name_parts[1].upper()}"
         else:
-            # Три или повече имена - последното UPPERCASE, останалите Title Case
+            # Три или повече имена - последното UPPERCASE,
+            # останалите Title Case
             formatted_parts = [part.capitalize() for part in name_parts[:-1]]
             formatted_parts.append(name_parts[-1].upper())
             return " ".join(formatted_parts)
 
     @staticmethod
+    def _get_legal_form_bg(legal_form_code):
+        legal_forms = {
+            10: "ЕООД",
+            4: "ООД",
+            5: "АД",
+            11: "ЕАД",
+            3: "КД",
+            6: "КДА",
+            2: "СД",
+            1: "ЕТ",
+        }
+        return legal_forms.get(legal_form_code, "")
+
+    @staticmethod
+    def _build_company_name_bg(company_name_bg_raw, legal_form_bg):
+        company_name_bg = BgCompanySearchWizard._format_company_name(
+            company_name_bg_raw
+        )
+        if legal_form_bg:
+            return company_name_bg, f"{company_name_bg} {legal_form_bg}"
+        return company_name_bg, company_name_bg
+
+    @staticmethod
+    def _extract_company_name_en(sections):
+        for section in sections:
+            for sub_deed in section.get("subDeeds", []):
+                for group in sub_deed.get("groups", []):
+                    for field in group.get("fields", []):
+                        if field.get("nameCode") == "CR_F_4_L":
+                            html_data = field.get("htmlData", "")
+                            text = re.sub(r"<[^>]+>", "", html_data)
+                            return " ".join(text.split()).strip()
+        return ""
+
+    @staticmethod
+    def _build_company_name_en(company_name_en_raw, company_name_bg, legal_form_bg):
+        if company_name_en_raw:
+            company_name_en_raw = BgCompanySearchWizard._format_company_name(
+                company_name_en_raw
+            )
+
+        legal_form_en_map = {
+            "ЕООД": "Ltd.",
+            "ООД": "Ltd.",
+            "АД": "JSC",
+            "ЕАД": "JSC",
+            "КД": "LP",
+            "КДА": "PLS",
+            "СД": "GP",
+            "ЕТ": "ET",
+        }
+        legal_form_en = legal_form_en_map.get(legal_form_bg, "")
+
+        if company_name_en_raw and legal_form_en:
+            return f"{company_name_en_raw} {legal_form_en}"
+        if company_name_en_raw:
+            return company_name_en_raw
+        if company_name_bg and legal_form_en:
+            return f"{company_name_bg} {legal_form_en}"
+        return company_name_bg
+
+    @staticmethod
+    def _build_company_data_base(
+        data,
+        company_name_bg_full,
+        company_name_en,
+        legal_form_bg,
+    ):
+        return {
+            "eik": data.get("uic", ""),
+            "company_name_bg": company_name_bg_full,
+            "company_name_en": company_name_en,
+            "legal_form_bg": legal_form_bg,
+            "vat_number": f"BG{data.get('uic', '')}" if data.get("uic") else "",
+            "status": "active",
+            "managers": [],
+        }
+
+    @staticmethod
+    def _parse_sections_into_company_data(company_data, sections):
+        handlers = {
+            "CR_F_5_L": BgCompanySearchWizard._handle_address_field,
+            "CR_F_6_L": BgCompanySearchWizard._handle_activity_field,
+            "CR_F_6a_L": BgCompanySearchWizard._handle_activity_code_field,
+            "CR_F_7_L": BgCompanySearchWizard._handle_managers_field,
+            "CR_F_1_L": BgCompanySearchWizard._handle_registration_date_field,
+        }
+        for section in sections:
+            for sub_deed in section.get("subDeeds", []):
+                for group in sub_deed.get("groups", []):
+                    for field in group.get("fields", []):
+                        field_code = field.get("nameCode", "")
+                        handler = handlers.get(field_code)
+                        if handler:
+                            handler(company_data, field)
+
+    @staticmethod
+    def _handle_address_field(company_data, field):
+        html_data = field.get("htmlData", "")
+        text = re.sub(r"<br\s*/?>", "\n", html_data)
+        text = re.sub(r"<[^>]+>", "", text)
+        lines = [" ".join(line.split()) for line in text.split("\n")]
+        text = "\n".join(lines).strip()
+        company_data["address_full_bg"] = text
+
+        parsed_address = BgCompanySearchWizard._parse_bulgarian_address_static(text)
+        company_data.update(parsed_address)
+
+    @staticmethod
+    def _handle_activity_field(company_data, field):
+        html_data = field.get("htmlData", "")
+        text = re.sub(r"<[^>]+>", "", html_data)
+        company_data["activity_description_bg"] = " ".join(text.split()).strip()
+
+    @staticmethod
+    def _handle_activity_code_field(company_data, field):
+        html_data = field.get("htmlData", "")
+        text = re.sub(r"<[^>]+>", "", html_data)
+        match = re.search(r"Група по НКИД:\s*(\d+)", text)
+        if match:
+            company_data["activity_code"] = match.group(1).strip()
+
+    @staticmethod
+    def _handle_managers_field(company_data, field):
+        html_data = field.get("htmlData", "")
+        text = re.sub(r"<[^>]+>", "", html_data)
+        text = " ".join(text.split()).strip()
+
+        manager_entries = text.split(",")
+        for manager_entry in manager_entries:
+            manager_data = BgCompanySearchWizard._parse_manager_entry(manager_entry)
+            if manager_data:
+                company_data["managers"].append(manager_data)
+
+    @staticmethod
+    def _parse_manager_entry(manager_entry):
+        manager_entry = manager_entry.strip()
+        if not manager_entry:
+            return None
+
+        manager_data = {}
+        country_match = re.search(r"Държава:\s*([^\n,]+)", manager_entry)
+        if country_match:
+            manager_data["country"] = country_match.group(1).strip()
+            name_part = manager_entry.split("Държава:")[0].strip()
+        else:
+            name_part = manager_entry.strip()
+
+        if not name_part:
+            return None
+
+        manager_data["name"] = BgCompanySearchWizard._format_person_name(name_part)
+        return manager_data
+
+    @staticmethod
+    def _handle_registration_date_field(company_data, field):
+        action_date = field.get("fieldActionDate", "")
+        if action_date:
+            company_data["registration_date"] = action_date.split("T")[0]
+
+    @staticmethod
     def _parse_registry_response_static(data):
         """Static parser for registry response"""
         try:
-            legal_forms = {
-                10: "ЕООД",
-                4: "ООД",
-                5: "АД",
-                11: "ЕАД",
-                3: "КД",
-                6: "КДА",
-                2: "СД",
-                1: "ЕТ",
-            }
-
-            legal_form_bg = legal_forms.get(data.get("legalForm"), "")
-            company_name_bg_raw = data.get("companyName", "")
-
-            # Форматираме името на фирмата в Title Case
-            company_name_bg = BgCompanySearchWizard._format_company_name(
-                company_name_bg_raw
+            legal_form_bg = BgCompanySearchWizard._get_legal_form_bg(
+                data.get("legalForm")
+            )
+            company_name_bg, company_name_bg_full = (
+                BgCompanySearchWizard._build_company_name_bg(
+                    data.get("companyName", ""),
+                    legal_form_bg,
+                )
+            )
+            company_name_en_raw = BgCompanySearchWizard._extract_company_name_en(
+                data.get("sections", [])
+            )
+            company_name_en = BgCompanySearchWizard._build_company_name_en(
+                company_name_en_raw,
+                company_name_bg,
+                legal_form_bg,
             )
 
-            # Добавяме правната форма към българското име
-            if legal_form_bg:
-                company_name_bg_full = f"{company_name_bg} {legal_form_bg}"
-            else:
-                company_name_bg_full = company_name_bg
+            company_data = BgCompanySearchWizard._build_company_data_base(
+                data,
+                company_name_bg_full,
+                company_name_en,
+                legal_form_bg,
+            )
 
-            # Генериране на английско име от секция 4
-            company_name_en_raw = ""
-            sections = data.get("sections", [])
-            for section in sections:
-                for sub_deed in section.get("subDeeds", []):
-                    for group in sub_deed.get("groups", []):
-                        for field in group.get("fields", []):
-                            if field.get("nameCode") == "CR_F_4_L":
-                                # Извличаме текста от HTML
-                                html_data = field.get("htmlData", "")
-                                text = re.sub(r"<[^>]+>", "", html_data)
-                                company_name_en_raw = " ".join(text.split()).strip()
-                                break
-                        if company_name_en_raw:
-                            break
-                    if company_name_en_raw:
-                        break
-                if company_name_en_raw:
-                    break
-
-            # Форматираме английското име
-            if company_name_en_raw:
-                company_name_en_raw = BgCompanySearchWizard._format_company_name(
-                    company_name_en_raw
-                )
-
-            # Формиране на пълното английско име с правна форма
-            legal_form_en_map = {
-                "ЕООД": "Ltd.",
-                "ООД": "Ltd.",
-                "АД": "JSC",
-                "ЕАД": "JSC",
-                "КД": "LP",
-                "КДА": "PLS",
-                "СД": "GP",
-                "ЕТ": "ET",
-            }
-            legal_form_en = legal_form_en_map.get(legal_form_bg, "")
-
-            if company_name_en_raw and legal_form_en:
-                company_name_en = f"{company_name_en_raw} {legal_form_en}"
-            elif company_name_en_raw:
-                company_name_en = company_name_en_raw
-            elif company_name_bg and legal_form_en:
-                company_name_en = f"{company_name_bg} {legal_form_en}"
-            else:
-                company_name_en = company_name_bg
-
-            company_data = {
-                "eik": data.get("uic", ""),
-                "company_name_bg": company_name_bg_full,
-                "company_name_en": company_name_en,
-                "legal_form_bg": legal_form_bg,
-                "vat_number": f"BG{data.get('uic', '')}" if data.get("uic") else "",
-                "status": "active",
-                "managers": [],  # Списък с управители
-            }
-
-            # Parse sections for address, activity and managers
-            sections = data.get("sections", [])
-            for section in sections:
-                for sub_deed in section.get("subDeeds", []):
-                    for group in sub_deed.get("groups", []):
-                        for field in group.get("fields", []):
-                            field_code = field.get("nameCode", "")
-                            html_data = field.get("htmlData", "")
-
-                            if field_code == "CR_F_5_L":
-                                # Extract address - preserve line structure by replacing <br> with newline
-                                text = re.sub(r"<br\s*/?>", "\n", html_data)
-                                text = re.sub(r"<[^>]+>", "", text)
-                                # Normalize whitespace per line (not globally)
-                                lines = [
-                                    " ".join(line.split()) for line in text.split("\n")
-                                ]
-                                text = "\n".join(lines).strip()
-                                company_data["address_full_bg"] = text
-
-                                # Parse structured address
-                                parsed_address = BgCompanySearchWizard._parse_bulgarian_address_static(
-                                    text
-                                )
-                                company_data.update(parsed_address)
-
-                            elif field_code == "CR_F_6_L":
-                                text = re.sub(r"<[^>]+>", "", html_data)
-                                company_data["activity_description_bg"] = " ".join(
-                                    text.split()
-                                ).strip()
-
-                            elif field_code == "CR_F_6a_L":
-                                text = re.sub(r"<[^>]+>", "", html_data)
-                                match = re.search(r"Група по НКИД:\s*(\d+)", text)
-                                if match:
-                                    company_data["activity_code"] = match.group(
-                                        1
-                                    ).strip()
-
-                            elif field_code == "CR_F_7_L":
-                                # Extract managers
-                                text = re.sub(r"<[^>]+>", "", html_data)
-                                text = " ".join(text.split()).strip()
-
-                                # Разделяме по запетая, ако има повече от един управител
-                                manager_entries = text.split(",")
-                                for manager_entry in manager_entries:
-                                    manager_entry = manager_entry.strip()
-                                    if manager_entry:
-                                        # Формат: "ИМЕ ПРЕЗИМЕ ФАМИЛИЯ, Държава: БЪЛГАРИЯ"
-                                        manager_data = {}
-
-                                        # Извличаме държавата
-                                        country_match = re.search(
-                                            r"Държава:\s*([^\n,]+)", manager_entry
-                                        )
-                                        if country_match:
-                                            manager_data["country"] = (
-                                                country_match.group(1).strip()
-                                            )
-                                            # Премахваме частта с държавата от името
-                                            name_part = manager_entry.split("Държава:")[
-                                                0
-                                            ].strip()
-                                        else:
-                                            name_part = manager_entry.strip()
-
-                                        if name_part:
-                                            # Форматираме името на лицето
-                                            formatted_name = BgCompanySearchWizard._format_person_name(
-                                                name_part
-                                            )
-                                            manager_data["name"] = formatted_name
-                                            company_data["managers"].append(
-                                                manager_data
-                                            )
-
-                            elif field_code == "CR_F_1_L":
-                                action_date = field.get("fieldActionDate", "")
-                                if action_date:
-                                    company_data["registration_date"] = (
-                                        action_date.split("T")[0]
-                                    )
+            BgCompanySearchWizard._parse_sections_into_company_data(
+                company_data,
+                data.get("sections", []),
+            )
 
             return company_data
 
@@ -819,7 +867,7 @@ class BgCompanySearchWizard(models.TransientModel):
         self.ensure_one()
 
         if not self.data_fetched:
-            raise UserError(_("Моля първо изтеглете данните от регистъра"))
+            raise UserError(_("Моля първо изтеглете данните от " "регистъра"))
 
         if not self.partner_id:
             raise UserError(_("Няма зададен партньор"))
@@ -873,7 +921,8 @@ class BgCompanySearchWizard(models.TransientModel):
                 "parent_id": self.partner_id.id,
             }
 
-            # Добавяме държава ако е налична (search with bg_BG context)
+            # Добавяме държава ако е налична
+            # (search with bg_BG context)
             if manager.get("country"):
                 bg_env = self.env(context=dict(self.env.context, lang="bg_BG"))
                 # Using =ilike for exact case-insensitive match
@@ -960,59 +1009,36 @@ class BgCompanySearchWizard(models.TransientModel):
         """
         vals = {}
 
-        # Company name
-        if company_data.get("company_name_bg"):
-            vals["name"] = company_data["company_name_bg"]
+        def set_if(src_key, dest_key):
+            value = company_data.get(src_key)
+            if value:
+                vals[dest_key] = value
 
-        # UIC/EIK
-        if company_data.get("eik"):
-            vals["l10n_bg_uic"] = company_data["eik"]
+        set_if("company_name_bg", "name")
+
+        eik = company_data.get("eik")
+        if eik:
+            vals["l10n_bg_uic"] = eik
             vals["l10n_bg_uic_type"] = "bg_uic"
 
-        # VAT
-        if company_data.get("vat_number"):
-            vals["vat"] = company_data["vat_number"]
+        set_if("vat_number", "vat")
+        set_if("legal_form_bg", "l10n_bg_legal_form")
+        set_if("city_id", "city_id")
+        set_if("state_id", "state_id")
+        set_if("zip", "zip")
+        set_if("street_name", "street_name")
+        set_if("street_number", "street_number")
+        set_if("street_number2", "street_number2")
 
-        # Legal form
-        if company_data.get("legal_form_bg"):
-            vals["l10n_bg_legal_form"] = company_data["legal_form_bg"]
-
-        # Address fields
-        if company_data.get("city_id"):
-            vals["city_id"] = company_data["city_id"]
-
-        if company_data.get("state_id"):
-            vals["state_id"] = company_data["state_id"]
-
-        if company_data.get("zip"):
-            vals["zip"] = company_data["zip"]
-
-        if company_data.get("street_name"):
-            vals["street_name"] = company_data["street_name"]
-
-        if company_data.get("street_number"):
-            vals["street_number"] = company_data["street_number"]
-
-        if company_data.get("street_number2"):
-            vals["street_number2"] = company_data["street_number2"]
-
-        # Проверка дали полетата от extend модула са инсталирани
         partner_fields = self.env["res.partner"]._fields
-
-        if "street_building_number" in partner_fields and company_data.get(
-            "street_building_number"
-        ):
-            vals["street_building_number"] = company_data["street_building_number"]
-
-        if "street_floor_number" in partner_fields and company_data.get(
-            "street_floor_number"
-        ):
-            vals["street_floor_number"] = company_data["street_floor_number"]
-
-        if "street_sector_number" in partner_fields and company_data.get(
-            "street_sector_number"
-        ):
-            vals["street_sector_number"] = company_data["street_sector_number"]
+        optional_fields = [
+            "street_building_number",
+            "street_floor_number",
+            "street_sector_number",
+        ]
+        for field_name in optional_fields:
+            if field_name in partner_fields and company_data.get(field_name):
+                vals[field_name] = company_data[field_name]
 
         if company_data.get("street"):
             vals["street"] = company_data["street"]

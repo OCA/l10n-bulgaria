@@ -165,13 +165,13 @@ class L10nBgTaricCache(models.Model):
                     workbook = xlrd.open_workbook(file_contents=file_stream.read())
                     sheet = workbook.sheet_by_index(0)
                     rows = [sheet.row_values(i) for i in range(sheet.nrows)]
-                except ImportError:
+                except ImportError as err:
                     raise UserError(
                         _(
                             "Please install 'openpyxl' or 'xlrd' package: pip install "
                             "openpyxl"
                         )
-                    )
+                    ) from err
 
             return self._process_taric_rows(rows)
 

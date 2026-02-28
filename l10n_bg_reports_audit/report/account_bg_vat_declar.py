@@ -5,7 +5,7 @@ from psycopg2 import sql
 
 from odoo import api, fields, models, tools
 
-from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
+from ..models.l10n_bg_file_helper import (
     account_tag_33_43,
     l10n_bg_extend_address,
     l10n_bg_lang,

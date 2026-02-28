@@ -18,7 +18,8 @@ def migrate(cr, version):
 
     if OLD_MODULE_NAME == NEW_MODULE_NAME:
         _logger.warning(
-            f"Old and new module names are the same ({OLD_MODULE_NAME}). Migration skipped."
+            f"Old and new module names are the same ({OLD_MODULE_NAME}). "
+            "Migration skipped."
         )
         return
 

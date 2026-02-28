@@ -243,7 +243,8 @@ def test_all_codes():
 
     if results["xi"]["success"] > 0:
         logger.info(
-            "   ✅ UK XI (NI/EU) API работи! Използвайте този endpoint за EU-aligned данни"
+            "   ✅ UK XI (NI/EU) API работи! Използвайте този endpoint за "
+            "EU-aligned данни"
         )
 
     if results["uk"]["success"] > 0:

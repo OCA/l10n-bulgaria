@@ -22,7 +22,10 @@ class FiscalPrinterDevice(models.Model):
     status_history_days = fields.Integer(
         string="History storage days",
         default=30,
-        help="Number of days to keep status history. Older records are automatically deleted.",
+        help=(
+            "Number of days to keep status history. Older records are "
+            "automatically deleted."
+        ),
     )
 
     @api.depends("status_ids")
@@ -102,7 +105,8 @@ class FiscalPrinterDevice(models.Model):
                 continue
 
         _logger.info(
-            f"Finished clearing status history. Total Deleted: {total_deleted} the record"
+            "Finished clearing status history. Total Deleted: "
+            f"{total_deleted} the record"
         )
         return total_deleted
 
@@ -118,7 +122,10 @@ class FiscalPrinterDevice(models.Model):
         count = len(old_statuses)
         if count > 0:
             old_statuses.unlink()
-            message = f"Изтрити {count} стари статуса (по-стари от {self.status_history_days} дни)"
+            message = (
+                f"Изтрити {count} стари статуса (по-стари от "
+                f"{self.status_history_days} дни)"
+            )
         else:
             message = "There are no old statuses to delete"
 

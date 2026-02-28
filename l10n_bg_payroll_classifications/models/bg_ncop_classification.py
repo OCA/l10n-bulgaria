@@ -19,7 +19,7 @@ class BGNCOPClassification(models.Model):
     child_ids = fields.One2many(
         "bg.hr.payroll.ncop.classification", "parent_id", string="Child Positions"
     )
-    active = fields.Boolean(string="Active", default=True)
+    active = fields.Boolean(default=True)
 
     level = fields.Selection(
         [
@@ -29,7 +29,6 @@ class BGNCOPClassification(models.Model):
             ("unit_group", "Unit Group"),
             ("occupation", "Occupation"),
         ],
-        string="Level",
         required=True,
         help="Hierarchical level in NCOP structure",
     )
@@ -47,7 +46,6 @@ class BGNCOPClassification(models.Model):
             ("operator", "Machine Operators"),
             ("elementary", "Elementary Occupations"),
         ],
-        string="Qualification Group",
         help="Qualification group for MOD calculation based on NCOP class",
     )
 
@@ -59,16 +57,15 @@ class BGNCOPClassification(models.Model):
             ("secondary", "Secondary education"),
             ("higher", "Higher education"),
         ],
-        string="Education Level",
         help="Minimum required education level for this position",
     )
 
     # Skills and experience requirements
     skill_level = fields.Integer(
-        string="Skill Level", help="Skill level (1-4) according to NCOP classification"
+        help="Skill level (1-4) according to NCOP classification"
     )
 
-    skills_requirements = fields.Text(string="Skills Requirements")
+    skills_requirements = fields.Text()
     experience_years = fields.Integer(string="Required Experience (years)", default=0)
 
     # Validity period

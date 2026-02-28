@@ -2,11 +2,7 @@
 
 from odoo import fields, models
 
-from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
-    get_delivery_type,
-    get_doc_type,
-    get_type_vat,
-)
+from .l10n_bg_file_helper import get_delivery_type, get_doc_type, get_type_vat
 
 
 class AccountMove(models.Model):

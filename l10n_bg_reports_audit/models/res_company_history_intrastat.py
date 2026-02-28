@@ -18,14 +18,12 @@ class L10nBgIntrastatThreshold(models.Model):
 
     company_id = fields.Many2one(
         "res.company",
-        string="Company",
         required=True,
         default=lambda self: self.env.company,
         ondelete="cascade",
     )
 
     year = fields.Integer(
-        string="Year",
         required=True,
         default=lambda self: fields.Date.today().year,
         help="Year for which the threshold applies",
@@ -46,8 +44,10 @@ class L10nBgIntrastatThreshold(models.Model):
             ("11", "November"),
             ("12", "December"),
         ],
-        string="Month",
-        help="Month from which the threshold applies (leave empty for annual threshold)",
+        help=(
+            "Month from which the threshold applies (leave empty for annual "
+            "threshold)"
+        ),
         tracking=True,
     )
     date_from = fields.Date(
@@ -59,7 +59,10 @@ class L10nBgIntrastatThreshold(models.Model):
     )
     date_to = fields.Date(
         string="Valid To",
-        help="Date until which this threshold is valid (leave empty for current threshold)",
+        help=(
+            "Date until which this threshold is valid (leave empty for current "
+            "threshold)"
+        ),
         tracking=True,
     )
 
@@ -97,14 +100,12 @@ class L10nBgIntrastatThreshold(models.Model):
 
     currency_id = fields.Many2one(
         "res.currency",
-        string="Currency",
         compute="_compute_currency_id",
         store=True,
         precompute=True,
     )
 
     active = fields.Boolean(
-        string="Active",
         default=True,
         help="Set to false to archive the threshold",
         tracking=True,
@@ -112,7 +113,6 @@ class L10nBgIntrastatThreshold(models.Model):
 
     company_id = fields.Many2one(
         "res.company",
-        string="Company",
         required=True,
         default=lambda self: self.env.company,
         ondelete="cascade",
@@ -121,7 +121,6 @@ class L10nBgIntrastatThreshold(models.Model):
     )
 
     notes = fields.Text(
-        string="Notes",
         help="Additional information about this threshold change",
         tracking=True,
     )
@@ -167,13 +166,15 @@ class L10nBgIntrastatThreshold(models.Model):
                 if record.date_from.month != expected_month:
                     raise ValidationError(
                         _(
-                            "The 'Valid From' date must be in the same month as the selected month."
+                            "The 'Valid From' date must be in the same month as the "
+                            "selected month."
                         )
                     )
             if record.date_from.year != record.year:
                 raise ValidationError(
                     _(
-                        "The 'Valid From' date must be in the same year as the selected year."
+                        "The 'Valid From' date must be in the same year as the "
+                        "selected year."
                     )
                 )
 
@@ -218,11 +219,13 @@ class L10nBgIntrastatThreshold(models.Model):
 
         if threshold:
             _logger.debug(
-                f"Found Intrastat threshold for date {date} and company {company.name}: {threshold.display_name}"
+                f"Found Intrastat threshold for date {date} and company "
+                f"{company.name}: {threshold.display_name}"
             )
         else:
             _logger.warning(
-                f"No Intrastat threshold found for date {date} and company {company.name}"
+                "No Intrastat threshold found for date "
+                f"{date} and company {company.name}"
             )
 
         return threshold

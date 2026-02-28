@@ -35,8 +35,8 @@ class CryptoWalletChangePasswordWizard(models.TransientModel):
         if self.use_current_user_password:
             try:
                 self.old_password = self.env.user.password
-            except Exception:
-                pass
+            except Exception as e:
+                _logger.debug("Could not read current user password: %s", e)
 
     @api.constrains("new_password", "confirm_password")
     def _check_password_match(self):

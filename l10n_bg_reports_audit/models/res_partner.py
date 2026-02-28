@@ -13,9 +13,11 @@ class ResPartner(models.Model):
         column1="partner_id",
         column2="account_tag_id",
         domain="[('applicability', '=', 'l10n_bg_partner')]",
-            help="Default Tags for receivable in NSI reports like Reference to the claims"
-            " and obligations allocated to institutional sectors",
-        )
+        help=(
+            "Default Tags for receivable in NSI reports like Reference to the "
+            "claims and obligations allocated to institutional sectors"
+        ),
+    )
 
     l10n_bg_tax_tag_payable_ids = fields.Many2many(
         string="NSI Payable Account Tags",
@@ -24,6 +26,8 @@ class ResPartner(models.Model):
         column1="partner_id",
         column2="account_tag_id",
         domain="[('applicability', '=', 'l10n_bg_partner')]",
-        help="Default Tags for payable in NSI reports like Reference to the claims "
-        "and obligations allocated to institutional sectors",
+        help=(
+            "Default Tags for payable in NSI reports like Reference to the "
+            "claims and obligations allocated to institutional sectors"
+        ),
     )

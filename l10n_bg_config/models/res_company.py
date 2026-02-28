@@ -68,8 +68,9 @@ class ResCompany(models.Model):
                 ]
             else:
                 record.l10n_bg_represent_contact_id = False
+                current_id = record.id
                 record.partner_id.child_ids.filtered(
-                    lambda r: r.id == record.id
+                    lambda r, _id=current_id: r.id == _id
                 ).type = "contact"
 
     @api.depends("chart_template")

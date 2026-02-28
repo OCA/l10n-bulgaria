@@ -2,7 +2,9 @@
     "name": "AI TARIC & INTRASTAT Classifier",
     "version": "18.0.1.0.2",
     "category": "Accounting/Localizations",
-    "summary": "AI-powered automatic TARIC and INTRASTAT code classification for products",
+    "summary": (
+        "AI-powered automatic TARIC and INTRASTAT code classification for " "products"
+    ),
     "author": "Rosen Vladimirov,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-bulgaria",
     "license": "LGPL-3",

@@ -97,6 +97,7 @@ class HRLeave(models.Model):
             and self.l10n_bg_paid_days_unpaid_leave
             != self.holiday_status_id.l10n_bg_paid_days_unpaid_leave
         ):
+            defined_days = self.holiday_status_id.l10n_bg_paid_days_unpaid_leave
             return {
                 "warning": {
                     "title": _("Warning"),
@@ -106,7 +107,7 @@ class HRLeave(models.Model):
                     )
                     % {
                         "paid": self.l10n_bg_paid_days_unpaid_leave,
-                        "defined": self.holiday_status_id.l10n_bg_paid_days_unpaid_leave,
+                        "defined": defined_days,
                     },
                 }
             }

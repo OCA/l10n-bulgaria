@@ -7,7 +7,7 @@ from markupsafe import Markup
 from odoo import Command, api, fields, models, tools
 from odoo.exceptions import UserError
 
-from odoo.addons.l10n_bg_report_theme.wizards.base_document_layout_colors import (
+from ..wizards.base_document_layout_colors import (
     copy_scss_to_home,
     get_scss_file_path,
 )
@@ -80,7 +80,8 @@ class BaseDocumentLayout(models.TransientModel):
         color_manager = self.env["base.document.layout.colors"]
         colorset = color_manager.load_scss_colors(company_id=company.id)
         if colorset:
-            # Използваме Command.set(colorset), за да сме сигурни, че старите записи се изчистват и новите се сетват
+            # Използваме Command.set(colorset), за да сме сигурни, че старите записи
+            # се изчистват и новите се сетват
             # Тъй като colorset вече съдържа Command.create, трябва да ги извлечем
             color_commands = [c[2] for c in colorset]
             res["selection_colors"] = [Command.clear()] + [
@@ -88,11 +89,13 @@ class BaseDocumentLayout(models.TransientModel):
             ]
             # Инициализиране на пътя в компанията
             if company:
-                from odoo.addons.l10n_bg_report_theme.wizards.base_document_layout_colors import (
-                    get_scss_file_path,
+                from ..wizards import (
+                    base_document_layout_colors as layout_colors,
                 )
 
-                new_path = get_scss_file_path(use_custom=True, company_id=company.id)
+                new_path = layout_colors.get_scss_file_path(
+                    use_custom=True, company_id=company.id
+                )
                 if company.custom_scss_path != new_path:
                     company.custom_scss_path = new_path
                 self.env.registry.clear_cache("assets")
@@ -151,7 +154,7 @@ class BaseDocumentLayout(models.TransientModel):
         "selection_colors.color",
     )
     def _compute_preview(self):
-        super()._compute_preview()
+        return super()._compute_preview()
 
     def _get_render_information(self, styles):
         res = super()._get_render_information(styles)
@@ -190,7 +193,6 @@ class BaseDocumentLayout(models.TransientModel):
             for key, ref in REPORT_REFS.items()
         }
 
-        layout_id = reports["layout"]
         for key, report in reports.items():
             if report and key != "layout":
                 report.with_context(**dict(self._context, active_test=False)).active = (
@@ -217,7 +219,8 @@ class BaseDocumentLayout(models.TransientModel):
                 force_dict=True, company_id=company.id
             )
 
-            # vals['selection_colors'] е списък от команди (0, 0, {...}) или (1, id, {...})
+            # vals['selection_colors'] е списък от команди (0, 0, {...}) или
+            # (1, id, {...})
             has_changes = False
             for command in vals["selection_colors"]:
                 if command[0] in (0, 1, 4) and (
@@ -246,7 +249,8 @@ class BaseDocumentLayout(models.TransientModel):
                         )
                         if current_scss_colors.get(name) != expected_line:
                             _logger.info(
-                                f"Saving color {name} = {new_color_hex} ({new_color_rgb}) for company {company.id}"
+                                f"Saving color {name} = {new_color_hex} "
+                                f"({new_color_rgb}) for company {company.id}"
                             )
                             color_manager.save_scss_colors(
                                 name,
@@ -296,7 +300,10 @@ class BaseDocumentLayout(models.TransientModel):
                 "type": "ir.actions.client",
                 "tag": "display_notification",
                 "params": {
-                    "message": "SCSS the file is restored to the original and the colors are reloaded",
+                    "message": (
+                        "SCSS the file is restored to the original and the colors "
+                        "are reloaded"
+                    ),
                     "type": "success",
                     "sticky": False,
                 },
@@ -305,7 +312,7 @@ class BaseDocumentLayout(models.TransientModel):
         except Exception as e:
             error_msg = f"Recovery error: {str(e)}"
             _logger.error(error_msg)
-            raise UserError(error_msg)
+            raise UserError(error_msg) from e
 
     def get_custom_scss_content(self):
         return self.company_id.get_custom_scss_content()

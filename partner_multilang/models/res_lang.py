@@ -5,4 +5,4 @@ from odoo import fields, models
 class Lang(models.Model):
     _inherit = "res.lang"
 
-    transliterate = fields.Boolean(string="Transliterate")
+    transliterate = fields.Boolean()

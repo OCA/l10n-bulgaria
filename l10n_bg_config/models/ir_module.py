@@ -2,7 +2,7 @@
 
 from odoo import models
 
-from odoo.addons.l10n_bg_config.models.res_company import L10N_BG_MULTILANGUAGE
+from .res_company import L10N_BG_MULTILANGUAGE
 
 
 class Module(models.Model):

@@ -21,7 +21,10 @@ def migrate(cr, version):
                    UPDATE account_move
                    SET l10n_bg_document_number = l10n_bg_name
                    WHERE l10n_bg_name IS NOT NULL
-                     AND (l10n_bg_document_number IS NULL OR l10n_bg_document_number = '');
+                     AND (
+                         l10n_bg_document_number IS NULL
+                         OR l10n_bg_document_number = ''
+                     );
                    """)
         _logger.info(f"Updated {cr.rowcount} records")
     else:

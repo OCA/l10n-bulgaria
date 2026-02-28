@@ -121,7 +121,10 @@ class ResTransliterate(models.AbstractModel):
         string="Transliteration Tracking",
         default=dict,
         copy=False,
-        help='Technical field to track which fields have been transliterated. Format: {"field_name": True}',
+        help=(
+            "Technical field to track which fields have been transliterated. "
+            'Format: {"field_name": True}'
+        ),
     )
 
     @api.depends_context("lang")
@@ -133,15 +136,12 @@ class ResTransliterate(models.AbstractModel):
         Одоо 18 използва display_name computed field вместо name_get().
         Този метод автоматично извлича правилния език от многоезичното name поле.
         """
+        if "name" not in self._fields:
+            return super()._compute_display_name()
+
         current_lang = self.env.context.get("lang") or self.env.user.lang or "en_US"
 
         for record in self:
-            # Проверка дали има name поле
-            if "name" not in record._fields:
-                # Fallback към parent implementation
-                super(ResTransliterate, record)._compute_display_name()
-                continue
-
             # Вземи стойността на name
             name_value = record.name
 
@@ -315,8 +315,8 @@ class ResTransliterate(models.AbstractModel):
     @api.depends_context("lang")
     def _force_multilanguage(self, vals, new_record=False):
         """
-        Forces multilanguage support by checking and potentially transliterating specific fields
-        during record creation or update.
+        Forces multilanguage support by checking and potentially transliterating
+        specific fields during record creation or update.
         """
         # Вземи списък с полета за транслитерация от модела
         transliterate_fields = self._get_transliterate_fields()
@@ -329,34 +329,12 @@ class ResTransliterate(models.AbstractModel):
         # 1. Са в vals (т.е. се променят сега)
         # 2. Са в списъка за транслитерация
         # 3. Съществуват в модела
-        fields_to_process = [
-            field_name
-            for field_name in vals.keys()
-            if field_name in transliterate_fields and field_name in self._fields
-        ]
+        fields_to_process = self._get_fields_to_process(vals, transliterate_fields)
 
         if not fields_to_process:
             return
 
-        if not self._is_transliteration_allowed():
-            if self._should_copy_all_languages():
-                tracking = dict(self.transliterate_tracking or {})
-                lang_codes = self._get_active_lang_codes()
-                for field_name in fields_to_process:
-                    if field_name != "name":
-                        continue
-                    value = vals.get(field_name)
-                    if not value:
-                        continue
-                    for lang_code in lang_codes:
-                        self.with_context(lang=lang_code, update_lang=True).write(
-                            {field_name: value}
-                        )
-                    tracking.pop(field_name, None)
-                if tracking != (self.transliterate_tracking or {}):
-                    self.with_context(update_lang=True).write(
-                        {"transliterate_tracking": tracking}
-                    )
+        if self._handle_transliteration_disabled(fields_to_process, vals):
             return
 
         # Вземи текущия tracking dict
@@ -365,16 +343,64 @@ class ResTransliterate(models.AbstractModel):
             "force_multilanguage_update", False
         )
 
+        self._apply_transliteration(
+            fields_to_process,
+            vals,
+            tracking,
+            force_multilanguage_update,
+            new_record,
+        )
+
+    def _get_fields_to_process(self, vals, transliterate_fields):
+        return [
+            field_name
+            for field_name in vals.keys()
+            if field_name in transliterate_fields and field_name in self._fields
+        ]
+
+    def _handle_transliteration_disabled(self, fields_to_process, vals):
+        if self._is_transliteration_allowed():
+            return False
+
+        if self._should_copy_all_languages():
+            tracking = dict(self.transliterate_tracking or {})
+            lang_codes = self._get_active_lang_codes()
+            for field_name in fields_to_process:
+                if field_name != "name":
+                    continue
+                value = vals.get(field_name)
+                if not value:
+                    continue
+                for lang_code in lang_codes:
+                    self.with_context(lang=lang_code, update_lang=True).write(
+                        {field_name: value}
+                    )
+                tracking.pop(field_name, None)
+            if tracking != (self.transliterate_tracking or {}):
+                self.with_context(update_lang=True).write(
+                    {"transliterate_tracking": tracking}
+                )
+        return True
+
+    def _apply_transliteration(
+        self,
+        fields_to_process,
+        vals,
+        tracking,
+        force_multilanguage_update,
+        new_record,
+    ):
+        is_new_record = new_record
         for field_name in fields_to_process:
             # Проверка дали вече е транслитерирано
-            if not new_record and not force_multilanguage_update:
+            if not is_new_record and not force_multilanguage_update:
                 if tracking.get(field_name, False):
                     # Полето вече е било транслитерирано - skip
                     continue
 
-            if not new_record:
+            if not is_new_record:
                 # Проверка дали полето е празно на en_US
-                new_record = (
+                is_new_record = (
                     not getattr(
                         self.with_context(**dict(self.env.context, lang="en_US")),
                         field_name,
@@ -382,7 +408,7 @@ class ResTransliterate(models.AbstractModel):
                     or force_multilanguage_update
                 )
 
-            if vals.get(field_name) and new_record:
+            if vals.get(field_name) and is_new_record:
                 value = vals[field_name]
                 current_lang, transliterate = self._check_lang(value)
 

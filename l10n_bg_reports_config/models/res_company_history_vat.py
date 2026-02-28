@@ -46,7 +46,10 @@ class L10nBgVatRatioHistory(models.Model):
             }
 
     def action_compute_from_declarations(self):
-        """Action to compute a ratio from VAT declarations with Odoo 18 notifications."""
+        """Action to compute a ratio from VAT declarations.
+
+        Uses Odoo 18 notifications.
+        """
         self.ensure_one()
         month = int(self.month) if self.month else None
 
@@ -104,7 +107,8 @@ class L10nBgVatRatioHistory(models.Model):
                     "type": "danger",
                     "title": _("Error"),
                     "message": _(
-                        "Annual adjustment can only be calculated for annual coefficients (without month)."
+                        "Annual adjustment can only be calculated for annual "
+                        "coefficients (without month)."
                     ),
                     "sticky": True,
                 },
@@ -129,7 +133,8 @@ class L10nBgVatRatioHistory(models.Model):
                     "type": "danger",
                     "title": _("Error"),
                     "message": _(
-                        "No monthly ratios found for year %s. Cannot calculate adjustment."
+                        "No monthly ratios found for year %s. "
+                        "Cannot calculate adjustment."
                     )
                     % self.year,
                     "sticky": True,
@@ -145,8 +150,9 @@ class L10nBgVatRatioHistory(models.Model):
                 "type": "info",
                 "title": _("Information"),
                 "message": _(
-                    "Annual adjustment calculation requires tracking of partial VAT credits. "
-                    "This should be implemented in the VAT return module."
+                    "Annual adjustment calculation requires tracking of "
+                    "partial VAT credits. This should be implemented in the "
+                    "VAT return module."
                 ),
                 "sticky": True,
             },

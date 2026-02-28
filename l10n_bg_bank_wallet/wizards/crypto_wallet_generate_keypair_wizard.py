@@ -66,8 +66,11 @@ class CryptoWalletGenerateKeypairWizard(models.TransientModel):
 
             if private_name in existing_names or public_name in existing_names:
                 raise UserError(
-                    _('Ключове с имена "%s" или "%s" вече съществуват в портфела!')
-                    % (private_name, public_name)
+                    _(
+                        'Ключове с имена "%(private)s" или "%(public)s" вече '
+                        "съществуват в портфела!"
+                    )
+                    % {"private": private_name, "public": public_name}
                 )
 
             # Генерира ключовете
@@ -92,11 +95,15 @@ class CryptoWalletGenerateKeypairWizard(models.TransientModel):
                     _logger.warning(f"Could not update key metadata: {e}")
 
             self.generation_result = _(
-                "Успешно генерирани %s ключове:\n\n"
-                "Частен ключ: %s\n"
-                "Публичен ключ: %s\n\n"
+                "Успешно генерирани %(key_type)s ключове:\n\n"
+                "Частен ключ: %(private)s\n"
+                "Публичен ключ: %(public)s\n\n"
                 "Ключовете са запазени в портфела и криптирани с вашата главна парола."
-            ) % (self.key_type.upper(), self.private_key_name, self.public_key_name)
+            ) % {
+                "key_type": self.key_type.upper(),
+                "private": self.private_key_name,
+                "public": self.public_key_name,
+            }
 
             _logger.info(f"Generated {self.key_type.upper()} keypair: {self.key_name}")
 

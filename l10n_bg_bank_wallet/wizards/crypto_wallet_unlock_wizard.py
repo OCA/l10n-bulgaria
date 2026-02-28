@@ -27,8 +27,8 @@ class CryptoWalletUnlockWizard(models.TransientModel):
         if self.use_user_password:
             try:
                 self.master_password = self.env.user.password
-            except Exception:
-                pass  # Ако не може да достъпи паролата, остава празно
+            except Exception as e:
+                _logger.debug("Could not read current user password: %s", e)
 
     def unlock_wallet(self):
         """Отключва портфела"""
@@ -49,9 +49,10 @@ class CryptoWalletUnlockWizard(models.TransientModel):
                 "params": {
                     "title": _("Успех"),
                     "message": _(
-                        'Портфелът "%s" е отключен успешно!\nНамерени са %d ключа.'
+                        'Портфелът "%(wallet)s" е отключен успешно!\n'
+                        "Намерени са %(count)d ключа."
                     )
-                    % (self.wallet_id.name, keys_count),
+                    % {"wallet": self.wallet_id.name, "count": keys_count},
                     "type": "success",
                     "sticky": False,
                 },

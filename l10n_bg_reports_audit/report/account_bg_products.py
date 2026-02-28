@@ -6,7 +6,7 @@ from psycopg2 import sql
 
 from odoo import api, fields, models, tools
 
-from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
+from ..models.l10n_bg_file_helper import (
     l10n_bg_get_account_deprecated_sql,
     l10n_bg_where,
 )
@@ -46,7 +46,7 @@ class AccountBGCalcProductLine(models.Model):
         string="Status",
         readonly=True,
     )
-    period = fields.Char(string="Period", readonly=True)
+    period = fields.Char(readonly=True)
     account_type = fields.Selection(
         [
             ("asset_receivable", "Receivable"),

@@ -163,7 +163,7 @@ Respond ONLY with valid JSON:
 
         except Exception as e:
             _logger.error(f"AI classification error: {str(e)}")
-            raise UserError(_("AI classification failed: %s") % str(e))
+            raise UserError(_("AI classification failed: %s") % str(e)) from e
 
     def action_verify_code(self):
         """Verify code and mark as verified"""

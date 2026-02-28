@@ -11,7 +11,8 @@ class AccountMoveLine(models.Model):
 
     def _l10n_bg_apply_tax_tag(self, tag=False, partner=False, update_partner=True):
         _logger.info(
-            "Start BG tax tag apply on %s lines (tag=%s, partner=%s, update_partner=%s)",
+            "Start BG tax tag apply on %s lines (tag=%s, partner=%s, "
+            "update_partner=%s)",
             len(self),
             tag.id if tag else False,
             partner.id if partner else False,
@@ -125,10 +126,11 @@ class AccountMoveLine(models.Model):
         return res
 
     def init(self):
-        super().init()
+        res = super().init()
         tools.create_index(
             self._cr,
             "account_move_line_account_date_idx",
             "account_move_line",
             ["account_id", "date"],
         )
+        return res

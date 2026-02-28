@@ -55,8 +55,8 @@ class CryptoWalletExportWizard(models.TransientModel):
         if self.use_user_password:
             try:
                 self.master_password = self.env.user.password
-            except Exception:
-                pass
+            except Exception as e:
+                _logger.debug("Could not read current user password: %s", e)
 
     @api.onchange("export_format")
     def _onchange_export_format(self):

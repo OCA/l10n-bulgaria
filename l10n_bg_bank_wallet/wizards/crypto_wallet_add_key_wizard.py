@@ -145,14 +145,15 @@ class CryptoWalletAddKeyWizard(models.TransientModel):
                     "params": {
                         "title": _("Успех"),
                         "message": _(
-                            'Ключът "%s" (тип: %s) е добавен успешно в портфела'
+                            'Ключът "%(key_name)s" (тип: %(key_type)s) е '
+                            "добавен успешно в портфела"
                         )
-                        % (
-                            self.key_name,
-                            dict(self._fields["key_type"].selection).get(
+                        % {
+                            "key_name": self.key_name,
+                            "key_type": dict(self._fields["key_type"].selection).get(
                                 self.key_type, self.key_type
                             ),
-                        ),
+                        },
                         "type": "success",
                         "sticky": False,
                     },

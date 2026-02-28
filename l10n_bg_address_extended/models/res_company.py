@@ -7,7 +7,6 @@ class Company(models.Model):
     _inherit = ["res.company"]
 
     street_name = fields.Char(
-        "Street Name",
         compute="_compute_address",
         inverse="_inverse_street_name",
     )

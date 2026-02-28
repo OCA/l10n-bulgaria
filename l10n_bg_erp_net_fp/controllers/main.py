@@ -131,7 +131,8 @@ class FiscalPrinterController(http.Controller):
     def browser_ready(self, **kw):
         """Сигнал от браузъра че е готов"""
         _logger.info(
-            f"[ProxyController] 🌐 Browser ready signal received from user: {request.env.user.name}"
+            "[ProxyController] 🌐 Browser ready signal received from user: "
+            f"{request.env.user.name}"
         )
         _logger.info(f"[ProxyController]    Session ID: {request.session.sid}")
         _logger.info(f"[ProxyController]    DB: {request.env.cr.dbname}")

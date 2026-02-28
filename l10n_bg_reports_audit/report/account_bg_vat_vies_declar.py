@@ -3,7 +3,7 @@ import logging
 
 from odoo import api, fields, models
 
-from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import (
+from ..models.l10n_bg_file_helper import (
     l10n_bg_extend_address,
     l10n_bg_lang,
     l10n_bg_where,

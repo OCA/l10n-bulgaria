@@ -13,7 +13,7 @@ class FiscalPrinterStatus(models.Model):
         ondelete="cascade",
         index=True,
     )
-    status = fields.Char("Status", index=True)
+    status = fields.Char(index=True)
     error_message = fields.Text("Error message")
     create_date = fields.Datetime("Check time", readonly=True, index=True)
     is_ready = fields.Boolean("Ready", index=True)

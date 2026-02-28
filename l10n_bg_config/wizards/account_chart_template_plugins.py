@@ -2,7 +2,7 @@ import logging
 
 from odoo import Command, api, fields, models
 
-from odoo.addons.l10n_bg_config.models.chart_template import BASE_MODULE, PLUGINS_SUFFIX
+from ..models.chart_template import BASE_MODULE, PLUGINS_SUFFIX
 
 _logger = logging.getLogger(__name__)
 
@@ -15,7 +15,6 @@ class AccountPluginsWizard(models.TransientModel):
         "account.plugins.wizard.line", "wizard_id", string="Plugins"
     )
     force_update = fields.Boolean(
-        string="Force Update",
         help="Force update of plugins even if they are already installed",
     )
     company_id = fields.Many2one(
@@ -49,13 +48,15 @@ class AccountPluginsWizard(models.TransientModel):
 
     def action_apply(self):
         """
-        Processes the installation and uninstallation of plugins based on the user's selection.
+        Processes the installation and uninstallation of plugins based on the user's
+        selection.
 
         The method identifies plugins marked for installation, as well as plugins marked
         for uninstallation and processes them accordingly. It performs the installation
         or uninstallation actions immediately. If force updating is enabled, it reloads
         the template settings. The method ensures at least one plugin is selected for
-        installation or uninstallation. If no plugins are selected, an exception is raised.
+        installation or uninstallation. If no plugins are selected, an exception is
+        raised.
         It returns an action to reload the client interface upon successful execution.
 
         :raises UserError: If no plugins are selected for installation or uninstallation
@@ -66,11 +67,11 @@ class AccountPluginsWizard(models.TransientModel):
         """
         self.ensure_one()
         to_install = self.plugin_line_ids.filtered(
-            lambda l: l.to_install and l.plugin_id.state == "uninstalled"
+            lambda line: line.to_install and line.plugin_id.state == "uninstalled"
         ).mapped("plugin_id")
 
         to_uninstall = self.plugin_line_ids.filtered(
-            lambda l: l.to_uninstall and l.plugin_id.state == "installed"
+            lambda line: line.to_uninstall and line.plugin_id.state == "installed"
         ).mapped("plugin_id")
         try:
             if to_install:
@@ -98,7 +99,7 @@ class AccountPluginsWizardLine(models.TransientModel):
 
     wizard_id = fields.Many2one("account.plugins.wizard", string="Wizard")
     plugin_id = fields.Many2one("ir.module.module", string="Plugin", readonly=True)
-    name = fields.Text(string="Name", readonly=True)
+    name = fields.Text(readonly=True)
     state = fields.Selection(
         [
             ("uninstalled", "Not installed"),
@@ -106,7 +107,6 @@ class AccountPluginsWizardLine(models.TransientModel):
             ("to install", "For installation"),
             ("to remove", "To remove"),
         ],
-        string="State",
         readonly=True,
     )
     to_install = fields.Boolean(string="Install", help="Mark for installation")

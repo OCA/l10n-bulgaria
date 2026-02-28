@@ -2,7 +2,7 @@
 import logging
 import re
 
-from odoo.addons.partner_multilang.models.res_transliterate import (
+from .models.res_transliterate import (
     LANGUAGE_MAPPING,
     partner_name_translate,
 )
@@ -165,7 +165,8 @@ def post_init_hook(env):
         _logger.info("Restoring Bulgarian names from backup into JSONB...")
         env.cr.execute("""
                        UPDATE res_partner p
-                       SET name = COALESCE(p.name, '{}'::jsonb) || jsonb_build_object('bg_BG', b.name)
+                       SET name = COALESCE(p.name, '{}'::jsonb)
+                           || jsonb_build_object('bg_BG', b.name)
                        FROM backup_res_partner_names b
                        WHERE p.id = b.id
                        """)
@@ -219,7 +220,8 @@ def uninstall_hook(env):
 
     if res and res[0] == "jsonb":
         # Извличаме bg_BG стойността. Ако я няма, взимаме каквото има.
-        # Тъй като Odoo ще конвертира към varchar, ние правим JSON-а да съдържа само текст.
+        # Тъй като Odoo ще конвертира към varchar, ние правим JSON-а да
+        # съдържа само текст.
         env.cr.execute("""
                        UPDATE res_partner
                        SET name = to_jsonb(

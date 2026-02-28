@@ -17,7 +17,7 @@ class BGModEconomicActivity(models.Model):
     child_ids = fields.One2many(
         "bg.hr.payroll.economic.activity", "parent_id", string="Child Activities"
     )
-    active = fields.Boolean(string="Active", default=True)
+    active = fields.Boolean(default=True)
     level = fields.Selection(
         [
             ("section", "Section"),
@@ -25,7 +25,6 @@ class BGModEconomicActivity(models.Model):
             ("group", "Group"),
             ("class", "Class"),
         ],
-        string="Level",
         required=True,
     )
 

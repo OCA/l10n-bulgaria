@@ -5,11 +5,8 @@ from psycopg2 import sql
 
 from odoo import api, fields, models, tools
 
-from odoo.addons.l10n_bg_reports_audit.models.account_move import (
-    get_delivery_type,
-    get_doc_type,
-)
-from odoo.addons.l10n_bg_reports_audit.models.l10n_bg_file_helper import l10n_bg_where
+from ..models.account_move import get_delivery_type, get_doc_type
+from ..models.l10n_bg_file_helper import l10n_bg_where
 
 _logger = logging.getLogger(__name__)
 

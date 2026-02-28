@@ -46,11 +46,17 @@ class AccountAccountSettingPreviewWizard(models.TransientModel):
             processed_dict = convert_lists_to_string(data_dict)
             xml_content = xmltodict.unparse(processed_dict, pretty=True, indent="  ")
             escaped_content = html.escape(xml_content)
-            html_content = f"<p>Current setting.<br/> Important: The downloaded file cannot be used directly for configuration. It serves only as a visual representation of the current configuration.</p><pre>{escaped_content}</pre>"
+            html_content = (
+                "<p>Current setting.<br/> Important: The downloaded file cannot be "
+                "used directly for configuration. It serves only as a visual "
+                "representation of the current configuration.</p>"
+                f"<pre>{escaped_content}</pre>"
+            )
             res["l10n_bg_config_file_preview"] = html_content
         except Exception as e:
             res["l10n_bg_config_file_preview"] = (
-                f'<div class="alert alert-danger">Error by processing XML data: {str(e)}</div>'
+                '<div class="alert alert-danger">'
+                f"Error by processing XML data: {str(e)}</div>"
             )
         return res
 
@@ -62,7 +68,7 @@ class AccountAccountSettingPreviewWizard(models.TransientModel):
             processed_dict = convert_lists_to_string(data_dict)
             return xmltodict.unparse(processed_dict, pretty=True, indent="  ")
         except Exception as e:
-            raise UserError(f"Data processing error: {str(e)}")
+            raise UserError(f"Data processing error: {str(e)}") from e
 
     def save_xml(self):
         """Save formatted XML as a downloadable file"""

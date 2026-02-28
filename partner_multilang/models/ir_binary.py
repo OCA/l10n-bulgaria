@@ -48,8 +48,10 @@ class IrBinary(models.AbstractModel):
 
         try:
             field_def = record._fields[field_name]
-        except KeyError:
-            raise UserError(f"Record has no field {field_name!r}.")  # pylint: disable=missing-gettext
+        except KeyError as e:
+            raise UserError(  # pylint: disable=missing-gettext
+                f"Record has no field {field_name!r}."
+            ) from e
         if field_def.type != "binary":
             raise UserError(  # pylint: disable=missing-gettext
                 f"Field {field_def!r} is type {field_def.type!r} but "
@@ -88,7 +90,8 @@ class IrBinary(models.AbstractModel):
                         )
                     except Exception as e:
                         _logger.warning(
-                            f"Error extracting string from dict field '{filename_field}': {e}"
+                            "Error extracting string from dict field "
+                            f"'{filename_field}': {e}"
                         )
                         field_value = None
 

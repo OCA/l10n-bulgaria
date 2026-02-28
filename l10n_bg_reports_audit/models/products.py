@@ -13,5 +13,8 @@ class ProductTemplate(models.Model):
         column1="product_template_id",
         column2="account_tag_id",
         domain="[('applicability', '=', 'l10n_bg_product')]",
-        help="Bulgaria NSI report tags to be set on the base and tax journal items created for this product.",
+        help=(
+            "Bulgaria NSI report tags to be set on the base and tax journal "
+            "items created for this product."
+        ),
     )

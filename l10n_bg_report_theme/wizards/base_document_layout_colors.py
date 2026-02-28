@@ -35,7 +35,8 @@ def get_scss_file_path(use_custom=True, company_id=None):
     """
     Връща пътя към SCSS файла.
     Args:
-        use_custom: Ако True, използва персонализирания файл, иначе оригиналния от модула
+        use_custom: Ако True, използва персонализирания файл, иначе оригиналния
+            от модула
         company_id: ИД на компанията за персонализирания файл
     """
     if use_custom:
@@ -125,14 +126,18 @@ class DocumentLayoutColorManager(models.TransientModel):
         """Loads color variables from the SCSS file."""
         res = []
         res_dict = {}
-        # Ако няма подаден company_id, опитай се да вземеш от контекста или текущата компания
+        # Ако няма подаден company_id, опитай се да вземеш от контекста или
+        # текущата компания
         company_id = company_id or self.env.company.id
         scss_file_path = get_scss_file_path(use_custom=True, company_id=company_id)
 
         try:
             with open(scss_file_path, encoding="utf-8") as file:
                 scss_content = file.read()
-                pattern = r"\$([a-zA-Z-]+):\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)(?:\s*!default)?\s*;"
+                pattern = (
+                    r"\$([a-zA-Z-]+):\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)"
+                    r"(?:\s*!default)?\s*;"
+                )
                 matches = re.findall(pattern, scss_content)
 
                 for var_name, r, g, b in matches:
@@ -195,7 +200,7 @@ class DocumentLayoutColorManager(models.TransientModel):
         except Exception as e:
             error_msg = f"Failed to save SCSS colors: {str(e)}"
             _logger.error(error_msg)
-            raise UserError(error_msg)
+            raise UserError(error_msg) from e
 
     def _update_ir_asset(self, company):
         """Този метод вече не се използва за файлове в home директорията,

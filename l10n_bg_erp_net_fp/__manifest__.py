@@ -6,22 +6,6 @@
     "summary": """
         Integration with ERP.BG fiscal printers through ErpNet.FP server.
         Supports real-time fiscal receipt printing and status monitoring.""",
-    "description": """
-This module provides integration between Odoo POS and fiscal printers
-supported by ErpNet.FP server. Features include:
-
-* Real-time fiscal receipt printing from POS
-* Direct browser-to-printer communication for receipts
-* Backend support for Z/X reports and administrative operations
-* Printer status monitoring
-* Automatic fallback to standard printing on error
-* Multiple printer support
-* Background printer status updates
-* Detailed error logging
-* Support for different printer models
-* Bulgarian tax group mapping (А, Б, В, Г)
-* Dual connection mode: Direct (server) and Proxy (browser)
-""",
     "version": "18.0.7.0.2",
     "license": "LGPL-3",
     "author": "Rosen Vladimirov,Odoo Community Association (OCA)",

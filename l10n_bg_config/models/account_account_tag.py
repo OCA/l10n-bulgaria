@@ -5,4 +5,4 @@ from odoo import fields, models
 class AccountAccountTag(models.Model):
     _inherit = "account.account.tag"
 
-    description = fields.Text("Description", translate=True)
+    description = fields.Text(translate=True)

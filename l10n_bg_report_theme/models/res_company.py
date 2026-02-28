@@ -8,9 +8,7 @@ from markupsafe import Markup
 from odoo import fields, models
 from odoo.modules import get_module_resource
 
-from odoo.addons.l10n_bg_report_theme.wizards.base_document_layout_colors import (
-    get_scss_file_path,
-)
+from ..wizards.base_document_layout_colors import get_scss_file_path
 
 _logger = logging.getLogger(__name__)
 
@@ -58,7 +56,8 @@ class Company(models.Model):
                 with open(self.custom_scss_path, encoding="utf-8") as f:
                     content = f.read()
                     _logger.info(
-                        f"Loaded custom SCSS for company {self.id} from {self.custom_scss_path}"
+                        "Loaded custom SCSS for company "
+                        f"{self.id} from {self.custom_scss_path}"
                     )
                     return Markup(content)
             except Exception as e:

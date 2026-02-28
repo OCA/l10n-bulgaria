@@ -30,12 +30,13 @@ class Partner(models.Model):
 
     @api.private
     def init(self):
-        super().init()
+        res = super().init()
         # Ensure the technical JSONB column exists without module upgrade.
         self._cr.execute(
             'ALTER TABLE "res_partner" '
             "ADD COLUMN IF NOT EXISTS complete_name_multilanguage jsonb"
         )
+        return res
 
     @api.model
     def get_view(self, view_id=None, view_type="form", **options):
@@ -177,7 +178,7 @@ class Partner(models.Model):
         def _strip(tokens):
             cleaned = []
             for token in tokens:
-                if isinstance(token, (list, tuple)) and len(token) >= 3:
+                if isinstance(token, list | tuple) and len(token) >= 3:
                     field_name = token[0]
                     if isinstance(field_name, str) and "." in field_name:
                         base, suffix = field_name.split(".", 1)

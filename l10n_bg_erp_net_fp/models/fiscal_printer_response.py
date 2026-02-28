@@ -9,13 +9,13 @@ class FiscalPrinterResponse(models.Model):
     _rec_name = "request_id"
     _order = "create_date desc"
 
-    request_id = fields.Char("Request ID", required=True, index=True)
+    request_id = fields.Char(required=True, index=True)
     printer_id = fields.Many2one(
         "fiscal.printer.device", "Printer", required=True, ondelete="cascade"
     )
-    success = fields.Boolean("Success", default=False)
-    response_data = fields.Text("Response Data")
-    error_message = fields.Text("Error Message")
+    success = fields.Boolean(default=False)
+    response_data = fields.Text()
+    error_message = fields.Text()
 
     def get_data(self):
         """Връща response данните като dict/list"""

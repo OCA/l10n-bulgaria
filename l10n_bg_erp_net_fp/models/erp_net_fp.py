@@ -7,7 +7,7 @@ import requests
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.l10n_bg_erp_net_fp.models.erp_net_fp_exceptions import (
+from .erp_net_fp_exceptions import (
     FiscalPrinterConnectionError,
     FiscalPrinterError,
 )
@@ -20,14 +20,12 @@ class FiscalPrinterDevice(models.Model):
     _description = "Fiscal printer server ErpNet.FP"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char("Name", required=True)
-    host = fields.Char("Host", required=True, default="http://localhost:8001")
+    name = fields.Char(required=True)
+    host = fields.Char(required=True, default="http://localhost:8001")
     printer_id = fields.Char("ID on a printer", required=True)
-    active = fields.Boolean("Active", default=True)
-    timeout = fields.Integer("Timeout", default=30, help="Timeout in seconds")
-    retry_count = fields.Integer(
-        "Retry Count", default=3, help="Number of retries on failure"
-    )
+    active = fields.Boolean(default=True)
+    timeout = fields.Integer(default=30, help="Timeout in seconds")
+    retry_count = fields.Integer(default=3, help="Number of retries on failure")
     ssl_verify = fields.Boolean(
         "Verify SSL",
         default=False,
@@ -40,7 +38,6 @@ class FiscalPrinterDevice(models.Model):
             ("direct", "Direct (Server can access printer)"),
             ("proxy", "Browser Proxy (Printer in local network)"),
         ],
-        string="Connection Mode",
         default="direct",
         required=True,
         tracking=True,
@@ -90,7 +87,7 @@ class FiscalPrinterDevice(models.Model):
 
             try:
                 _logger.info(f"Start an automatic Z report for {device.name}")
-                result = device.print_z_report()
+                device.print_z_report()
                 device.last_z_report = fields.Datetime.now()
 
                 device.message_post(
@@ -188,7 +185,7 @@ class FiscalPrinterDevice(models.Model):
                         record.name,
                     )
             except Exception as e:
-                raise ValidationError(_("Invalid host URL: %s") % str(e))
+                raise ValidationError(_("Invalid host URL: %s") % str(e)) from e
 
     @api.onchange("ssl_verify")
     def _onchange_ssl_verify(self):
@@ -199,7 +196,8 @@ class FiscalPrinterDevice(models.Model):
                     "warning": {
                         "title": _("Security Warning"),
                         "message": _(
-                            "Disabling SSL verification for HTTPS connection is not recommended!"
+                            "Disabling SSL verification for HTTPS connection is not "
+                            "recommended!"
                         ),
                     }
                 }
@@ -226,7 +224,8 @@ class FiscalPrinterDevice(models.Model):
                     "warning": {
                         "title": _("Connection Mode"),
                         "message": _(
-                            'Local network address detected. Connection mode set to "Browser Proxy".'
+                            "Local network address detected. Connection mode set to "
+                            '"Browser Proxy".'
                         ),
                     }
                 }
@@ -271,17 +270,17 @@ class FiscalPrinterDevice(models.Model):
                 error_msg = f"SSL Error: {str(e)}. Try disabling SSL verification."
                 _logger.error(error_msg)
                 if attempt == self.retry_count - 1:
-                    raise FiscalPrinterError(_(error_msg))
+                    raise FiscalPrinterError(_(error_msg)) from e
             except requests.exceptions.HTTPError as e:
                 error_msg = f"HTTP Error: {e.response.status_code} - {e.response.text}"
                 _logger.error(error_msg)
                 if attempt == self.retry_count - 1:
-                    raise FiscalPrinterError(_(error_msg))
+                    raise FiscalPrinterError(_(error_msg)) from e
             except requests.exceptions.RequestException as e:
                 error_msg = f"Communication error: {str(e)}"
                 _logger.error(error_msg)
                 if attempt == self.retry_count - 1:
-                    raise FiscalPrinterConnectionError(_(error_msg))
+                    raise FiscalPrinterConnectionError(_(error_msg)) from e
             finally:
                 session.close()
 
@@ -327,10 +326,9 @@ class FiscalPrinterDevice(models.Model):
             "fiscal.printer.request", "fiscal.printer.request", bus_message
         )
 
-        # Commit за да се изпрати bus notification-а
-        self.env.cr.commit()
-
-        _logger.info("[PROXY] ✅ Bus notification sent and committed!")
+        # Flush, за да сме сигурни, че bus notification-ът е записан
+        self.env.cr.flush()
+        _logger.info("[PROXY] ✅ Bus notification sent and flushed!")
 
         # Чакаме отговор от браузъра
         start_time = time.time()
@@ -374,8 +372,8 @@ class FiscalPrinterDevice(models.Model):
                     _logger.info("=" * 80)
                     raise FiscalPrinterError(error_msg)
 
-            # Commit за да видим новите записи
-            self.env.cr.commit()
+            # Flush за да видим новите записи
+            self.env.cr.flush()
             time.sleep(0.5)
 
         _logger.error(f"[PROXY] ⏰ TIMEOUT after {timeout}s!")
@@ -385,7 +383,8 @@ class FiscalPrinterDevice(models.Model):
 
         raise FiscalPrinterConnectionError(
             _(
-                "Timeout waiting for browser response. Make sure browser is open and has access to printer."
+                "Timeout waiting for browser response. Make sure browser is open and "
+                "has access to printer."
             )
         )
 
@@ -506,7 +505,7 @@ class FiscalPrinterDevice(models.Model):
         Служебно изведени
         :param amount: сума за извеждане
         """
-        if not isinstance(amount, (int, float)) or amount <= 0:
+        if not isinstance(amount, int | float) or amount <= 0:
             raise ValidationError(_("Amount must be a positive number"))
 
         data = {"amount": amount}
@@ -517,7 +516,7 @@ class FiscalPrinterDevice(models.Model):
         Служебно въведени
         :param amount: сума за въвеждане
         """
-        if not isinstance(amount, (int, float)) or amount <= 0:
+        if not isinstance(amount, int | float) or amount <= 0:
             raise ValidationError(_("Amount must be a positive number"))
 
         data = {"amount": amount}
@@ -546,12 +545,13 @@ class FiscalPrinterDevice(models.Model):
                 try:
                     datetime.fromisoformat(date_str)
                     params[param_name] = date_str
-                except ValueError:
+                except ValueError as e:
                     raise ValidationError(
                         _(
-                            f"Invalid date format for {param_name}. Use ISO format (YYYY-MM-DD)"
+                            f"Invalid date format for {param_name}. Use ISO format "
+                            "(YYYY-MM-DD)"
                         )
-                    )
+                    ) from e
 
         return self._make_request(
             "GET", f"printers/{self.printer_id}/journal", params=params

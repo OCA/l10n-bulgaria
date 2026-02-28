@@ -4,9 +4,10 @@
     "development_status": "Production/Stable",
     "maintainers": ["rosenvladimirov", "deyanlyubenov"],
     "category": "Accounting/Localizations/Reporting",
-    "summary": """
-    Configuration module for Bulgarian Accounting Reports - Odoo 18.0 specific views and wizards
-    """,
+    "summary": (
+        "Configuration module for Bulgarian Accounting Reports - Odoo 18.0 "
+        "specific views and wizards"
+    ),
     "license": "LGPL-3",
     "author": "Rosen Vladimirov,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-bulgaria",

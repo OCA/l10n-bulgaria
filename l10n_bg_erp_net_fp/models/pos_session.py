@@ -99,7 +99,7 @@ class PosSession(models.Model):
             }
 
         try:
-            result = self.l10n_bg_fiscal_printer_id.print_x_report()
+            self.l10n_bg_fiscal_printer_id.print_x_report()
             self.l10n_bg_last_x_report = fields.Datetime.now()
 
             self.message_post(

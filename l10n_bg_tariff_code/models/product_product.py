@@ -38,8 +38,9 @@ class ProductProduct(models.Model):
             "simple_notification",
             {
                 "type": "success",
-                "message": "Обновени тарифни ставки за %s продукта от EU TARIC"
-                % len(self),
+                "message": (
+                    f"Обновени тарифни ставки за {len(self)} продукта от EU TARIC"
+                ),
                 "sticky": False,
             },
         )

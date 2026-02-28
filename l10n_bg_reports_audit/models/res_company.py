@@ -50,8 +50,11 @@ class ResCompany(models.Model):
     l10n_bg_vat_ratio = fields.Float(
         string="VAT Ratio (Art. 73)",
         default=0.0,
-        help="Annual VAT ratio coefficient according to Art. 73, Para. 2 of VAT Act. "
-        "This is automatically updated from the current fiscal year's annual VAT ratio history.",
+        help=(
+            "Annual VAT ratio coefficient according to Art. 73, Para. 2 of VAT "
+            "Act. This is automatically updated from the current fiscal year's "
+            "annual VAT ratio history."
+        ),
     )
 
     l10n_bg_vat_ratio_history_id = fields.Many2one(
@@ -97,8 +100,9 @@ class ResCompany(models.Model):
                 ]
             else:
                 record.l10n_bg_tax_contact_id = False
+                current_id = record.id
                 record.partner_id.child_ids.filtered(
-                    lambda r: r.id == record.id
+                    lambda r, _id=current_id: r.id == _id
                 ).type = "contact"
 
     def _compute_l10n_bg_vat_ratio_history_id(self):
@@ -159,7 +163,7 @@ class ResCompany(models.Model):
 
     def _inverse_l10n_bg_intrastat_threshold_id(self):
         """Handle manual changes to the threshold record."""
-        for record in self:
+        for _record in self:
             # This allows manual linking if needed
             # You can add additional logic here if necessary
             pass

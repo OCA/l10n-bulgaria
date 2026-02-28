@@ -59,7 +59,6 @@ class L10nBgVatRatioHistory(models.Model):
             ("monthly", "Monthly"),
             ("annual", "Annual"),
         ],
-        string="Period Type",
         compute="_compute_period_type",
         store=True,
     )
@@ -85,8 +84,10 @@ class L10nBgVatRatioHistory(models.Model):
         required=True,
         digits=(5, 2),
         default=0.0,
-        help="VAT ratio coefficient according to Art. 73, Para. 2 of VAT Act (in percentage). "
-        "Rounded to second decimal place.",
+        help=(
+            "VAT ratio coefficient according to Art. 73, Para. 2 of VAT Act "
+            "(in percentage). Rounded to second decimal place."
+        ),
         tracking=True,
     )
 
@@ -101,7 +102,10 @@ class L10nBgVatRatioHistory(models.Model):
         string="Box 13 - Received Payments",
         currency_field="currency_id",
         default=0.0,
-        help="Tax base of received payments before taxable event (Art. 73, Para. 3, Item 2)",
+        help=(
+            "Tax base of received payments before taxable event (Art. 73, "
+            "Para. 3, Item 2)"
+        ),
     )
     numerator_box_14 = fields.Monetary(
         string="Box 14 - Supplies Outside EU (Art. 69, Para. 2)",
@@ -120,7 +124,10 @@ class L10nBgVatRatioHistory(models.Model):
         string="Box 16 - Supplies without Tax Credit (Art. 70, Para. 1, Items 3-5)",
         currency_field="currency_id",
         default=0.0,
-        help="Tax base of supplies without exercised tax credit right (Art. 73, Para. 3, Item 5)",
+        help=(
+            "Tax base of supplies without exercised tax credit right (Art. 73, "
+            "Para. 3, Item 5)"
+        ),
     )
 
     numerator_total = fields.Monetary(
@@ -136,25 +143,37 @@ class L10nBgVatRatioHistory(models.Model):
         string="Box 17 - Supplies Outside Bulgaria (not Art. 69, Para. 2)",
         currency_field="currency_id",
         default=0.0,
-        help="Tax base of supplies outside Bulgaria not equated to taxable (Art. 73, Para. 4, Item 2)",
+        help=(
+            "Tax base of supplies outside Bulgaria not equated to taxable "
+            "(Art. 73, Para. 4, Item 2)"
+        ),
     )
     denominator_box_18 = fields.Monetary(
         string="Box 18 - Exempt Supplies (excl. Art. 50, Para. 1, Item 2)",
         currency_field="currency_id",
         default=0.0,
-        help="Tax base of exempt supplies, excluding financial services (Art. 73, Para. 4, Item 3)",
+        help=(
+            "Tax base of exempt supplies, excluding financial services "
+            "(Art. 73, Para. 4, Item 3)"
+        ),
     )
     denominator_box_19 = fields.Monetary(
         string="Box 19 - Non-Economic Activities",
         currency_field="currency_id",
         default=0.0,
-        help="Value of supplies outside economic activity scope (Art. 73, Para. 4, Item 4)",
+        help=(
+            "Value of supplies outside economic activity scope (Art. 73, "
+            "Para. 4, Item 4)"
+        ),
     )
     denominator_box_42 = fields.Monetary(
         string="Box 42 - Received Subsidies",
         currency_field="currency_id",
         default=0.0,
-        help="Amount of received subsidies not included in tax base (Art. 73, Para. 4, Item 6)",
+        help=(
+            "Amount of received subsidies not included in tax base (Art. 73, "
+            "Para. 4, Item 6)"
+        ),
     )
 
     denominator_total = fields.Monetary(
@@ -187,21 +206,16 @@ class L10nBgVatRatioHistory(models.Model):
 
     currency_id = fields.Many2one(
         "res.currency",
-        string="Currency",
         compute="_compute_currency_id",
         store=True,
         precompute=True,
     )
 
     notes = fields.Text(
-        string="Notes",
         help="Additional information about this ratio calculation",
     )
 
-    active = fields.Boolean(
-        string="Active",
-        default=True,
-    )
+    active = fields.Boolean(default=True)
 
     _sql_constraints = [
         (
@@ -297,7 +311,10 @@ class L10nBgVatRatioHistory(models.Model):
             company_name = record.company_id.name if record.company_id else ""
             if record.month:
                 month_name = dict(self._fields["month"].selection)[record.month]
-                record.display_name = f"[{company_name}] {month_name} {record.year} - {record.vat_ratio:.2f}%"
+                record.display_name = (
+                    f"[{company_name}] {month_name} {record.year} - "
+                    f"{record.vat_ratio:.2f}%"
+                )
             else:
                 record.display_name = (
                     f"[{company_name}] {record.year} (Annual) - {record.vat_ratio:.2f}%"
@@ -322,9 +339,13 @@ class L10nBgVatRatioHistory(models.Model):
                 if abs(computed_ratio_rounded - record.vat_ratio) > 0.01:
                     raise ValidationError(
                         _(
-                            "The VAT ratio (%.2f%%) does not match the calculated ratio (%.2f%%)."
+                            "The VAT ratio (%(vat_ratio).2f%%) does not match the "
+                            "calculated ratio (%(computed).2f%%)."
                         )
-                        % (record.vat_ratio, computed_ratio_rounded)
+                        % {
+                            "vat_ratio": record.vat_ratio,
+                            "computed": computed_ratio_rounded,
+                        }
                     )
 
     @api.onchange(
@@ -444,14 +465,16 @@ class L10nBgVatRatioHistory(models.Model):
 
         if last_ratio:
             _logger.info(
-                f"Found last known coefficient: {last_ratio.display_name} = {last_ratio.vat_ratio}%"
+                f"Found last known coefficient: {last_ratio.display_name} = "
+                f"{last_ratio.vat_ratio}%"
             )
             return self._build_ratio_result_from_record(
                 last_ratio, tax_period, year, is_copied=True
             )
 
         _logger.warning(
-            f"No previous coefficient found for company {company.name}. Manual entry required."
+            f"No previous coefficient found for company {company.name}. Manual "
+            "entry required."
         )
         return self._build_empty_ratio_result(tax_period, year, month)
 
@@ -478,9 +501,14 @@ class L10nBgVatRatioHistory(models.Model):
 
         if is_copied:
             result["notes"] = _(
-                "No VAT declaration data found for period %s. "
-                "Values copied from last known coefficient: %s (%.2f%%)"
-            ) % (tax_period or year, record.display_name, record.vat_ratio)
+                "No VAT declaration data found for period %(period)s. "
+                "Values copied from last known coefficient: %(display)s "
+                "(%(vat_ratio).2f%%)"
+            ) % {
+                "period": tax_period or year,
+                "display": record.display_name,
+                "vat_ratio": record.vat_ratio,
+            }
         else:
             result["notes"] = ""
 
@@ -523,7 +551,8 @@ class L10nBgVatRatioHistory(models.Model):
             ratio = (numerator_total / denominator_total) * 100
             vat_ratio = self._round_vat_ratio(ratio)
             _logger.info(
-                f"VAT ratio calculated: {numerator_total:.2f} / {denominator_total:.2f} = {vat_ratio:.2f}%"
+                f"VAT ratio calculated: {numerator_total:.2f} / "
+                f"{denominator_total:.2f} = {vat_ratio:.2f}%"
             )
         else:
             _logger.warning("Denominator is zero. Cannot calculate ratio.")

@@ -35,4 +35,4 @@ class Company(models.Model):
             f'ALTER TABLE "{self._table}" '
             "ADD COLUMN IF NOT EXISTS transliterate_tracking jsonb"
         )
-        super().init()
+        return super().init()
