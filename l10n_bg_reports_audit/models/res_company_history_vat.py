@@ -33,7 +33,6 @@ class L10nBgVatRatioHistory(models.Model):
     )
 
     year = fields.Integer(
-        string="Year",
         required=True,
         default=lambda self: fields.Date.today().year,
         help="Year for which the ratio applies",
@@ -53,7 +52,6 @@ class L10nBgVatRatioHistory(models.Model):
             ("11", "November"),
             ("12", "December"),
         ],
-        string="Month",
         help="Leave empty for annual coefficient",
     )
     period_type = fields.Selection(
@@ -169,14 +167,12 @@ class L10nBgVatRatioHistory(models.Model):
 
     # Metadata
     is_manual = fields.Boolean(
-        string="Manual Entry",
         default=False,
         help="Check if ratio is entered manually (no data in Odoo)",
         tracking=True,
     )
 
     is_computed = fields.Boolean(
-        string="Computed from VAT Declarations",
         default=False,
         help="Check if ratio was computed automatically from VAT declaration data",
         tracking=True,
@@ -313,7 +309,7 @@ class L10nBgVatRatioHistory(models.Model):
         Round VAT ratio to second decimal place according to Bulgarian tax rules.
         Rounds up at 0.005
         """
-        return math.ceil(ratio * 100) / 100
+        return math.floor(ratio * 100 + 0.5) / 100
 
     @api.constrains("numerator_total", "denominator_total", "vat_ratio", "is_manual")
     def _check_ratio_calculation(self):
