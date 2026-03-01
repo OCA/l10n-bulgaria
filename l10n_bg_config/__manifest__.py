@@ -6,7 +6,7 @@
     "summary": "\n"
     "        This module allows you to install and configure all\n"
     "        the localization modules related to Bulgaria.",
-    "version": "18.0.8.0.4",
+    "version": "18.0.8.0.5",
     "development_status": "Production/Stable",
     "category": "Localization",
     "license": "LGPL-3",

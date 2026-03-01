@@ -2,7 +2,7 @@
 
 {
     "name": "Bulgaria - Base address extended",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "author": "Odoo Community Association (OCA), Rosen Vladimirov",
     "category": "Localization",
     "website": "https://github.com/OCA/l10n-bulgaria",
