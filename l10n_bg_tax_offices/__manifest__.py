@@ -1,5 +1,5 @@
 # Copyright 2024 Rosen Vladimirov
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 {
     "name": "L10n Bg Tax Offices",

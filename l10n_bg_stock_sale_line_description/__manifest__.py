@@ -1,11 +1,11 @@
 # Copyright 2025 Rosen Vladimirov
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 {
     "name": "Stock Sale Line Description",
     "summary": "Show sale order line description on pickings and delivery slips",
     "version": "18.0.1.0.0",
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "author": "Rosen Vladimirov,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-bulgaria",
     "depends": ["stock", "sale_stock"],
