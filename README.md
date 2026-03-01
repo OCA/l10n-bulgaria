@@ -11,6 +11,8 @@
 
 OCA addons for Bulgarian localization in Odoo 18.0.
 
+Stable release policy for `l10n-bulgaria-oca` modules: stable branches are published each March, in the year following the official Odoo release (e.g., Odoo 19 stable release in March 2027). For beta or earlier versions, follow forked repositories maintained by `rosenvladimirov` or other developers.
+
 <!-- /!\ do not modify below this line -->
 
 <!-- prettier-ignore-start -->

@@ -7,3 +7,4 @@ from . import resource
 
 # from . import stock_warehouse
 from . import hr_employee
+from . import hr_employee_public
