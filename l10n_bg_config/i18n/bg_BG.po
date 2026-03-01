@@ -18,14 +18,28 @@ msgstr ""
 "X-Generator: Poedit 3.6\n"
 
 #. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_plugins_wizard_form
+msgid ""
+"<b>Plugin Management</b><br/><br/>\n"
+"                        Use this panel to <b>enable or disable plugins</b> "
+"that extend the system's functionality.<br/><br/>\n"
+"                        ✔️ Use checkboxes to activate or deactivate specific "
+"plugins.<br/>\n"
+"                        ✔️ Use the <b>force reload checkbox</b> if you've "
+"made changes to localization templates and want them to be applied "
+"immediately.<br/><br/>\n"
+"                        <i>Note: Forcing a reload may take time on large "
+"databases.</i>"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_settings_xml_file_form
 msgid ""
 "<code>&lt;configuration&gt;\n"
 "    &lt;settings&gt;\n"
 "        &lt;setting model=\"account.account.tag\" "
 "field=\"l10n_bg_applicability\" value=\"sale\"&gt;\n"
-"            -11,+11,-12_1,-12_2,+12_1,+12_2,-13,+13,-14,+14,-15,+15,-16,"
-"+16,-17,+17,-18,+18,-19,+19,-21,+21,-22,+22,-23,+23,-24,+24\n"
+"            -11,+11,-12_1,-12_2,+12_1,+12_2,-13,+13,-14,+14,-15,+15,-16,+16,-17,+17,-18,+18,-19,+19,-21,+21,-22,+22,-23,+23,-24,+24\n"
 "        &lt;/setting&gt;\n"
 "        &lt;setting model=\"account.account.tag\" "
 "field=\"l10n_bg_applicability\" value=\"purchase\"&gt;\n"
@@ -42,8 +56,8 @@ msgid ""
 "<strong>Text content</strong> – Filter indicating which records the value "
 "should be applied to (e.g., by IDs or codes)"
 msgstr ""
-"<strong>Текстово съдържание</strong> - Филтър, указващ към кои записи "
-"трябва да се приложи стойността (напр. по идентификатори или кодове)"
+"<strong>Текстово съдържание</strong> - Филтър, указващ към кои записи трябва "
+"да се приложи стойността (напр. по идентификатори или кодове)"
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_settings_xml_file_form
@@ -294,8 +308,8 @@ msgstr "Локализация за България"
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
-msgid "Bulgaria cites, melisipalies, states..."
-msgstr "България градове, общини, области..."
+msgid "Bulgaria cities, melisipalies, states..."
+msgstr ""
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
@@ -310,8 +324,8 @@ msgstr "Българско ДДС"
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
-msgid "Bulgarian cites"
-msgstr "Български градове"
+msgid "Bulgarian cities"
+msgstr ""
 
 #. module: l10n_bg_config
 #: model:ir.model.fields,field_description:l10n_bg_config.field_res_config_settings__module_l10n_bg_uic_id_number
@@ -343,8 +357,7 @@ msgstr "Централни валутни курсове, изтеглени о�
 
 #. module: l10n_bg_config
 #: model:ir.model.fields,help:l10n_bg_config.field_res_config_settings__module_l10n_bg_multilang
-msgid ""
-"Change to multilingual support for fields without native configurations"
+msgid "Change to multilingual support for fields without native configurations"
 msgstr ""
 "Промяна към многоезична поддръжка за полета без стандартна конфигурация"
 
@@ -357,7 +370,6 @@ msgstr "Вид избор на ЕИК за България."
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_plugins_wizard_form
 msgid "Choose actions for each plugin through the appropriate checkerboards."
 msgstr "Изберете действия за всеки плъгин чрез съответните редове за избор."
 
@@ -495,6 +507,12 @@ msgstr ""
 "%(academic_title_display)s: краткото име за визуализация на академична титла"
 
 #. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_bank_statement_line__l10n_bg_document_number
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_move__l10n_bg_document_number
+msgid "Document Number (BG)"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields,field_description:l10n_bg_config.field_res_config_settings__module_currency_rate_update_bg_bnb
 msgid "Download currency rates from Bulgaria National Bank (OCA)"
 msgstr "Изтегляне на валутни курсове от Българска народна банка (OCA)"
@@ -515,9 +533,8 @@ msgid ""
 "Enter API Key to use additional functionality related to the Bulgaria "
 "localization. For more information contact with developer."
 msgstr ""
-"Въведете API ключ, за да използвате допълнителни функционалности, свързани "
-"с локализацията на България. За повече информация се свържете с "
-"разработчика."
+"Въведете API ключ, за да използвате допълнителни функционалности, свързани с "
+"локализацията на България. За повече информация се свържете с разработчика."
 
 #. module: l10n_bg_config
 #: model:ir.model.fields,help:l10n_bg_config.field_res_partner__l10n_bg_crypt_key
@@ -538,8 +555,8 @@ msgid ""
 "Enter the key to encrypt the data. If not entered, a random key will be "
 "generated."
 msgstr ""
-"Въведете ключа за криптиране на данните. Ако не е въведен, ще бъде "
-"генериран случаен ключ."
+"Въведете ключа за криптиране на данните. Ако не е въведен, ще бъде генериран "
+"случаен ключ."
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_settings_xml_file_form
@@ -605,6 +622,18 @@ msgid "Installed"
 msgstr "Инсталиран"
 
 #. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid "Invalid checksum for Bulgarian VAT number: %s"
+msgstr ""
+
+#. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid "Invalid format for Bulgarian VAT number: %s"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_bank_statement_line__is_l10n_bg_record
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_move__is_l10n_bg_record
 #: model:ir.model.fields,field_description:l10n_bg_config.field_l10n_bg_config_mixin__is_l10n_bg_record
@@ -655,11 +684,6 @@ msgid "Manage Plugins"
 msgstr "Управление на добавки"
 
 #. module: l10n_bg_config
-#: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_plugins_wizard_form
-msgid "Manage plugins"
-msgstr "Управление на добавки"
-
-#. module: l10n_bg_config
 #: model:ir.model.fields,help:l10n_bg_config.field_account_plugins_wizard_line__to_install
 msgid "Mark for installation"
 msgstr "Отбележи за инсталиране"
@@ -697,6 +721,16 @@ msgid "Multilang support for partner names and more"
 msgstr "Многоезична поддръжка за имена на партньори и др"
 
 #. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
+msgid "Multilanguage Modules"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_res_config_settings__is_l10n_bg_multilanguage_text
+msgid "Multilanguage Settings"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields,field_description:l10n_bg_config.field_res_config_settings__module_l10n_bg_tax_offices
 msgid "NRA Bulgaria, tax offices and departments"
 msgstr "НАП България, данъчни служби и отдели"
@@ -717,6 +751,12 @@ msgid "National Revenue Agency departments, offices and head office."
 msgstr "Отдели, служби и централа на Националната агенция по приходите."
 
 #. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/wizards/account_account_tag_bulk_edit_wizard.py:0
+msgid "No configuration file uploaded."
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields.selection,name:l10n_bg_config.selection__account_plugins_wizard_line__state__uninstalled
 msgid "Not installed"
 msgstr "Не е инсталиран"
@@ -726,6 +766,12 @@ msgstr "Не е инсталиран"
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_move__l10n_bg_name
 msgid "Number of locale document"
 msgstr "Номер на български тип документ"
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_bank_statement_line__l10n_bg_name_value
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_move__l10n_bg_name_value
+msgid "Number of locale document (stored)"
+msgstr ""
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
@@ -891,8 +937,8 @@ msgstr ""
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
-msgid "Theatrical section for settings"
-msgstr "Техническа секция за настройки"
+msgid "Theoretical section for settings"
+msgstr ""
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_settings_xml_file_form
@@ -907,12 +953,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_settings_xml_file_form
 msgid "This file can be used by:"
 msgstr "Този файл може да се използва от:"
-
-#. module: l10n_bg_config
-#. odoo-python
-#: code:addons/l10n_bg_config/hooks.py:0
-msgid "This module is only for Bulgaria"
-msgstr "Този модул е предназначен само за България"
 
 #. module: l10n_bg_config
 #: model:ir.model.fields.selection,name:l10n_bg_config.selection__account_plugins_wizard_line__state__to_remove
@@ -1008,13 +1048,19 @@ msgid "VAT Report for tax administration (OCA))"
 msgstr "Справка за ДДС за данъчната администрация (OCA))"
 
 #. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid "Validation error for Bulgarian VAT: %(vat)s - %(error)s"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
 msgid ""
 "Will update daily from cron only if is checked Automatic Currency Rates "
 "(OCA) and you added a rate_provider"
 msgstr ""
-"Ще се актуализира ежедневно от cron само ако е маркирано Автоматични "
-"валутни курсове (OCA) и сте добавили rate_provider"
+"Ще се актуализира ежедневно от cron само ако е маркирано Автоматични валутни "
+"курсове (OCA) и сте добавили rate_provider"
 
 #. module: l10n_bg_config
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__wizard_id
@@ -1035,3 +1081,37 @@ msgstr "XML конфигурационен файл за Odoo"
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_preview_xml_file__l10n_bg_config_file_preview
 msgid "XML Preview"
 msgstr "Предварителен преглед на XML"
+
+#. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid ""
+"You cannot change the Tax ID for partner '%(partner)s' because there are "
+"already posted accounting entries. Old Tax ID: %(old_tax)s, New Tax ID: %"
+"(new_tax)s"
+msgstr ""
+
+#. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid ""
+"You cannot change the parent company for partner '%(partner)s' because the "
+"parent has a different Tax ID. Partner Tax ID: %(partner_tax)s, Parent Tax "
+"ID: %(parent_tax)s. This is not allowed when there are posted accounting "
+"entries."
+msgstr ""
+
+#~ msgid "Bulgaria cites, melisipalies, states..."
+#~ msgstr "България градове, общини, области..."
+
+#~ msgid "Bulgarian cites"
+#~ msgstr "Български градове"
+
+#~ msgid "Manage plugins"
+#~ msgstr "Управление на добавки"
+
+#~ msgid "Theatrical section for settings"
+#~ msgstr "Техническа секция за настройки"
+
+#~ msgid "This module is only for Bulgaria"
+#~ msgstr "Този модул е предназначен само за България"
