@@ -9,7 +9,8 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
-- Post-install tests covering API key zip payload, view hiding logic, and bg language/fields checks
+- Post-install tests covering API key zip payload, view hiding logic, and bg
+  language/fields checks
 
 ### Changed
 
