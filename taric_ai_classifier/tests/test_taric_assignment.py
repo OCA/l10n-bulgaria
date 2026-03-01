@@ -26,6 +26,7 @@ class TestTaricAssignment(TransactionCase):
         )
 
         self.product.write({"taric_code_id": taric_code.id})
+        self.product.flush_model()  # ensure related is recomputed in tests
 
         # hs_code should mirror the TARIC code
         self.assertEqual(self.product.hs_code, taric_code.code)

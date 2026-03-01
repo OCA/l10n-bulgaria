@@ -20,7 +20,9 @@ class TestSaleLineDescription(TransactionCase):
                 "type": "consu",
             }
         )
-        cls.pricelist = cls.env.ref("product.list0")
+        cls.pricelist = cls.env["product.pricelist"].create(
+            {"name": "Test Pricelist", "currency_id": cls.env.ref("base.EUR").id}
+        )
         cls.loc_stock = cls.env.ref("stock.stock_location_stock")
         cls.loc_customer = cls.env.ref("stock.stock_location_customers")
 
