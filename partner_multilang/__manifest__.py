@@ -10,6 +10,7 @@
     "            transliteration and language detection.",
     "external_dependencies": {"python": ["transliterate", "unidecode", "lingua"]},
     "depends": ["base", "contacts"],
+    "development_status": "Production/Stable",
     "data": ["views/res_lang_views.xml", "views/res_config_settings_view.xml"],
     "images": ["static/description/banner.png"],
     "demo": [],

@@ -7,6 +7,7 @@
     "author": "Rosen Vladimirov,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-bulgaria",
     "depends": ["account", "stock_delivery"],
+    "development_status": "Production/Stable",
     "external_dependencies": {"python": ["requests"]},
     "data": [
         "security/ir.model.access.csv",
