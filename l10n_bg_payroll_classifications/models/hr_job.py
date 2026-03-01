@@ -10,7 +10,6 @@ class Job(models.Model):
         "bg.hr.payroll.ncop.classification",
         string="NCOP Position",
         help="NCOP Position",
-        required=True,
         ondelete="restrict",
     )
 
