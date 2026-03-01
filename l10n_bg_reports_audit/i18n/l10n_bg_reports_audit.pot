@@ -4,10 +4,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 05:56+0000\n"
-"PO-Revision-Date: 2026-02-25 05:56+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -423,11 +421,6 @@ msgid "Company name"
 msgstr ""
 
 #. module: l10n_bg_reports_audit
-#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_l10n_bg_vat_ratio_history__is_computed
-msgid "Computed from VAT Declarations"
-msgstr ""
-
-#. module: l10n_bg_reports_audit
 #: model:ir.model,name:l10n_bg_reports_audit.model_res_config_settings
 msgid "Config Settings"
 msgstr ""
@@ -834,9 +827,7 @@ msgstr ""
 
 #. module: l10n_bg_reports_audit
 #: model:ir.model.fields,help:l10n_bg_reports_audit.field_l10n_bg_intrastat_threshold__message_has_error
-#: model:ir.model.fields,help:l10n_bg_reports_audit.field_l10n_bg_intrastat_threshold__message_has_sms_error
 #: model:ir.model.fields,help:l10n_bg_reports_audit.field_l10n_bg_vat_ratio_history__message_has_error
-#: model:ir.model.fields,help:l10n_bg_reports_audit.field_l10n_bg_vat_ratio_history__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
@@ -867,9 +858,19 @@ msgid "Is Bulgaria Record"
 msgstr ""
 
 #. module: l10n_bg_reports_audit
+#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_l10n_bg_vat_ratio_history__is_computed
+msgid "Is Computed"
+msgstr ""
+
+#. module: l10n_bg_reports_audit
 #: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_l10n_bg_intrastat_threshold__message_is_follower
 #: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_l10n_bg_vat_ratio_history__message_is_follower
 msgid "Is Follower"
+msgstr ""
+
+#. module: l10n_bg_reports_audit
+#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_l10n_bg_vat_ratio_history__is_manual
+msgid "Is Manual"
 msgstr ""
 
 #. module: l10n_bg_reports_audit
@@ -947,11 +948,6 @@ msgstr ""
 #. module: l10n_bg_reports_audit
 #: model:ir.model.fields,help:l10n_bg_reports_audit.field_res_company__l10n_bg_intrastat_threshold_id
 msgid "Link to the most recent month's Intrastat threshold record"
-msgstr ""
-
-#. module: l10n_bg_reports_audit
-#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_l10n_bg_vat_ratio_history__is_manual
-msgid "Manual Entry"
 msgstr ""
 
 #. module: l10n_bg_reports_audit
@@ -1058,15 +1054,15 @@ msgstr ""
 #. module: l10n_bg_reports_audit
 #. odoo-python
 #: code:addons/l10n_bg_reports_audit/models/res_company_history_vat.py:0
-msgid "No VAT declaration data found for period %s. Manual entry required."
+msgid ""
+"No VAT declaration data found for period %(period)s. Values copied from last"
+" known coefficient: %(display)s (%(vat_ratio).2f%%)"
 msgstr ""
 
 #. module: l10n_bg_reports_audit
 #. odoo-python
 #: code:addons/l10n_bg_reports_audit/models/res_company_history_vat.py:0
-msgid ""
-"No VAT declaration data found for period %s. Values copied from last known "
-"coefficient: %s (%.2f%%)"
+msgid "No VAT declaration data found for period %s. Manual entry required."
 msgstr ""
 
 #. module: l10n_bg_reports_audit
@@ -1262,12 +1258,6 @@ msgid "Responsible User"
 msgstr ""
 
 #. module: l10n_bg_reports_audit
-#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_l10n_bg_intrastat_threshold__message_has_sms_error
-#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_l10n_bg_vat_ratio_history__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr ""
-
-#. module: l10n_bg_reports_audit
 #: model:ir.model.fields.selection,name:l10n_bg_reports_audit.selection__account_bg_info_purchases_line__info_tag_5__84
 msgid "Sales of flour"
 msgstr ""
@@ -1440,7 +1430,9 @@ msgstr ""
 #. module: l10n_bg_reports_audit
 #. odoo-python
 #: code:addons/l10n_bg_reports_audit/models/res_company_history_vat.py:0
-msgid "The VAT ratio (%.2f%%) does not match the calculated ratio (%.2f%%)."
+msgid ""
+"The VAT ratio (%(vat_ratio).2f%%) does not match the calculated ratio "
+"(%(computed).2f%%)."
 msgstr ""
 
 #. module: l10n_bg_reports_audit
@@ -2202,6 +2194,11 @@ msgid ""
 msgstr ""
 
 #. module: l10n_bg_reports_audit
+#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_vies_info_declar__info_tag_ttr_1
+msgid "[TTR-1] Totals section code"
+msgstr ""
+
+#. module: l10n_bg_reports_audit
 #: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_vies_info_declar__account_tag_ttr_3
 msgid "[TTR-2] Base for ICD"
 msgstr ""
@@ -2219,9 +2216,7 @@ msgstr ""
 
 #. module: l10n_bg_reports_audit
 #: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_calc_vies_line__info_tag_vir_1
-#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_vies_info_declar__info_tag_ttr_1
 #: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_vies_info_declar__info_tag_vdr_1
-#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_vies_info_declar__info_tag_vtr_1
 #: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_vies_total_declar__info_tag_ttr_1
 msgid "[VDR-1] Main Record Section Code"
 msgstr ""
@@ -2270,6 +2265,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_vies_info_declar__info_tag_vhr_3
 #: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_vies_total_declar__info_tag_vhr_3
 msgid "[VHR-3] Number of documents in the vies journal"
+msgstr ""
+
+#. module: l10n_bg_reports_audit
+#: model:ir.model.fields,field_description:l10n_bg_reports_audit.field_account_bg_vies_info_declar__info_tag_vtr_1
+msgid "[VTR-1] VIES company section"
 msgstr ""
 
 #. module: l10n_bg_reports_audit
