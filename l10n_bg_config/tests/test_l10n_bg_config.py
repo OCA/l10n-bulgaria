@@ -20,12 +20,18 @@ class TestL10nBGConfig(TransactionCase):
         self.assertIn("password", payload, "Password expected when api key invalid")
 
         api_key = "APIKEY123"
-        crypt_key = base64.b64encode(generate_encryption_keys(partner.l10n_bg_uic, api_key))
+        crypt_key = base64.b64encode(
+            generate_encryption_keys(partner.l10n_bg_uic, api_key)
+        )
         partner.l10n_bg_key = api_key
         partner.l10n_bg_crypt_key = crypt_key
 
-        payload_valid = prepare_zip_payload(files_report={"dummy": b""}, company=company)
-        self.assertNotIn("password", payload_valid, "Password not expected when api key valid")
+        payload_valid = prepare_zip_payload(
+            files_report={"dummy": b""}, company=company
+        )
+        self.assertNotIn(
+            "password", payload_valid, "Password not expected when api key valid"
+        )
 
     def test_get_view_hides_bg_fields_for_non_bg_company(self):
         other_company = self.env["res.company"].create(
@@ -36,7 +42,11 @@ class TestL10nBGConfig(TransactionCase):
         )
         partner_model = self.env["res.partner"].with_company(other_company)
         view = partner_model.get_view(view_type="form")
-        arch = view["arch"].decode() if isinstance(view["arch"], (bytes, bytearray)) else view["arch"]
+        arch = (
+            view["arch"].decode()
+            if isinstance(view["arch"], (bytes, bytearray))
+            else view["arch"]
+        )
 
         self.assertIn("l10n_bg_key", arch)
         # fields with l10n_bg* should be invisible for non-BG companies

@@ -33,6 +33,9 @@ class TestTaricAssignment(TransactionCase):
         # classification method and history should be recorded
         self.assertEqual(self.product.classification_method, "manual")
         history = self.env["taric.classification.history"].search(
-            [("product_id", "=", self.product.id), ("taric_code_id", "=", taric_code.id)]
+            [
+                ("product_id", "=", self.product.id),
+                ("taric_code_id", "=", taric_code.id),
+            ]
         )
         self.assertTrue(history, "Classification history should be created")
