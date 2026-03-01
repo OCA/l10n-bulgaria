@@ -4,16 +4,40 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-07 10:49+0000\n"
-"PO-Revision-Date: 2025-06-07 10:49+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_plugins_wizard_form
+msgid ""
+"<b>Plugin Management</b><br/><br/>\n"
+"                        Use this panel to <b>enable or disable plugins</b> that extend the system's functionality.<br/><br/>\n"
+"                        ✔️ Use checkboxes to activate or deactivate specific plugins.<br/>\n"
+"                        ✔️ Use the <b>force reload checkbox</b> if you've made changes to localization templates and want them to be applied immediately.<br/><br/>\n"
+"                        <i>Note: Forcing a reload may take time on large databases.</i>"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_settings_xml_file_form
+msgid ""
+"<code>&lt;configuration&gt;\n"
+"    &lt;settings&gt;\n"
+"        &lt;setting model=\"account.account.tag\" field=\"l10n_bg_applicability\" value=\"sale\"&gt;\n"
+"            -11,+11,-12_1,-12_2,+12_1,+12_2,-13,+13,-14,+14,-15,+15,-16,+16,-17,+17,-18,+18,-19,+19,-21,+21,-22,+22,-23,+23,-24,+24\n"
+"        &lt;/setting&gt;\n"
+"        &lt;setting model=\"account.account.tag\" field=\"l10n_bg_applicability\" value=\"purchase\"&gt;\n"
+"            -30,+30,-31,+31,-32,+32,-41,+41,-42,+42\n"
+"        &lt;/setting&gt;\n"
+"    &lt;/settings&gt;\n"
+"&lt;/configuration&gt;\n"
+"</code>"
+msgstr ""
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_settings_xml_file_form
@@ -142,6 +166,11 @@ msgid "Application"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_plugins_wizard_form
+msgid "Apply"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields.selection,name:l10n_bg_config.selection__res_partner__l10n_bg_uic_type__bg_egn
 msgid "BG Identification number"
 msgstr ""
@@ -250,7 +279,7 @@ msgstr ""
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
-msgid "Bulgaria cites, melisipalies, states..."
+msgid "Bulgaria cities, melisipalies, states..."
 msgstr ""
 
 #. module: l10n_bg_config
@@ -266,7 +295,7 @@ msgstr ""
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
-msgid "Bulgarian cites"
+msgid "Bulgarian cities"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -283,6 +312,11 @@ msgstr ""
 #: model:ir.actions.act_window,name:l10n_bg_config.action_account_account_settings_xml_file
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_settings_xml_file_form
 msgid "Bulk Edit Account Tags"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_plugins_wizard_form
+msgid "Cancel"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -304,6 +338,11 @@ msgid "Choice type of Bulgaria UID."
 msgstr ""
 
 #. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
+msgid "Choose actions for each plugin through the appropriate checkerboards."
+msgstr ""
+
+#. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.view_account_settings_preview_xml_file_form
 msgid "Close"
 msgstr ""
@@ -314,6 +353,11 @@ msgid "Companies"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard__company_id
+msgid "Company"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields.selection,name:l10n_bg_config.selection__res_partner__type__agent
 msgid "Company agent"
 msgstr ""
@@ -321,6 +365,11 @@ msgstr ""
 #. module: l10n_bg_config
 #: model:ir.model.fields.selection,name:l10n_bg_config.selection__res_partner__type__represent
 msgid "Company represent/manager"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
+msgid "Config Plugins"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -356,12 +405,16 @@ msgid "Country"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard__create_uid
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__create_uid
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_preview_xml_file__create_uid
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_xml_file__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard__create_date
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__create_date
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_preview_xml_file__create_date
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_xml_file__create_date
 msgid "Created on"
@@ -396,6 +449,8 @@ msgid "Description"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard__display_name
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__display_name
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_preview_xml_file__display_name
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_xml_file__display_name
 msgid "Display Name"
@@ -409,6 +464,12 @@ msgid ""
 "You can use python-style string pattern with all the fields of the title (for example, use '%(title)s' to display the field 'title') plus\n"
 "%(partner)s: use the partner name\n"
 "%(academic_title_display)s: the code of the academic_title_display"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_bank_statement_line__l10n_bg_document_number
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_move__l10n_bg_document_number
+msgid "Document Number (BG)"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -472,14 +533,58 @@ msgid "Fix coefficient in Automatic Currency Rates (EE)"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model:ir.model.fields.selection,name:l10n_bg_config.selection__account_plugins_wizard_line__state__to_install
+msgid "For installation"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard__force_update
+msgid "Force Update"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,help:l10n_bg_config.field_account_plugins_wizard__force_update
+msgid "Force update of plugins even if they are already installed"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields,help:l10n_bg_config.field_res_config_settings__module_l10n_bg_intrastat
 msgid "Generate XML files for Bulgaria intrastat (EE)"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard__id
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__id
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_preview_xml_file__id
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_xml_file__id
 msgid "ID"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__to_install
+msgid "Install"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
+msgid "Install/Uninstall Plugins"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields.selection,name:l10n_bg_config.selection__account_plugins_wizard_line__state__installed
+msgid "Installed"
+msgstr ""
+
+#. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid "Invalid checksum for Bulgarian VAT number: %s"
+msgstr ""
+
+#. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid "Invalid format for Bulgarian VAT number: %s"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -492,23 +597,21 @@ msgid "Is Bulgaria Record"
 msgstr ""
 
 #. module: l10n_bg_config
-#: model:ir.model.fields,field_description:l10n_bg_config.field_res_partner__is_company_master
-#: model:ir.model.fields,field_description:l10n_bg_config.field_res_users__is_company_master
-msgid "Is Company Master"
-msgstr ""
-
-#. module: l10n_bg_config
 #: model:ir.model,name:l10n_bg_config.model_account_move
 msgid "Journal Entry"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard__write_uid
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__write_uid
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_preview_xml_file__write_uid
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_xml_file__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard__write_date
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__write_date
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_preview_xml_file__write_date
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_xml_file__write_date
 msgid "Last Updated on"
@@ -527,6 +630,21 @@ msgstr ""
 #. module: l10n_bg_config
 #: model:ir.model.fields,help:l10n_bg_config.field_res_config_settings__module_currency_rate_live_fix
 msgid "Live Currency Rate Fix for Bulgaria (EE) module"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.actions.act_window,name:l10n_bg_config.action_account_plugins_wizard
+msgid "Manage Plugins"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,help:l10n_bg_config.field_account_plugins_wizard_line__to_install
+msgid "Mark for installation"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,help:l10n_bg_config.field_account_plugins_wizard_line__to_uninstall
+msgid "Mark for uninstallation"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -555,8 +673,23 @@ msgid "Multilang support for partner names and more"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
+msgid "Multilanguage Modules"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_res_config_settings__is_l10n_bg_multilanguage_text
+msgid "Multilanguage Settings"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields,field_description:l10n_bg_config.field_res_config_settings__module_l10n_bg_tax_offices
 msgid "NRA Bulgaria, tax offices and departments"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__name
+msgid "Name"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -570,9 +703,26 @@ msgid "National Revenue Agency departments, offices and head office."
 msgstr ""
 
 #. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/wizards/account_account_tag_bulk_edit_wizard.py:0
+msgid "No configuration file uploaded."
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields.selection,name:l10n_bg_config.selection__account_plugins_wizard_line__state__uninstalled
+msgid "Not installed"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_bank_statement_line__l10n_bg_name
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_move__l10n_bg_name
 msgid "Number of locale document"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_bank_statement_line__l10n_bg_name_value
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_move__l10n_bg_name_value
+msgid "Number of locale document (stored)"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -593,6 +743,21 @@ msgstr ""
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
 msgid "Partners & Addresses"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__plugin_id
+msgid "Plugin"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard__plugin_line_ids
+msgid "Plugins"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model,name:l10n_bg_config.model_account_plugins_wizard_line
+msgid "Plugins Wizard Line"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -671,6 +836,11 @@ msgid "Settings"
 msgstr ""
 
 #. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__state
+msgid "State"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model:ir.model.fields,field_description:l10n_bg_config.field_res_config_settings__module_l10n_bg_multilang
 msgid "Switch on multilanguage support"
 msgstr ""
@@ -709,7 +879,7 @@ msgstr ""
 
 #. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
-msgid "Theatrical section for settings"
+msgid "Theoretical section for settings"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -725,9 +895,8 @@ msgid "This file can be used by:"
 msgstr ""
 
 #. module: l10n_bg_config
-#. odoo-python
-#: code:addons/l10n_bg_config/hooks.py:0
-msgid "This module is only for Bulgaria"
+#: model:ir.model.fields.selection,name:l10n_bg_config.selection__account_plugins_wizard_line__state__to_remove
+msgid "To remove"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -740,6 +909,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_bg_config.field_res_partner__l10n_bg_uic_type
 #: model:ir.model.fields,field_description:l10n_bg_config.field_res_users__l10n_bg_uic_type
 msgid "Type of Bulgaria UID"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__to_uninstall
+msgid "Uninstall"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -810,10 +984,26 @@ msgid "VAT Report for tax administration (OCA))"
 msgstr ""
 
 #. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid "Validation error for Bulgarian VAT: %(vat)s - %(error)s"
+msgstr ""
+
+#. module: l10n_bg_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_config.res_config_settings_view_form
 msgid ""
 "Will update daily from cron only if is checked Automatic Currency Rates "
 "(OCA) and you added a rate_provider"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model.fields,field_description:l10n_bg_config.field_account_plugins_wizard_line__wizard_id
+msgid "Wizard"
+msgstr ""
+
+#. module: l10n_bg_config
+#: model:ir.model,name:l10n_bg_config.model_account_plugins_wizard
+msgid "Wizard for accounting plugins"
 msgstr ""
 
 #. module: l10n_bg_config
@@ -824,4 +1014,23 @@ msgstr ""
 #. module: l10n_bg_config
 #: model:ir.model.fields,field_description:l10n_bg_config.field_account_settings_preview_xml_file__l10n_bg_config_file_preview
 msgid "XML Preview"
+msgstr ""
+
+#. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid ""
+"You cannot change the Tax ID for partner '%(partner)s' because there are "
+"already posted accounting entries. Old Tax ID: %(old_tax)s, New Tax ID: "
+"%(new_tax)s"
+msgstr ""
+
+#. module: l10n_bg_config
+#. odoo-python
+#: code:addons/l10n_bg_config/models/res_partner.py:0
+msgid ""
+"You cannot change the parent company for partner '%(partner)s' because the "
+"parent has a different Tax ID. Partner Tax ID: %(partner_tax)s, Parent Tax "
+"ID: %(parent_tax)s. This is not allowed when there are posted accounting "
+"entries."
 msgstr ""
