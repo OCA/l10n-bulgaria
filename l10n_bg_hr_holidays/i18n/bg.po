@@ -76,12 +76,6 @@ msgid "BG Configuration"
 msgstr "Конфигурация BG"
 
 #. module: l10n_bg_hr_holidays
-#: model_terms:ir.ui.view,arch_db:l10n_bg_hr_holidays.hr_leave_type_view_form_paid_days
-#, fuzzy
-msgid "BG Configuration leaves"
-msgstr "Конфигурация BG оставя"
-
-#. module: l10n_bg_hr_holidays
 #: model:hr.leave.type,name:l10n_bg_hr_holidays.holiday_status_kt_bereavement
 #, fuzzy
 msgid "Bereavement Leave"
@@ -330,6 +324,11 @@ msgid "NSSI – Leave Reasons (Appendix №9)"
 msgstr "NSSI - причини за напускане (Приложение №9)"
 
 #. module: l10n_bg_hr_holidays
+#: model:ir.model.fields,field_description:l10n_bg_hr_holidays.field_nssi_leave_reason__name
+msgid "Name"
+msgstr ""
+
+#. module: l10n_bg_hr_holidays
 #: model:ir.model.fields,help:l10n_bg_hr_holidays.field_hr_leave__l10n_bg_paid_days_unpaid_leave
 #: model:ir.model.fields,help:l10n_bg_hr_holidays.field_hr_leave_type__l10n_bg_paid_days_unpaid_leave
 #, fuzzy
@@ -382,12 +381,10 @@ msgstr "Платени дни"
 #. module: l10n_bg_hr_holidays
 #. odoo-python
 #: code:addons/l10n_bg_hr_holidays/models/hr_leave.py:0
-#, fuzzy
 msgid ""
-"Paid days (%.1f) exceed definned leave days (%.1f). Please adjust the values."
+"Paid days (%(paid).1f) exceed definned leave days (%(defined).1f). Please "
+"adjust the values."
 msgstr ""
-"Платените дни (%.1f) са повече от определените дни отпуск (%.1f). Моля, "
-"коригирайте стойностите."
 
 #. module: l10n_bg_hr_holidays
 #. odoo-python
@@ -444,11 +441,6 @@ msgstr "Отпуск за заемане на публична длъжност/
 #: model:nssi.leave.reason,name:l10n_bg_hr_holidays.l10n_bg_nssi_06
 msgid "Quarantine"
 msgstr "Карантина"
-
-#. module: l10n_bg_hr_holidays
-#: model:ir.model.fields,field_description:l10n_bg_hr_holidays.field_nssi_leave_reason__name
-msgid "Reason"
-msgstr "Причина"
 
 #. module: l10n_bg_hr_holidays
 #: model:hr.leave.type,name:l10n_bg_hr_holidays.holiday_status_nssi_09
@@ -584,3 +576,18 @@ msgstr "Трудова злополука"
 #, fuzzy
 msgid "e.g. KT155, NSSI01"
 msgstr "напр. KT155, NSSI01"
+
+#, fuzzy
+#~ msgid "BG Configuration leaves"
+#~ msgstr "Конфигурация BG оставя"
+
+#, fuzzy
+#~ msgid ""
+#~ "Paid days (%.1f) exceed definned leave days (%.1f). Please adjust the "
+#~ "values."
+#~ msgstr ""
+#~ "Платените дни (%.1f) са повече от определените дни отпуск (%.1f). Моля, "
+#~ "коригирайте стойностите."
+
+#~ msgid "Reason"
+#~ msgstr "Причина"
