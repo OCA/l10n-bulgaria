@@ -14,6 +14,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Changed
 
 - Updated field labels to avoid duplicates in templates/variants
+- Test fixtures use consumable product type for compatibility
 
 ## [18.0.1.0.2] - 2026-03-01
 

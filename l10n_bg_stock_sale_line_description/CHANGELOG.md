@@ -12,6 +12,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Post-install test ensuring stock move description follows sale line
 
+### Changed
+
+- Test fixtures create consumable product to match Odoo 18 type selection
+
 ## [18.0.1.0.0] - 2026-03-01
 
 ### Added

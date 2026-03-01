@@ -13,10 +13,10 @@ class TestTaricAssignment(TransactionCase):
         cls.product = cls.env["product.template"].create(
             {
                 "name": "TARIC Test Product",
-                "type": "product",
                 "uom_id": cls.env.ref("uom.product_uom_unit").id,
                 "uom_po_id": cls.env.ref("uom.product_uom_unit").id,
                 "list_price": 5.0,
+                "type": "consu",
             }
         )
 

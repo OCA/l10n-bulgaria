@@ -14,10 +14,10 @@ class TestSaleLineDescription(TransactionCase):
         cls.product = cls.env["product.product"].create(
             {
                 "name": "Test Product",
-                "type": "product",
                 "uom_id": cls.env.ref("uom.product_uom_unit").id,
                 "uom_po_id": cls.env.ref("uom.product_uom_unit").id,
                 "list_price": 10.0,
+                "type": "consu",
             }
         )
         cls.pricelist = cls.env.ref("product.list0")
