@@ -1,5 +1,5 @@
 # Copyright 2023 Rosen Vladimirov
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 {
     "name": "Bulgaria - Cities and Locations",
@@ -10,7 +10,7 @@
     "version": "18.0.1.0.0",
     "development_status": "Production/Stable",
     "category": "Localization",
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "author": "Odoo Community Association (OCA), Rosen Vladimirov",
     "maintainers": ["rosenvladimirov"],
     "website": "https://github.com/OCA/l10n-bulgaria",

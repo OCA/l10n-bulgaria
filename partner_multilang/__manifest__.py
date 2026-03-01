@@ -1,7 +1,7 @@
 {
     "name": "Partner Multilang",
     "version": "18.0.3.0.3",
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "category": "Localization",
     "author": "Rosen Vladimirov, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-bulgaria",
