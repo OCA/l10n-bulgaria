@@ -11,7 +11,9 @@ class ProductTemplate(models.Model):
 
     # TARIC classification
     taric_code_id = fields.Many2one(
-        "taric.code", string="TARIC Code", help="10-digit TARIC code for customs"
+        "taric.code",
+        string="TARIC Code (template)",
+        help="10-digit TARIC code for customs",
     )
 
     # AI classification fields

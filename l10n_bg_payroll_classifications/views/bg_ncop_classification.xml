@@ -216,8 +216,8 @@
                 <field name="level" />
                 <field name="qualification_group" />
                 <templates>
-                    <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_global_click">
+                    <t t-name="card">
+                        <div class="o_kanban_record oe_kanban_global_click">
                             <div class="oe_kanban_details">
                                 <strong class="o_kanban_record_title">
                                     <field name="code" /> - <field name="name" />

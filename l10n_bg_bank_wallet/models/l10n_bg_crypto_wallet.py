@@ -169,7 +169,7 @@ class CryptoWallet(models.Model):
     salt = fields.Text("Salt to encrypt", readonly=True)
     is_locked = fields.Boolean("Locked", default=True)
     created_date = fields.Datetime(
-        "Created on", default=fields.Datetime.now, readonly=True
+        "Wallet created at", default=fields.Datetime.now, readonly=True
     )
     last_accessed = fields.Datetime("Last opened", readonly=True)
     file_path = fields.Char("File path on disk", readonly=True)

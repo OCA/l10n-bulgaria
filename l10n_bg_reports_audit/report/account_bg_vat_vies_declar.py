@@ -42,12 +42,12 @@ class AccountBGInfoViesDeclaration(models.Model):
     info_tag_vdr_6 = fields.Char("[VDR-6] Represented person address", readonly=True)
     info_tag_vdr_7 = fields.Char("[VDR-7] Represented person function", readonly=True)
 
-    info_tag_vtr_1 = fields.Char("[VDR-1] Main Record Section Code", readonly=True)
+    info_tag_vtr_1 = fields.Char("[VTR-1] VIES company section", readonly=True)
     info_tag_vtr_2 = fields.Char("Company UIC", readonly=True)
     info_tag_vtr_3 = fields.Char("Company name", readonly=True)
     info_tag_vtr_4 = fields.Char("Company address", readonly=True)
 
-    info_tag_ttr_1 = fields.Char("[VDR-1] Main Record Section Code", readonly=True)
+    info_tag_ttr_1 = fields.Char("[TTR-1] Totals section code", readonly=True)
     account_tag_ttr_2 = fields.Monetary(
         readonly=True,
         string="[TTR-2] Base for ICD total [01-15]",

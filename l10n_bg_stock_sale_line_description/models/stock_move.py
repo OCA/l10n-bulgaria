@@ -9,6 +9,7 @@ class StockMove(models.Model):
 
     sale_line_description = fields.Text(
         related="sale_line_id.name",
+        string="Sale line description",
         readonly=True,
         store=False,
     )
