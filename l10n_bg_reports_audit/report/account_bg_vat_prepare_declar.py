@@ -67,7 +67,6 @@ class AccountBGResultDeclar(models.Model):
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        _logger.info(f"CREATE or REPLACE VIEW {self._table} as ({self._table_query})")
         self.env.cr.execute(
             sql.SQL(f"CREATE or REPLACE VIEW {self._table} as ({self._table_query})")
         )
