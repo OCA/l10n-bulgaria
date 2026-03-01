@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* l10n_bg_multilang
+# 	* l10n_bg_multilang
 #
 msgid ""
 msgstr ""
@@ -10,36 +10,22 @@ msgstr ""
 "PO-Revision-Date: 2021-04-21 14:01+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
 #. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_partner_display_name_bg
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_users_display_name_bg
-msgid "BG Name"
-msgstr "BG Name"
+#: model:ir.model.fields,help:l10n_bg_multilang.field_res_country_state__name
+msgid ""
+"Administrative divisions of a country. E.g. Fed. State, Departement, Canton"
+msgstr ""
 
 #. module: l10n_bg_multilang
 #: model:ir.model,name:l10n_bg_multilang.model_res_bank
 msgid "Bank"
 msgstr "Τράπεζα"
-
-#. module: l10n_bg_multilang
-#: model:ir.model,name:l10n_bg_multilang.model_res_company
-msgid "Companies"
-msgstr "Εταιρίες"
-
-#. module: l10n_bg_multilang
-#: model:ir.model,name:l10n_bg_multilang.model_res_partner
-msgid "Contact"
-msgstr "Επαφή"
-
-#. module: l10n_bg_multilang
-#: model:ir.model,name:l10n_bg_multilang.model_res_country
-msgid "Country"
-msgstr "Χώρα"
 
 #. module: l10n_bg_multilang
 #: model:ir.model,name:l10n_bg_multilang.model_res_country_state
@@ -52,28 +38,19 @@ msgid "Currency"
 msgstr "Νόμισμα"
 
 #. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_partner_display_lang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_users_display_lang
-msgid "Display Lang"
-msgstr "Display Lang"
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_currency__currency_subunit_label
+msgid "Currency Subunit"
+msgstr ""
 
 #. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_l10n_bg_multilang_transliterate_display_name
-msgid "Display Name"
-msgstr "Εμφάνιση Ονόματος"
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_currency__currency_unit_label
+msgid "Currency Unit"
+msgstr ""
 
 #. module: l10n_bg_multilang
-#: model:ir.model.fields,help:l10n_bg_multilang.field_res_country_title_format
-msgid "Display format to use for partner belonging to this country.\n"
-"\n"
-"You can use python-style string pattern with all the fields of the title (for example, use '%(title)s' to display the field 'title') plus\n"
-"%(partner)s: use the partner name\n"
-"%(academic_title_display)s: the code of the academic_title_display"
-msgstr "Display format to use for partner belonging to this country.\n"
-"\n"
-"You can use python-style string pattern with all the fields of the title (for example, use '%(title)s' to display the field 'title') plus\n"
-"%(partner)s: use the partner name\n"
-"%(academic_title_display)s: the code of the academic_title_display"
+#: model:ir.model.fields,help:l10n_bg_multilang.field_res_currency__symbol
+msgid "Currency sign, to be used when printing amounts."
+msgstr ""
 
 #. module: l10n_bg_multilang
 #: model:ir.model,name:l10n_bg_multilang.model_hr_employee
@@ -81,85 +58,136 @@ msgid "Employee"
 msgstr "Υπάλληλος"
 
 #. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_partner_display_name_el
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_users_display_name_el
-msgid "GR Name"
-msgstr "GR Name"
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_hr_employee__name
+msgid "Employee Name"
+msgstr ""
 
 #. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_l10n_bg_multilang_transliterate_id
-msgid "ID"
-msgstr "Κωδικός"
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_hr_employee_public__name
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_bank__name
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_resource_resource__name
+msgid "Name"
+msgstr ""
 
 #. module: l10n_bg_multilang
-#: model:ir.model.fields,help:l10n_bg_multilang.field_res_company_lang
-msgid "If the selected language is loaded in the system, all documents related to this contact will be printed in this language. If not, it will be English."
-msgstr "Εάν η επιλεγόμενη γλώσσα είναι φορτωμένη στο σύστημα, όλα τα έγγραφα σχετικά με αυτό το συμβόλαιο θα εκτυπωθούν σε αυτή την γλώσσα. Εάν όχι θα εκτυπωθούν στα Αγγλικά."
-
-#. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_company_lang
-msgid "Language"
-msgstr "Γλώσσα"
-
-#. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_l10n_bg_multilang_transliterate___last_update
-msgid "Last Modified on"
-msgstr "Τελευταία τροποποίηση στις"
-
-#. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_country_title_format
-msgid "Layout in Name views"
-msgstr "Layout in Name views"
-
-#. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_partner_name_with_title
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_users_name_with_title
-msgid "Partner name with title"
-msgstr "Partner name with title"
+#: model:ir.model,name:l10n_bg_multilang.model_hr_employee_public
+msgid "Public Employee"
+msgstr ""
 
 #. module: l10n_bg_multilang
 #: model:ir.model,name:l10n_bg_multilang.model_resource_resource
-msgid "Resource Detail"
-msgstr "Λεπτομέρεια Πόρου"
+msgid "Resources"
+msgstr ""
 
 #. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_hr_employee_name_related
-msgid "Resource Name"
-msgstr "Όνομα Πόρου"
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_country_state__name
+msgid "State Name"
+msgstr ""
 
 #. module: l10n_bg_multilang
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_partner_display_name_en
-#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_users_display_name_en
-msgid "SRC Name"
-msgstr "SRC Name"
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_currency__symbol
+msgid "Symbol"
+msgstr ""
 
 #. module: l10n_bg_multilang
-#: model:ir.ui.view,arch_db:l10n_bg_multilang.view_country_form
-msgid "Title format..."
-msgstr "Title format..."
+#: model:ir.model.fields,help:l10n_bg_multilang.field_hr_employee__transliterate_tracking
+#: model:ir.model.fields,help:l10n_bg_multilang.field_hr_employee_public__transliterate_tracking
+#: model:ir.model.fields,help:l10n_bg_multilang.field_res_country_state__transliterate_tracking
+msgid ""
+"Technical field to track which fields have been transliterated. Format: "
+"{\"field_name\": True}"
+msgstr ""
 
 #. module: l10n_bg_multilang
-#: model:ir.model,name:l10n_bg_multilang.model_res_users
-msgid "Users"
-msgstr "Χρήστες"
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_hr_employee__transliterate_tracking
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_hr_employee_public__transliterate_tracking
+#: model:ir.model.fields,field_description:l10n_bg_multilang.field_res_country_state__transliterate_tracking
+msgid "Transliteration Tracking"
+msgstr ""
 
-#. module: l10n_bg_multilang
-#: model:ir.model,name:l10n_bg_multilang.model_stock_warehouse
-msgid "Warehouse"
-msgstr "Αποθήκη"
+#~ msgid "BG Name"
+#~ msgstr "BG Name"
 
-#. module: l10n_bg_multilang
-#: model:ir.model,name:l10n_bg_multilang.model_account_group
-msgid "account.group"
-msgstr "account.group"
+#~ msgid "Companies"
+#~ msgstr "Εταιρίες"
 
-#. module: l10n_bg_multilang
-#: model:ir.model,name:l10n_bg_multilang.model_ir_translation
-msgid "ir.translation"
-msgstr "ir.translation"
+#~ msgid "Contact"
+#~ msgstr "Επαφή"
 
-#. module: l10n_bg_multilang
-#: model:ir.model,name:l10n_bg_multilang.model_l10n_bg_multilang_transliterate
-msgid "l10n_bg_multilang.transliterate"
-msgstr "l10n_bg_multilang.transliterate"
+#~ msgid "Country"
+#~ msgstr "Χώρα"
 
+#~ msgid "Display Lang"
+#~ msgstr "Display Lang"
+
+#~ msgid "Display Name"
+#~ msgstr "Εμφάνιση Ονόματος"
+
+#~ msgid ""
+#~ "Display format to use for partner belonging to this country.\n"
+#~ "\n"
+#~ "You can use python-style string pattern with all the fields of the title "
+#~ "(for example, use '%(title)s' to display the field 'title') plus\n"
+#~ "%(partner)s: use the partner name\n"
+#~ "%(academic_title_display)s: the code of the academic_title_display"
+#~ msgstr ""
+#~ "Display format to use for partner belonging to this country.\n"
+#~ "\n"
+#~ "You can use python-style string pattern with all the fields of the title "
+#~ "(for example, use '%(title)s' to display the field 'title') plus\n"
+#~ "%(partner)s: use the partner name\n"
+#~ "%(academic_title_display)s: the code of the academic_title_display"
+
+#~ msgid "GR Name"
+#~ msgstr "GR Name"
+
+#~ msgid "ID"
+#~ msgstr "Κωδικός"
+
+#~ msgid ""
+#~ "If the selected language is loaded in the system, all documents related "
+#~ "to this contact will be printed in this language. If not, it will be "
+#~ "English."
+#~ msgstr ""
+#~ "Εάν η επιλεγόμενη γλώσσα είναι φορτωμένη στο σύστημα, όλα τα έγγραφα "
+#~ "σχετικά με αυτό το συμβόλαιο θα εκτυπωθούν σε αυτή την γλώσσα. Εάν όχι θα "
+#~ "εκτυπωθούν στα Αγγλικά."
+
+#~ msgid "Language"
+#~ msgstr "Γλώσσα"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Τελευταία τροποποίηση στις"
+
+#~ msgid "Layout in Name views"
+#~ msgstr "Layout in Name views"
+
+#~ msgid "Partner name with title"
+#~ msgstr "Partner name with title"
+
+#~ msgid "Resource Detail"
+#~ msgstr "Λεπτομέρεια Πόρου"
+
+#~ msgid "Resource Name"
+#~ msgstr "Όνομα Πόρου"
+
+#~ msgid "SRC Name"
+#~ msgstr "SRC Name"
+
+#~ msgid "Title format..."
+#~ msgstr "Title format..."
+
+#~ msgid "Users"
+#~ msgstr "Χρήστες"
+
+#~ msgid "Warehouse"
+#~ msgstr "Αποθήκη"
+
+#~ msgid "account.group"
+#~ msgstr "account.group"
+
+#~ msgid "ir.translation"
+#~ msgstr "ir.translation"
+
+#~ msgid "l10n_bg_multilang.transliterate"
+#~ msgstr "l10n_bg_multilang.transliterate"
