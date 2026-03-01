@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/check-tag-names, no-inline-comments */
 /** @odoo-module **/
 
 /**

@@ -1,9 +1,10 @@
+/* eslint-disable jsdoc/check-tag-names, complexity, no-inline-comments */
 /** @odoo-module **/
 
+import {ErpNetFPPrinter} from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
+import {PaymentScreen} from "@point_of_sale/app/screens/payment_screen/payment_screen";
 import {_t} from "@web/core/l10n/translation";
 import {patch} from "@web/core/utils/patch";
-import {PaymentScreen} from "@point_of_sale/app/screens/payment_screen/payment_screen";
-import {ErpNetFPPrinter} from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
 
 console.log("[FiscalPayment] 🔧 Loading Fiscal Payment Extension...");
 

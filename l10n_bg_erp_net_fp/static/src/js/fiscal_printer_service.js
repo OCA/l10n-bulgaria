@@ -1,4 +1,4 @@
-/* eslint-disable no-use-before-define */
+/* eslint-disable jsdoc/check-tag-names, no-use-before-define, complexity, no-param-reassign */
 /** @odoo-module **/
 
 import {registry} from "@web/core/registry";

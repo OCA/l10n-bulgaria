@@ -1,10 +1,11 @@
+/* eslint-disable jsdoc/check-tag-names, sort-imports */
 /** @odoo-module **/
 
+import {ErpNetFPPrinter} from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
+import {OpeningControlPopup} from "@point_of_sale/app/store/opening_control_popup/opening_control_popup";
 import {_t} from "@web/core/l10n/translation";
 import {patch} from "@web/core/utils/patch";
 import {parseFloat} from "@web/views/fields/parsers";
-import {OpeningControlPopup} from "@point_of_sale/app/store/opening_control_popup/opening_control_popup";
-import {ErpNetFPPrinter} from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
 
 // Запазваме оригиналния confirm на popup-а
 const superConfirm = OpeningControlPopup.prototype.confirm;

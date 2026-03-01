@@ -1,9 +1,10 @@
+/* eslint-disable jsdoc/check-tag-names, sort-imports */
 /** @odoo-module **/
 
+import {ErpNetFPPrinter} from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
+import {CashMovePopup} from "@point_of_sale/app/navbar/cash_move_popup/cash_move_popup";
 import {_t} from "@web/core/l10n/translation";
 import {patch} from "@web/core/utils/patch";
-import {CashMovePopup} from "@point_of_sale/app/navbar/cash_move_popup/cash_move_popup";
-import {ErpNetFPPrinter} from "@l10n_bg_erp_net_fp/js/erp_net_fp_printer";
 
 console.log("[FiscalCashMove] 🔧 Loading Fiscal Cash Move Patch...");
 

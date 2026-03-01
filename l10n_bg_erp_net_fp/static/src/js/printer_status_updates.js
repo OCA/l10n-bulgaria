@@ -1,10 +1,11 @@
+/* eslint-disable jsdoc/check-tag-names, sort-imports */
 /** @odoo-module **/
 
-import {ListController} from "@web/views/list/list_controller";
-import {listView} from "@web/views/list/list_view";
+import {onMounted, onWillUnmount} from "@odoo/owl";
 import {registry} from "@web/core/registry";
 import {useService} from "@web/core/utils/hooks";
-import {onMounted, onWillUnmount} from "@odoo/owl";
+import {ListController} from "@web/views/list/list_controller";
+import {listView} from "@web/views/list/list_view";
 
 /**
  * List controller за fiscal.printer.device

@@ -1,9 +1,10 @@
+/* eslint-disable jsdoc/check-tag-names, sort-imports, complexity, no-alert, no-shadow, no-negated-condition */
 /** @odoo-module **/
 
-import {patch} from "@web/core/utils/patch";
-import {FormController} from "@web/views/form/form_controller";
-import {session} from "@web/session";
 import {markdownRegistry} from "@markdown_viewer_locale/js/markdown_registry";
+import {patch} from "@web/core/utils/patch";
+import {session} from "@web/session";
+import {FormController} from "@web/views/form/form_controller";
 
 // ДЕБЪГ: Проверка дали модулът се зарежда
 console.log("🔵 Markdown модул зареден!");

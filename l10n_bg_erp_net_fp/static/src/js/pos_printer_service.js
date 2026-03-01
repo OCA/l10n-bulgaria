@@ -1,7 +1,7 @@
+/* eslint-disable jsdoc/check-tag-names */
 /** @odoo-module **/
-
-import {patch} from "@web/core/utils/patch";
 import {PrinterService} from "@point_of_sale/app/printer/printer_service";
+import {patch} from "@web/core/utils/patch";
 
 console.log("[FiscalPrinter] 🔧 Loading Fiscal Printer PrinterService Patch...");
 

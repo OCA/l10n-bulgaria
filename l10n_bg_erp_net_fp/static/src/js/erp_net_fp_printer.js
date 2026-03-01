@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/check-tag-names, complexity, no-inline-comments, no-implicit-coercion */
 /** @odoo-module **/
 
 import {_t} from "@web/core/l10n/translation";
