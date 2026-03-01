@@ -324,6 +324,16 @@ msgid "Display Name"
 msgstr "Име за показване"
 
 #. module: l10n_bg_reports_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.l10n_bg_view_move_form_base
+msgid "Document Number"
+msgstr ""
+
+#. module: l10n_bg_reports_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.l10n_bg_view_move_form_base
+msgid "Document Type"
+msgstr ""
+
+#. module: l10n_bg_reports_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.res_config_settings_view_form
 msgid "EE modules for help."
 msgstr "Помощни EE модули."
@@ -344,6 +354,11 @@ msgstr "Грешка"
 #: code:addons/l10n_bg_reports_config/models/res_company_history_vat.py:0
 msgid "Error computing VAT ratio: %s"
 msgstr "Грешка при изчисляването на съотношението на ДДС: %s"
+
+#. module: l10n_bg_reports_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.l10n_bg_view_move_form_base
+msgid "Exemption reason"
+msgstr ""
 
 #. module: l10n_bg_reports_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.res_config_settings_view_form
@@ -824,13 +839,10 @@ msgstr "VIES Декларация"
 #. odoo-python
 #: code:addons/l10n_bg_reports_config/models/res_company_history_vat.py:0
 msgid ""
-"VAT ratio computed from declarations: %.2f%%\n"
-"Numerator: %.2f %s\n"
-"Denominator: %.2f %s"
+"VAT ratio computed from declarations: %(ratio).2f%%\n"
+"Numerator: %(numerator).2f %(currency)s\n"
+"Denominator: %(denominator).2f %(currency)s"
 msgstr ""
-"Съотношение на ДДС, изчислено от декларациите: %.2f%%\n"
-"Числител: %.2f %s\n"
-"Знаменател: %.2f %s"
 
 #. module: l10n_bg_reports_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.res_config_settings_view_form
@@ -842,3 +854,12 @@ msgstr "ДДС и Интрастат"
 #: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.view_l10n_bg_vat_ratio_history_search
 msgid "Year"
 msgstr "Година"
+
+#~ msgid ""
+#~ "VAT ratio computed from declarations: %.2f%%\n"
+#~ "Numerator: %.2f %s\n"
+#~ "Denominator: %.2f %s"
+#~ msgstr ""
+#~ "Съотношение на ДДС, изчислено от декларациите: %.2f%%\n"
+#~ "Числител: %.2f %s\n"
+#~ "Знаменател: %.2f %s"
