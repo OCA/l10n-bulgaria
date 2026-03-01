@@ -4,10 +4,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e-20251015\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-15 16:04+0000\n"
-"PO-Revision-Date: 2025-10-15 16:04+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -301,6 +299,16 @@ msgid "Display Name"
 msgstr ""
 
 #. module: l10n_bg_reports_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.l10n_bg_view_move_form_base
+msgid "Document Number"
+msgstr ""
+
+#. module: l10n_bg_reports_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.l10n_bg_view_move_form_base
+msgid "Document Type"
+msgstr ""
+
+#. module: l10n_bg_reports_config
 #: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.res_config_settings_view_form
 msgid "EE modules for help."
 msgstr ""
@@ -320,6 +328,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_bg_reports_config/models/res_company_history_vat.py:0
 msgid "Error computing VAT ratio: %s"
+msgstr ""
+
+#. module: l10n_bg_reports_config
+#: model_terms:ir.ui.view,arch_db:l10n_bg_reports_config.l10n_bg_view_move_form_base
+msgid "Exemption reason"
 msgstr ""
 
 #. module: l10n_bg_reports_config
@@ -788,9 +801,9 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_bg_reports_config/models/res_company_history_vat.py:0
 msgid ""
-"VAT ratio computed from declarations: %.2f%%\n"
-"Numerator: %.2f %s\n"
-"Denominator: %.2f %s"
+"VAT ratio computed from declarations: %(ratio).2f%%\n"
+"Numerator: %(numerator).2f %(currency)s\n"
+"Denominator: %(denominator).2f %(currency)s"
 msgstr ""
 
 #. module: l10n_bg_reports_config
