@@ -124,7 +124,10 @@ class ProductTemplate(models.Model):
                 method = "expert"
 
             for product in self:
-                # Save classification history
+                # Keep hs_code in sync even if not recomputed yet
+                if product.taric_code_id:
+                    product.hs_code = product.taric_code_id.code
+
                 self.env["taric.classification.history"].create(
                     {
                         "product_id": product.id,
@@ -134,7 +137,6 @@ class ProductTemplate(models.Model):
                     }
                 )
 
-                # Update product classification method
                 product.classification_method = method
 
         return result
