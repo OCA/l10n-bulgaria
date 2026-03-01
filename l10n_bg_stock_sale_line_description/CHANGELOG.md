@@ -11,3 +11,4 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 
 - Initial changelog entry
+- Post-install test ensuring stock move description follows sale line

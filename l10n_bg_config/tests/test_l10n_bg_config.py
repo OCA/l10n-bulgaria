@@ -44,7 +44,7 @@ class TestL10nBGConfig(TransactionCase):
         view = partner_model.get_view(view_type="form")
         arch = (
             view["arch"].decode()
-            if isinstance(view["arch"], (bytes, bytearray))
+            if isinstance(view["arch"], (bytes | bytearray))
             else view["arch"]
         )
 
