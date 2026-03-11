@@ -86,13 +86,16 @@ FROM {self._from()}
     am.state AS state,
     ROW_NUMBER() OVER(ORDER BY am.partner_shipping_id) AS info_tag_vir_2,
     COALESCE(partner.vat, partner.l10n_bg_uic) AS info_tag_vir_3,
-    SUM(CASE WHEN aat.tag_name = 15 AND aat.negate THEN ABS(aml.balance)*-1
+    SUM(CASE WHEN am.state = 'cancel' THEN 0.00
+            WHEN aat.tag_name = 15 AND aat.negate THEN ABS(aml.balance)*-1
             WHEN aat.tag_name = 15 AND NOT aat.negate THEN ABS(aml.balance)
             ELSE 0.00 END) AS account_tag_vir_4,
-    SUM(CASE WHEN aat.tag_name = 25 AND aat.negate THEN ABS(aml.balance)*-1
+    SUM(CASE WHEN am.state = 'cancel' THEN 0.00
+            WHEN aat.tag_name = 25 AND aat.negate THEN ABS(aml.balance)*-1
             WHEN aat.tag_name = 25 AND NOT aat.negate THEN ABS(aml.balance)
             ELSE 0.00 END) AS account_tag_vir_5,
-    SUM(CASE WHEN aat.tag_name = 17 AND aat.negate THEN ABS(aml.balance)*-1
+    SUM(CASE WHEN am.state = 'cancel' THEN 0.00
+            WHEN aat.tag_name = 17 AND aat.negate THEN ABS(aml.balance)*-1
             WHEN aat.tag_name = 17 AND NOT aat.negate THEN ABS(aml.balance)
             ELSE 0.00 END) AS account_tag_vir_6"""
 
@@ -111,10 +114,6 @@ FROM {self._from()}
                     FROM account_account_tag
                     WHERE applicability = 'taxes') AS aat
         ON aat.id = tag_line_rel.account_account_tag_id
-    LEFT JOIN (SELECT imd.id, imd.res_id, imd.model, imd.module, imd.name
-                    FROM ir_model_data AS imd
-                    WHERE imd.module = 'l10n_bg' AND imd.model = 'account.account.tag') AS imd_tag_tax
-        ON imd_tag_tax.res_id = aat.id
     LEFT JOIN res_partner AS partner
         ON am.partner_shipping_id = partner.id"""
 
