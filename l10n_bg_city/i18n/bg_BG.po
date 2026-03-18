@@ -32,10 +32,8 @@ msgstr ""
 #. module: l10n_bg_city
 #: model:ir.model.fields,help:l10n_bg_city.field_res_country_state__name
 msgid ""
-"Administrative divisions of a country. E.g. Fed. State, Departement, Canton"
+"Administrative divisions of a country. E.g. Fed. State, Department, Canton"
 msgstr ""
-"Административно деление на дадена държава. Например Федерация, Щат, "
-"департамент, кантон"
 
 #. module: l10n_bg_city
 #: model:res.city,name:l10n_bg_city.00103
@@ -23501,3 +23499,10 @@ msgstr ""
 #: model:res.city,name:l10n_bg_city.30524
 msgid "Zvinitsa"
 msgstr ""
+
+#~ msgid ""
+#~ "Administrative divisions of a country. E.g. Fed. State, Departement, "
+#~ "Canton"
+#~ msgstr ""
+#~ "Административно деление на дадена държава. Например Федерация, Щат, "
+#~ "департамент, кантон"
