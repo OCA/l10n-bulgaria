@@ -34,12 +34,12 @@ msgid "<i class=\"fa fa-repeat\"/> Reset"
 msgstr "<i class=\"fa fa-repeat\"/> Нулиране"
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "<strong class=\"o_section_labels\">Shipping address:</strong>"
 msgstr "<strong class=\"o_section_labels\">Адрес за доставка:</strong>"
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "<strong class=\"o_section_labels\">The Attention of:</strong>"
 msgstr "<strong class=\"o_section_labels\">Вниманието на:</strong>"
 
@@ -52,6 +52,11 @@ msgstr "<strong>Дата на данъчното събитие</strong>"
 #: model:ir.module.category,description:l10n_bg_report_theme.category_l10n_bg_report_theme
 msgid "Access management for different sections in Bulgarian reports"
 msgstr "Управление на достъпа до различни секции в българските справки"
+
+#. module: l10n_bg_report_theme
+#: model:res.groups,name:l10n_bg_report_theme.group_control_address_swap
+msgid "Address Swap Control"
+msgstr ""
 
 #. module: l10n_bg_report_theme
 #: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_partner
@@ -207,7 +212,7 @@ msgid "Font"
 msgstr "Шрифт"
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "From:"
 msgstr "От:"
 
@@ -227,12 +232,12 @@ msgid "Invoice Signatures Control"
 msgstr "Контрол на подписите във фактури"
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "Invoicing address:"
 msgstr "Адрес за фактуриране:"
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "Invoicing and shipping address:"
 msgstr "Фактуриране и адрес за доставка:"
 
@@ -415,8 +420,8 @@ msgid "Str.:"
 msgstr "ул.:"
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
 #: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "TIN"
 msgstr "ЕИК"
 
@@ -533,6 +538,13 @@ msgstr ""
 msgid "Users who can view the signatures section in stock pickings"
 msgstr ""
 "Потребители, които могат да преглеждат раздела с подписи в складови операции"
+
+#. module: l10n_bg_report_theme
+#: model:res.groups,comment:l10n_bg_report_theme.group_control_address_swap
+msgid ""
+"When enabled, swaps address and information block positions in reports "
+"(address moves to left, information block to right)"
+msgstr ""
 
 #. module: l10n_bg_report_theme
 #: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.signatures_section
