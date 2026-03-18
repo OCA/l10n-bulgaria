@@ -16,7 +16,7 @@ msgstr ""
 #. module: partner_multilang
 #: model:ir.model.fields,help:partner_multilang.field_res_country_state__name
 msgid ""
-"Administrative divisions of a country. E.g. Fed. State, Departement, Canton"
+"Administrative divisions of a country. E.g. Fed. State, Department, Canton"
 msgstr ""
 
 #. module: partner_multilang
