@@ -30,12 +30,12 @@ msgid "<i class=\"fa fa-repeat\"/> Reset"
 msgstr ""
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "<strong class=\"o_section_labels\">Shipping address:</strong>"
 msgstr ""
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "<strong class=\"o_section_labels\">The Attention of:</strong>"
 msgstr ""
 
@@ -47,6 +47,11 @@ msgstr ""
 #. module: l10n_bg_report_theme
 #: model:ir.module.category,description:l10n_bg_report_theme.category_l10n_bg_report_theme
 msgid "Access management for different sections in Bulgarian reports"
+msgstr ""
+
+#. module: l10n_bg_report_theme
+#: model:res.groups,name:l10n_bg_report_theme.group_control_address_swap
+msgid "Address Swap Control"
 msgstr ""
 
 #. module: l10n_bg_report_theme
@@ -203,7 +208,7 @@ msgid "Font"
 msgstr ""
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "From:"
 msgstr ""
 
@@ -223,12 +228,12 @@ msgid "Invoice Signatures Control"
 msgstr ""
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "Invoicing address:"
 msgstr ""
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "Invoicing and shipping address:"
 msgstr ""
 
@@ -409,8 +414,8 @@ msgid "Str.:"
 msgstr ""
 
 #. module: l10n_bg_report_theme
-#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_no_partner
 #: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.deal_partner
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_theme.report_saleorder_document
 msgid "TIN"
 msgstr ""
 
@@ -510,6 +515,13 @@ msgstr ""
 #. module: l10n_bg_report_theme
 #: model:res.groups,comment:l10n_bg_report_theme.group_control_signatures_stock_picking
 msgid "Users who can view the signatures section in stock pickings"
+msgstr ""
+
+#. module: l10n_bg_report_theme
+#: model:res.groups,comment:l10n_bg_report_theme.group_control_address_swap
+msgid ""
+"When enabled, swaps address and information block positions in reports "
+"(address moves to left, information block to right)"
 msgstr ""
 
 #. module: l10n_bg_report_theme
