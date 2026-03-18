@@ -32,6 +32,12 @@ msgid "Accepted delivery report"
 msgstr ""
 
 #. module: l10n_bg_report_stock
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_stock.report_accepted_delivery_document
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_stock.report_handover_protocol_document
+msgid "From:"
+msgstr ""
+
+#. module: l10n_bg_report_stock
 #: model:ir.actions.report,name:l10n_bg_report_stock.action_report_handover_protocol
 msgid "Handover protocol"
 msgstr ""
@@ -44,4 +50,10 @@ msgstr ""
 #. module: l10n_bg_report_stock
 #: model_terms:ir.ui.view,arch_db:l10n_bg_report_stock.report_accepted_delivery_document
 msgid "Sale Description"
+msgstr ""
+
+#. module: l10n_bg_report_stock
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_stock.report_accepted_delivery_document
+#: model_terms:ir.ui.view,arch_db:l10n_bg_report_stock.report_handover_protocol_document
+msgid "TIN"
 msgstr ""
