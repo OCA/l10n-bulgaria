@@ -1,5 +1,5 @@
 # Copyright 2023 Rosen Vladimirov
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 {
     "name": "Bulgaria - Report Theme Sections",
@@ -7,9 +7,9 @@
         "Professional report theme with modular section-based layout for Bulgarian "
         "business documents."
     ),
-    "version": "18.0.5.0.3",
+    "version": "18.0.5.0.4",
     "development_status": "Production/Stable",
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "author": "Rosen Vladimirov,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-bulgaria",
     "depends": ["web", "sale", "account", "stock", "purchase", "l10n_bg_config"],
