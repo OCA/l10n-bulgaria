@@ -1,12 +1,26 @@
-# Bulgarian Sale Order Delivery Note
+# България — Приемно-предавателен отчет от поръчка (OCA)
 
-> Acceptance/Delivery doc за SO
+> QWeb PDF "приемно-предавателен" / pro-forma отчет, генериран
+> директно от българска поръчка за продажба.
 
 **Модул:** `l10n_bg_sale_order_delivery_note` | **Версия:** 18.0.1.0.0 | **Лиценз:** AGPL-3 | **Категория:** Sales/Bulgaria
 
 ## Описание
 
-Acceptance/Delivery doc за SO
+Българската търговска практика често изисква
+приемно-предавателен / pro-forma документ, издаден на ниво
+**поръчка за продажба** (преди или вместо stock-side
+приемно-предавателния протокол). Този модул добавя този отчет на
+`sale.order`.
+
+## Какво предоставя
+
+- `report/ir_actions_report.xml` — `ir.actions.report` (qweb-pdf),
+  bind-нат към `sale.order`, достъпен от Print менюто на поръчката.
+- `report/ir_action_report_templates.xml` — QWeb template-ът,
+  ползващ българския section-based report theme.
+
+Само report-layer — без model полета, без seed данни.
 
 ## Зависимости
 
@@ -14,22 +28,19 @@ Acceptance/Delivery doc за SO
 |---|---|
 | `sale` | `l10n_bg_report_theme` |
 
-## Отчети (reports)
+## Конфигурация
 
-- `report/ir_action_report_templates.xml`
-- `report/ir_actions_report.xml`
+Няма. Инсталирайте — приемно-предавателният отчет се появява в Print
+менюто на поръчката.
 
-## Инсталация
+## Свързани модули
 
-```bash
-# Добавете пътя на репозиторията в Odoo addons_path,
-# след това инсталирайте през UI Apps → търсене 'l10n_bg_sale_order_delivery_note' или през CLI:
-odoo -i l10n_bg_sale_order_delivery_note -d <вашата_база> --stop-after-init
-```
+`l10n_bg_report_stock` предоставя stock-picking-side
+приемно-предавателния протокол + документ; този модул е sale-order-side
+вариантът.
 
 ## Свързани
 
-- Главно репозитори: [`l10n-bulgaria-oca`](../README.md)
-
----
-*Генериран 2026-05-15 от `__manifest__.py` + source layout. Ръчно обогатяване за пълен handbook.*
+- Преглед на репозиторията: [`../OVERVIEW.bg.md`](../OVERVIEW.bg.md)
+- Stock-side: `l10n_bg_report_stock`
+- Report layout: `l10n_bg_report_theme`

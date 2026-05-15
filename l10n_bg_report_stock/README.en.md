@@ -1,12 +1,28 @@
-# L10n Bg Report Stock
+# Bulgaria — Stock Handover & Accepted-Delivery Documents (OCA)
 
-> Bulgaria - Accepted delivery documents in stock picking
+> Adds the Bulgarian accepted-delivery slip and handover protocol
+> (приемно-предавателен протокол) PDF reports to stock pickings.
 
-**Module:** `l10n_bg_report_stock` | **Version:** 18.0.1.0.0 | **License:** AGPL-3 | **Category:** ?
+**Module:** `l10n_bg_report_stock` | **Version:** 18.0.1.0.0 | **License:** AGPL-3 | **Category:** Localization
 
 ## Overview
 
-Bulgaria - Accepted delivery documents in stock picking
+Bulgarian goods movements are documented with a **приемно-предавателен
+протокол** (handover protocol) and an **accepted-delivery slip** —
+signed proof of delivery/acceptance distinct from the invoice. This
+module adds those two PDF reports to `stock.picking` using the
+section-based `l10n_bg_report_theme` layout.
+
+## What it provides
+
+- `report/report_accepted_deliveryslip.xml` — accepted-delivery slip
+- `report/report_handover_protocol.xml` — handover protocol
+- `report/stock_report_views.xml` — wires the reports into the picking
+  Print menu
+- `stock.move.line._get_aggregated_product_quantities()` extended so
+  the documents aggregate quantities the Bulgarian way
+
+Report/view-layer only — no new persistent model fields.
 
 ## Dependencies
 
@@ -14,27 +30,18 @@ Bulgaria - Accepted delivery documents in stock picking
 |---|---|
 | `stock` | `l10n_bg_report_theme` |
 
-## Extended models
+## Configuration
 
-- `stock.move.line` (inherited)
+None. Install — the two reports appear in the Print menu of stock
+pickings (delivery orders / receipts).
 
-## Reports
+## Related modules
 
-- `report/report_accepted_deliveryslip.xml`
-- `report/report_handover_protocol.xml`
-- `report/stock_report_views.xml`
-
-## Installation
-
-```bash
-# Add this repository's path to your Odoo addons_path,
-# then install via UI Apps → search 'l10n_bg_report_stock' or via CLI:
-odoo -i l10n_bg_report_stock -d <your_database> --stop-after-init
-```
+- `l10n_bg_stock_sale_line_description` — adds SO line description to
+  pickings
+- `l10n_bg_sale_order_delivery_note` — SO-side accepted-delivery report
 
 ## See also
 
-- Parent repository: [`l10n-bulgaria-oca`](../README.md)
-
----
-*Generated 2026-05-15 from `__manifest__.py` + source layout. Hand-enrich for full handbook coverage.*
+- Parent repo overview: [`../OVERVIEW.md`](../OVERVIEW.md)
+- Report theme: `l10n_bg_report_theme`

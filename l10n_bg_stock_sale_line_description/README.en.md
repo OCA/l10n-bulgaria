@@ -1,12 +1,30 @@
-# Stock Sale Line Description
+# Bulgaria — Sale Line Description on Pickings (OCA)
 
-> Show sale order line description on pickings and delivery slips
+> Shows the sale-order line description on stock pickings and delivery
+> slips, so the delivered item text matches what the customer ordered.
 
-**Module:** `l10n_bg_stock_sale_line_description` | **Version:** 18.0.1.0.1 | **License:** LGPL-3 | **Category:** ?
+**Module:** `l10n_bg_stock_sale_line_description` | **Version:** 18.0.1.0.1 | **License:** LGPL-3 | **Category:** Localization
 
 ## Overview
 
-Show sale order line description on pickings and delivery slips
+By default a delivery slip shows the product name, not the descriptive
+text the salesperson entered on the sale-order line. Bulgarian
+customers expect the delivery document to carry the same wording as
+the order. This module surfaces the SO line description on the picking
+form and the delivery-slip report.
+
+## What it does
+
+- `views/stock_picking_views.xml` inherits the picking form — adds the
+  SO line description next to `description_picking` in the operations
+  page.
+- `report/report_deliveryslip.xml` inherits the delivery-slip report
+  (and the serial-move-line variant) — prints the description in the
+  move table.
+- `security/res_groups.xml` ships a group gating whether the extra
+  description column is shown.
+
+Report/view-layer only — no model fields.
 
 ## Dependencies
 
@@ -14,30 +32,13 @@ Show sale order line description on pickings and delivery slips
 |---|---|
 | `stock`, `sale_stock` | — |
 
-## Extended models
+## Configuration
 
-- `stock.move` (inherited)
-
-## Views
-
-- `views/stock_picking_views.xml`
-
-## Reports
-
-- `report/report_deliveryslip.xml`
-
-## Installation
-
-```bash
-# Add this repository's path to your Odoo addons_path,
-# then install via UI Apps → search 'l10n_bg_stock_sale_line_description' or via CLI:
-odoo -i l10n_bg_stock_sale_line_description -d <your_database> --stop-after-init
-```
+None (other than optionally assigning the visibility group). Install —
+the description follows from the sale order onto the picking and its
+printed delivery slip.
 
 ## See also
 
-- Parent repository: [`l10n-bulgaria-oca`](../README.md)
-- Module tests: `tests/`
-
----
-*Generated 2026-05-15 from `__manifest__.py` + source layout. Hand-enrich for full handbook coverage.*
+- Parent repo overview: [`../OVERVIEW.md`](../OVERVIEW.md)
+- Related: `l10n_bg_report_stock`

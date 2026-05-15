@@ -1,12 +1,24 @@
-# Bulgarian Invoice Copy
+# Bulgaria — Invoice COPY Watermark (OCA)
 
-> Add COPY watermark to Bulgarian invoice reports
+> Adds a "COPY" watermark to Bulgarian invoice reports so reprints are
+> visually distinguishable from the original.
 
 **Module:** `l10n_bg_invoice_copy` | **Version:** 18.0.1.0.0 | **License:** AGPL-3 | **Category:** Accounting/Localizations
 
 ## Overview
 
-Add COPY watermark to Bulgarian invoice reports
+Bulgarian practice requires that any reprint of an already-issued
+invoice is clearly marked as a copy ("КОПИЕ"), so it cannot be
+mistaken for a second original. This module overlays a watermark on
+the Bulgarian themed invoice PDF when the document is not the first
+print.
+
+## What it does
+
+`views/report_invoice_copy.xml` inherits the invoice report QWeb
+template and renders a diagonal "COPY" watermark layer over the
+invoice body. Purely a report-layer change — no model fields, no
+seeded data.
 
 ## Dependencies
 
@@ -14,21 +26,23 @@ Add COPY watermark to Bulgarian invoice reports
 |---|---|
 | `account` | `l10n_bg_report_theme` |
 
-## Views
+It builds on the `l10n_bg_report_theme` section-based invoice layout
+(not the stock Odoo invoice template).
 
-- `views/report_invoice_copy.xml`
+## Configuration
 
-## Installation
+None. Install and the watermark appears on invoice reprints.
 
-```bash
-# Add this repository's path to your Odoo addons_path,
-# then install via UI Apps → search 'l10n_bg_invoice_copy' or via CLI:
-odoo -i l10n_bg_invoice_copy -d <your_database> --stop-after-init
-```
+## Relationship to `l10n_bg_invoice_grif`
+
+`l10n_bg_invoice_grif` (l10n-bulgaria CE repo) is the richer variant —
+it adds an explicit **Гриф** field (ОРИГИНАЛ / КОПИЕ) printed on the
+invoice. Use `invoice_copy` for a simple visual watermark; use
+`invoice_grif` when the original/copy status must be an explicit
+labelled field.
 
 ## See also
 
-- Parent repository: [`l10n-bulgaria-oca`](../README.md)
-
----
-*Generated 2026-05-15 from `__manifest__.py` + source layout. Hand-enrich for full handbook coverage.*
+- Parent repo overview: [`../OVERVIEW.md`](../OVERVIEW.md)
+- Report layout: `l10n_bg_report_theme`
+- Sibling: `l10n_bg_invoice_grif`

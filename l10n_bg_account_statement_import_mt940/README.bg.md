@@ -1,42 +1,54 @@
-# Account Statement Import Mt940
+# България — MT940 импорт на банкови извлечения (OCA)
 
-> MT940 банкови извлечения — БГ банки
+> Добавя SWIFT **MT940** формат към OCA framework-а за импорт на
+> банкови извлечения, с разхлабен `:28C:` StatementNumber pattern за
+> приемане на експорти от български банки.
 
-**Модул:** `l10n_bg_account_statement_import_mt940` | **Версия:** 18.0.1.0.0 | **Лиценз:** LGPL-3 | **Категория:** ?
+**Модул:** `l10n_bg_account_statement_import_mt940` | **Версия:** 18.0.1.0.0 | **Лиценз:** LGPL-3 | **Категория:** Localization
 
 ## Описание
 
-MT940 банкови извлечения — БГ банки
+Повечето български банки експортират извлечения в **MT940** (SWIFT).
+OCA framework-ът `account_statement_import_file` не доставя MT940 по
+подразбиране, а `StatementNumber` regex-ът на стандартната `mt-940`
+Python библиотека е по-строг от това, което някои български банки
+емитват. Този модул регистрира формата и patch-ва pattern-а, така че
+тези експорти се парсват чисто.
+
+## Какво прави
+
+- `account.journal._get_bank_statements_available_import_formats()`
+  разширен (`models/account_journal.py`) — добавя `"mt940"` към
+  списъка с поддържани формати за импорт.
+- Wizard binding (`wizard/account_statement_import.xml`) включва MT940
+  парсера в OCA `account.statement.import` потока.
+- `mt940.tags.StatementNumber.pattern` е override-нат с разхлабен
+  regex, така че `:28C:` полето от български банки се приема
+  (валидирано от standalone parser теста в `tests/`).
 
 ## Зависимости
 
-| Odoo базови | Българска локализация |
+| OCA core | Python пакет |
 |---|---|
-| `account_statement_import_file` | — |
+| `account_statement_import_file` | `mt-940` |
 
-**Python пакети:** `mt-940`
+> Бележка: манифестът декларира PyPI пакета `mt-940`
+> (`pip install mt-940`); import името е `mt940`.
 
-## Разширени модели
+## Конфигурация
 
-- `account.journal` (extension)
+1. Инсталация (`pip install mt-940` ако още не е наличен).
+2. Accounting → импорт на банково извлечение → изберете **MT940**
+   формат → качете `.940` / `.sta` файла на банката.
 
-## Помощници (wizards)
+## Бележка vs InfoPay
 
-- `wizard/account_statement_import.py`
-- `wizard/bank_custom_tags.py`
-
-## Инсталация
-
-```bash
-# Добавете пътя на репозиторията в Odoo addons_path,
-# след това инсталирайте през UI Apps → търсене 'l10n_bg_account_statement_import_mt940' или през CLI:
-odoo -i l10n_bg_account_statement_import_mt940 -d <вашата_база> --stop-after-init
-```
+За Borica InfoPay банки предпочитайте live API (`l10n_bg_infopay` +
+bridges) пред MT940 файлов импорт. MT940 е fallback за банки без
+InfoPay канал.
 
 ## Свързани
 
-- Главно репозитори: [`l10n-bulgaria-oca`](../README.md)
-- Модулни тестове: `tests/`
-
----
-*Генериран 2026-05-15 от `__manifest__.py` + source layout. Ръчно обогатяване за пълен handbook.*
+- Преглед на репозиторията: [`../OVERVIEW.bg.md`](../OVERVIEW.bg.md)
+- OCA import база: `account_statement_import_file`
+- Live алтернатива: `l10n_bg_infopay`

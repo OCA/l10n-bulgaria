@@ -1,12 +1,25 @@
-# Bulgarian Sale Order Delivery Note
+# Bulgaria — Sale Order Accepted-Delivery Report (OCA)
 
-> Generate Accepted Delivery Report for Bulgarian Sale Orders
+> A QWeb PDF "accepted delivery" / pro-forma report generated directly
+> from a Bulgarian sale order.
 
 **Module:** `l10n_bg_sale_order_delivery_note` | **Version:** 18.0.1.0.0 | **License:** AGPL-3 | **Category:** Sales/Bulgaria
 
 ## Overview
 
-Generate Accepted Delivery Report for Bulgarian Sale Orders
+Bulgarian sales practice often needs an accepted-delivery / pro-forma
+document issued at the **sale-order** stage (before or instead of the
+stock-side handover protocol). This module adds that report on
+`sale.order`.
+
+## What it provides
+
+- `report/ir_actions_report.xml` — an `ir.actions.report` (qweb-pdf)
+  bound to `sale.order`, available from the order's Print menu.
+- `report/ir_action_report_templates.xml` — the QWeb template, using
+  the Bulgarian section-based report theme.
+
+Report-layer only — no model fields, no seeded data.
 
 ## Dependencies
 
@@ -14,22 +27,19 @@ Generate Accepted Delivery Report for Bulgarian Sale Orders
 |---|---|
 | `sale` | `l10n_bg_report_theme` |
 
-## Reports
+## Configuration
 
-- `report/ir_action_report_templates.xml`
-- `report/ir_actions_report.xml`
+None. Install — the accepted-delivery report appears in the sale-order
+Print menu.
 
-## Installation
+## Related modules
 
-```bash
-# Add this repository's path to your Odoo addons_path,
-# then install via UI Apps → search 'l10n_bg_sale_order_delivery_note' or via CLI:
-odoo -i l10n_bg_sale_order_delivery_note -d <your_database> --stop-after-init
-```
+`l10n_bg_report_stock` provides the stock-picking-side handover
+protocol + accepted-delivery slip; this module is the
+sale-order-side counterpart.
 
 ## See also
 
-- Parent repository: [`l10n-bulgaria-oca`](../README.md)
-
----
-*Generated 2026-05-15 from `__manifest__.py` + source layout. Hand-enrich for full handbook coverage.*
+- Parent repo overview: [`../OVERVIEW.md`](../OVERVIEW.md)
+- Stock-side: `l10n_bg_report_stock`
+- Report layout: `l10n_bg_report_theme`
