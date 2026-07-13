@@ -36,7 +36,6 @@ Same scope as [`l10n-bulgaria`](https://github.com/rosenvladimirov/l10n-bulgaria
 ### HR
 
 ### Fiscal Printers
-- `l10n_bg_erp_net_fp` — ErpNet.FP integration
 
 ### MRP / Multilang
 
