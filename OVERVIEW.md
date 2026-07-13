@@ -17,42 +17,30 @@ Same scope as [`l10n-bulgaria`](https://github.com/rosenvladimirov/l10n-bulgaria
 ### Foundation
 - `l10n_bg_config` — central configuration backbone
 - `partner_multilang` — JSONB multilingual partner names
-- `l10n_bg_multilang` — multi-language support
 - `l10n_bg_address_extended` — precise BG addresses
 - `markdown_viewer_locale` — locale-aware Markdown viewer
 
 ### Geographic
-- `l10n_bg_city` — ЕКАТТЕ database
-- `l10n_bg_tax_offices` — NRA directorate registry
 
 ### Accounting & Reports
-- `l10n_bg_report_theme` — section-based report layout
 - `l10n_bg_invoice_copy` — ОРИГИНАЛ/КОПИЕ watermark
 - `l10n_bg_report_stock` — accepted delivery documents
 - `l10n_bg_account_reconcile_patch` — JSONB regexp fix
 
 ### Banking
-- `l10n_bg_bank_wallet` — encrypted credential storage
 - `l10n_bg_account_statement_import_mt940` — MT940 import
 
 ### NRA / Trade Registry / TARIC
-- `l10n_bg_company_registry` — Trade Registry API
-- `l10n_bg_tariff_code` — TARIC/HS/CN codes
 - `taric_ai_classifier` — AI-powered TARIC classification
 
 ### HR
-- `l10n_bg_hr_holidays` — 61 BG leave types
-- `l10n_bg_payroll_classifications` — NKPD + KID classifications
 
 ### Fiscal Printers
 - `l10n_bg_erp_net_fp` — ErpNet.FP integration
 
 ### MRP / Multilang
-- `l10n_bg_mrp_multilang`
-- `l10n_bg_project_multilang`
 
 ### Stock / Sale
-- `l10n_bg_sale_order_delivery_note`
 - `l10n_bg_stock_sale_line_description`
 
 ## Per-module docs
