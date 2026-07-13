@@ -26,8 +26,6 @@ Same scope as [`l10n-bulgaria`](https://github.com/rosenvladimirov/l10n-bulgaria
 - `l10n_bg_tax_offices` — NRA directorate registry
 
 ### Accounting & Reports
-- `l10n_bg_reports_audit` — SQL views + NRA tag framework
-- `l10n_bg_reports_config` — accounting reports UI
 - `l10n_bg_report_theme` — section-based report layout
 - `l10n_bg_invoice_copy` — ОРИГИНАЛ/КОПИЕ watermark
 - `l10n_bg_report_stock` — accepted delivery documents

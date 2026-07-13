@@ -26,8 +26,6 @@
 - `l10n_bg_tax_offices` — НАП дирекции
 
 ### Счетоводство & Отчети
-- `l10n_bg_reports_audit` — SQL views + НАП tag framework
-- `l10n_bg_reports_config` — UI на счетоводни отчети
 - `l10n_bg_report_theme` — section-based report layout
 - `l10n_bg_invoice_copy` — ОРИГИНАЛ/КОПИЕ воден знак
 - `l10n_bg_report_stock` — приемно-предавателни документи
